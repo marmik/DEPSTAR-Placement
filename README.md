@@ -1,6 +1,6 @@
-Charusat University Online Quiz App
+#Charusat University Online Quiz App
 
-Introduction
+#Introduction
 Welcome to the Charusat University Online Quiz App! This web application is designed to facilitate online quizzes for students and educators at Charusat University. Whether you're a student looking to test your knowledge or an educator creating quizzes for your classes, our app has you covered.
 
 Features
@@ -13,29 +13,24 @@ Responsive Design: Works seamlessly across devices, including desktops, tablets,
 Installation
 To run this app locally, follow these steps:
 
-Clone the repository:
+#Clone the repository:
 
-bash
-Copy code
 git clone https://github.com/your_username/charusat-quiz-app.git
-Navigate to the project directory:
 
-bash
-Copy code
+#Navigate to the project directory:
+
 cd charusat-quiz-app
-Install dependencies:
 
-bash
-Copy code
+#Install dependencies:
+
 npm install
-Start the development server:
 
-bash
-Copy code
+#Start the development server:
+
 npm start
 Open your browser and go to http://localhost:3000 to view the app.
 
-Usage
+#Usage
 Educators: Log in and navigate to the "Create Quiz" section to create a new quiz or manage existing quizzes.
 Students: Log in and access available quizzes from the dashboard. Complete quizzes and view your scores and rankings.
 Technologies Used
