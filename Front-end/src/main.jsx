@@ -10,7 +10,7 @@ import LoginAdmin from './pages/admin/LoginAdmin.jsx';
 
 const router = createBrowserRouter([
   {
-    path: "/admin",
+    path: "/admin/login",
     element: <LoginAdmin/>,
   },
   {

@@ -1,10 +1,10 @@
 import './App.css'
-import LoginFaculty from './pages/faculty/LoginFaculty'
+import Login from './pages/Login'
 
 function App() {
   return (
     <>
-    <LoginFaculty/>
+    <Login/>
     </>
   )
 }
