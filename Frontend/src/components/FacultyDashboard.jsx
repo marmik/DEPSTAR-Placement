@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { GiHamburgerMenu } from "react-icons/gi";
 import Dashboard from '../pages/faculty/Dashboard';
 import FacultySidebar from './FacultySidebar';
+import { Route, Routes } from 'react-router-dom';
+import AddExam from '../pages/faculty/AddExam';
 
 
 
@@ -36,8 +38,10 @@ function FacultyDashboard() {
           <br />
 
           <div className='p-3 '>
-            
-              <Dashboard/>
+            <Routes>
+              <Route path='/' element={<Dashboard/>}></Route>
+              <Route path='/add-exam' element={<AddExam/>}></Route>
+            </Routes>
           </div>
 
         </div>
