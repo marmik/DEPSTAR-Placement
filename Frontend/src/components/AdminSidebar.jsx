@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { HiHome, HiUser, HiBookOpen, HiChatAlt, HiLogout } from 'react-icons/hi';
 import { IoMdSettings } from "react-icons/io";
 
-const FacultySidebar = () => {
+const AdminSidebar = () => {
     const location = useLocation();
     const path = location.pathname;
     return (
@@ -13,7 +13,7 @@ const FacultySidebar = () => {
             </div>
             <nav className="flex-grow  py-4 px-6">
                 <ul className='flex flex-col gap-4'>
-                    <li className={`p-4 rounded-lg ${path == "/admin/dashboard/" || path=="/admin/dashboard" ? "bg-white shadow-2xl text-secondary":"" }  `}>
+                    <li className={`p-4 rounded-lg ${path == "/admin/Dashboard/" || path=="/admin/Dashboard" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
                             to="./"
 >
@@ -23,7 +23,7 @@ const FacultySidebar = () => {
                             </div>
                         </Link>
                     </li>
-                    <li className={`p-4 rounded-lg ${path == "/admin/dashboard/view-users" ? "bg-white shadow-2xl text-secondary":"" }  `}>
+                    <li className={`p-4 rounded-lg ${path == "/admin/Dashboard/view-users" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
                             to="./view-users"
                            >
@@ -33,7 +33,7 @@ const FacultySidebar = () => {
                             </div>
                         </Link>
                     </li>
-                    <li className={`p-4 rounded-lg ${path == "/admin/dashboard/view-exams" ? "bg-white shadow-2xl text-secondary":"" }  `}>
+                    <li className={`p-4 rounded-lg ${path == "/admin/Dashboard/view-exams" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
                             to="./view-exams"
                             >
@@ -43,7 +43,7 @@ const FacultySidebar = () => {
                             </div>
                         </Link>
                     </li>
-                    <li className={`p-4 rounded-lg ${path == "/admin/dashboard/system-feedbacks" ? "bg-white shadow-2xl text-secondary":"" }  `}>
+                    <li className={`p-4 rounded-lg ${path == "/admin/Dashboard/system-feedbacks" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
                             to="./system-feedbacks"
                             >
@@ -53,7 +53,7 @@ const FacultySidebar = () => {
                             </div>
                         </Link>
                     </li>
-                    <li className={`p-4 rounded-lg ${path == "/admin/dashboard/system-settings" ? "bg-white shadow-2xl text-secondary":"" } `}>
+                    <li className={`p-4 rounded-lg ${path == "/admin/Dashboard/system-settings" ? "bg-white shadow-2xl text-secondary":"" } `}>
                         <Link
                             to="./system-settings">
                             <div className="flex items-center space-x-2">
@@ -76,4 +76,4 @@ const FacultySidebar = () => {
         </div>
     );
 };
-export default FacultySidebar;
+export default AdminSidebar;
