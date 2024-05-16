@@ -4,6 +4,9 @@ import Dashboard from '../pages/faculty/Dashboard';
 import FacultySidebar from './FacultySidebar';
 import { Route, Routes } from 'react-router-dom';
 import AddExam from '../pages/faculty/AddExam';
+import Manageexam from '../pages/faculty/Manageexam';
+import ManageFeedback from '../pages/faculty/ManageFeedback';
+import SystemFeedback from '../pages/student/SystemFeedback';
 
 
 
@@ -31,7 +34,7 @@ function FacultyDashboard() {
             </div>
             <div className='flex justify-center items-center gap-4'>
               <p className='font-medium text-xl'>Raj Markana</p>
-              <img src="./vite.svg" alt="Image" className='rounded-full' />
+              <img src="../vite.svg" alt="Image" className='rounded-full' />
             </div>
           </div>
 
@@ -41,6 +44,9 @@ function FacultyDashboard() {
             <Routes>
               <Route path='/' element={<Dashboard/>}></Route>
               <Route path='/add-exam' element={<AddExam/>}></Route>
+              <Route path='/manage-exams' element={<Manageexam/>}></Route>
+              <Route path='/manage-feedbacks' element={<ManageFeedback/>}></Route>
+              <Route path='/system-feedbacks' element={<SystemFeedback/>}></Route>
             </Routes>
           </div>
 

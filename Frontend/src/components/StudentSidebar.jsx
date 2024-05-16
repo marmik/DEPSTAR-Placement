@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { HiHome, HiPlusCircle, HiBookOpen, HiChatAlt, HiLogout } from 'react-icons/hi';
+import { HiHome,HiBookOpen, HiChatAlt, HiLogout } from 'react-icons/hi';
+import { PiExam } from "react-icons/pi";
 
-const FacultySidebar = () => {
+
+
+const StudentSidebar = () => {
     return (
         <div className=" flex flex-col bg-blue-700 text-white h-screen overflow-hidden">
             <div className="flex items-center justify-center h-20">
@@ -12,7 +15,8 @@ const FacultySidebar = () => {
                 <ul className='flex flex-col gap-4'>
                     <li className='p-4 bg-white rounded-lg text-secondary'>
                         <Link
-                            to="/faculty"
+                            to="/student"
+
                         >
                             <div className="flex items-center space-x-2">
                                 <HiHome className="w-5 h-5" />
@@ -22,47 +26,37 @@ const FacultySidebar = () => {
                     </li>
                     <li className='p-4'>
                         <Link
-                            to="./add-exam"
+                            to="./view-quiz"
                            
                         >
                             <div className="flex items-center space-x-2">
-                                <HiPlusCircle className="w-5 h-5" />
-                                <span>Add New Exam</span>
+                                <PiExam className="w-5 h-5" />
+                                <span>View Quizzes</span>
                             </div>
                         </Link>
                     </li>
                     <li className='p-4'>
                         <Link
-                            to="./manage-exams"
+                            to="./given-feedback"
                             
                         >
                             <div className="flex items-center space-x-2">
                                 <HiBookOpen className="w-5 h-5" />
-                                <span>Manage Exams</span>
+                                <span>Given Feedback</span>
                             </div>
                         </Link>
                     </li>
                     <li className='p-4'>
                         <Link
-                            to="./manage-feedbacks"
+                            to="./system-feedback"
                             
                         >
                             <div className="flex items-center space-x-2">
                                 <HiChatAlt className="w-5 h-5" />
-                                <span>Manage Feedbacks</span>
+                                <span>System Feedback</span>
                             </div>
                         </Link>
-                    </li>
-                    <li className='p-4'>
-                        <Link
-                            to="./system-feedbacks"
-                            
-                        >
-                            <div className="flex items-center space-x-2">
-                                <HiChatAlt className="w-5 h-5" />
-                                <span>System Feedbacks</span>
-                            </div>
-                        </Link>
+                   
                     </li>
                 </ul>
             </nav>
@@ -78,4 +72,4 @@ const FacultySidebar = () => {
         </div>
     );
 };
-export default FacultySidebar;
+export default StudentSidebar;
