@@ -3,6 +3,11 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import Dashboard from '../pages/admin/Dashboard';
 import AdminSidebar from './AdminSidebar';
 import { Route, Routes } from 'react-router-dom';
+import ViewUsers from '../pages/admin/ViewUsers';
+import ViewExams from '../pages/admin/ViewExams';
+import SystemFeedbacks from '../pages/admin/SystemFeedbacks';
+import SystemSettings from '../pages/admin/SystemSettings';
+
 
 
 
@@ -39,10 +44,10 @@ function AdminDashboard() {
           <div className='p-3 '>
             <Routes>
               <Route path='/' element={<Dashboard/>}></Route>
-              <Route path='/View-Users' element={"View-Users"}></Route>
-              <Route path='/View-Exams' element={"View-Exams"}></Route>
-              <Route path='/System-Feedbacks' element={"System-Feedbacks"}></Route>
-              <Route path='/System-Settings' element={"System-Settings"}></Route>
+              <Route path='/View-Users' element={<ViewUsers/>}></Route>
+              <Route path='/View-Exams' element={<ViewExams/>}></Route>
+              <Route path='/System-Feedbacks' element={<SystemFeedbacks/>}></Route>
+              <Route path='/System-Settings' element={<SystemSettings/>}></Route>
             </Routes>
           </div>
 
