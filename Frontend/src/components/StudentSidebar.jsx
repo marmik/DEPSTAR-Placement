@@ -1,19 +1,21 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { HiHome,HiBookOpen, HiChatAlt, HiLogout } from 'react-icons/hi';
 import { PiExam } from "react-icons/pi";
 
 
 
 const StudentSidebar = () => {
+    const location = useLocation();
+    const path = location.pathname;
     return (
-        <div className=" flex flex-col bg-blue-700 text-white h-screen overflow-hidden">
+        <div className=" flex flex-col bg-primary text-white h-screen overflow-hidden">
             <div className="flex items-center justify-center h-20">
                 <span className="text-xl font-bold">Logo</span>
             </div>
             <nav className="flex-grow  py-4 px-6">
                 <ul className='flex flex-col gap-4'>
-                    <li className='p-4 bg-white rounded-lg text-secondary'>
+                    <li className={`p-4 rounded-lg ${path == "/student" || path=="/student/" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
                             to="/student"
 
@@ -24,18 +26,18 @@ const StudentSidebar = () => {
                             </div>
                         </Link>
                     </li>
-                    <li className='p-4'>
+                    <li className={`p-4 rounded-lg ${path == "/student/view-quiz" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
                             to="./view-quiz"
                            
                         >
                             <div className="flex items-center space-x-2">
                                 <PiExam className="w-5 h-5" />
-                                <span>View Quizzes</span>
+                                <span>View Quiz</span>
                             </div>
                         </Link>
                     </li>
-                    <li className='p-4'>
+                    <li className={`p-4 rounded-lg ${path == "/student/given-feedback" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
                             to="./given-feedback"
                             
@@ -46,7 +48,7 @@ const StudentSidebar = () => {
                             </div>
                         </Link>
                     </li>
-                    <li className='p-4'>
+                    <li className={`p-4 rounded-lg ${path == "/student/system-feedback" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
                             to="./system-feedback"
                             

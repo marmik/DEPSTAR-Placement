@@ -30,7 +30,7 @@ function Login() {
 
 
             <h1 className="font-bold text-3xl flex lg:hidden md:hidden">Logo Here</h1>
-            <h1 className="font-bold text-3xl md:text-4xl md:mb-8 py-2 my-2 border-b-2">Login as {(isstudent) ? "Student" : "Faculty"}.</h1>
+            <h1 className="font-bold text-3xl md:text-4xl md:mb-8 py-2 my-2 border-b-2">Login as {(isstudent) ? "Student" : "Faculty"}</h1>
 
             <div className="flex flex-row mb-5">
               <h2 className={(isstudent) ? "text-2xl font-semibold  border-b-4 border-b-primary cursor-pointer" : "text-2xl font-semibold  cursor-pointer"} onClick={() => setstudent(true)}>Student</h2>
@@ -50,7 +50,7 @@ function Login() {
                 <input type="password" name="" id="password" placeholder="your password" className="px-4 py-3 border-2 border-slate-300 rounded-md max-w-full focus:border-primary focus:outline-none" />
               </div>
 
-              <button className="self-center w-3/12 my-6 bg-blue-600 hover:bg-blue-700 text-white font-medium text-lg px-4 py-3 rounded-md lg:self-end shadow-xl" >Login</button>
+              <button className="self-center w-3/12 my-6 bg-primary text-light font-medium text-lg px-4 py-3 rounded-md lg:self-end shadow-xl" >Login</button>
             </form>
           </div>
         </div>

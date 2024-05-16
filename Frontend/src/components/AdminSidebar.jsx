@@ -1,17 +1,19 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { HiHome, HiUser, HiBookOpen, HiChatAlt, HiLogout } from 'react-icons/hi';
 import { IoMdSettings } from "react-icons/io";
 
 const FacultySidebar = () => {
+    const location = useLocation();
+    const path = location.pathname;
     return (
-        <div className=" flex flex-col bg-blue-700 text-white h-screen overflow-hidden">
+        <div className=" flex flex-col bg-primary text-light h-screen overflow-hidden">
             <div className="flex items-center justify-center h-20">
                 <span className="text-xl font-bold">Logo</span>
             </div>
             <nav className="flex-grow  py-4 px-6">
                 <ul className='flex flex-col gap-4'>
-                    <li className='p-4 bg-white rounded-lg text-secondary'>
+                    <li className={`p-4 rounded-lg ${path == "/admin/dashboard/" || path=="/admin/dashboard" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
                             to="./"
 >
@@ -21,9 +23,9 @@ const FacultySidebar = () => {
                             </div>
                         </Link>
                     </li>
-                    <li className='p-4'>
+                    <li className={`p-4 rounded-lg ${path == "/admin/dashboard/view-users" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
-                            to="./View-Users"
+                            to="./view-users"
                            >
                             <div className="flex items-center space-x-2">
                                 <HiUser className="w-5 h-5" />
@@ -31,9 +33,9 @@ const FacultySidebar = () => {
                             </div>
                         </Link>
                     </li>
-                    <li className='p-4'>
+                    <li className={`p-4 rounded-lg ${path == "/admin/dashboard/view-exams" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
-                            to="./View-Exams"
+                            to="./view-exams"
                             >
                             <div className="flex items-center space-x-2">
                                 <HiBookOpen className="w-5 h-5" />
@@ -41,9 +43,9 @@ const FacultySidebar = () => {
                             </div>
                         </Link>
                     </li>
-                    <li className='p-4'>
+                    <li className={`p-4 rounded-lg ${path == "/admin/dashboard/system-feedbacks" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
-                            to="./System-Feedbacks"
+                            to="./system-feedbacks"
                             >
                             <div className="flex items-center space-x-2">
                                 <HiChatAlt className="w-5 h-5" />
@@ -51,9 +53,9 @@ const FacultySidebar = () => {
                             </div>
                         </Link>
                     </li>
-                    <li className='p-4'>
+                    <li className={`p-4 rounded-lg ${path == "/admin/dashboard/system-settings" ? "bg-white shadow-2xl text-secondary":"" } `}>
                         <Link
-                            to="./System-Settings">
+                            to="./system-settings">
                             <div className="flex items-center space-x-2">
                                 <IoMdSettings className="w-5 h-5" />
                                 <span>System Settings</span>
@@ -64,7 +66,7 @@ const FacultySidebar = () => {
             </nav>
             <div className="py-4 px-6 bg-blue-950">
                 <Link
-                    to="/"
+                    to="/admin/login"
                     className="flex items-center space-x-2  text-white"
                 >
                     <HiLogout className="w-5 h-5" />

@@ -44,10 +44,10 @@ function AdminDashboard() {
           <div className='p-3 '>
             <Routes>
               <Route path='/' element={<Dashboard/>}></Route>
-              <Route path='/View-Users' element={<ViewUsers/>}></Route>
-              <Route path='/View-Exams' element={<ViewExams/>}></Route>
-              <Route path='/System-Feedbacks' element={<SystemFeedbacks/>}></Route>
-              <Route path='/System-Settings' element={<SystemSettings/>}></Route>
+              <Route path='/view-users' element={<ViewUsers/>}></Route>
+              <Route path='/view-exams' element={<ViewExams/>}></Route>
+              <Route path='/system-feedbacks' element={<SystemFeedbacks/>}></Route>
+              <Route path='/system-settings' element={<SystemSettings/>}></Route>
             </Routes>
           </div>
 
