@@ -9,6 +9,7 @@ import './index.css'
 import LoginAdmin from './pages/admin/LoginAdmin.jsx';
 import FacultyDashboard from './components/FacultyDashboard.jsx';
 import StudentDashboard from './components/StudentDashboard.jsx';
+import AdminDashboard from './components/AdminDashboard.jsx';
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
   {
     path: "/Student/*",
     element: <StudentDashboard/>
+  },
+  {
+    path: "/admin/dashboard/*",
+    element: <AdminDashboard/>,
   },
 ]);
 
