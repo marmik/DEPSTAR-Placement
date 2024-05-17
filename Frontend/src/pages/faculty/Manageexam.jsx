@@ -35,26 +35,26 @@ const Manageexam = () => {
               <table className="min-w-full   border rounded-lg overflow-hidden">
                 <thead className="bg-primary text-light border">
                   <tr className='divide-x divide-light'>
-                    <th className="text-left py-3 px-4 uppercase font-semibold text-sm">No</th>
-                    <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Title</th>
-                    <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Description</th>
-                    <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Subject</th>
-                    <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Questions</th>
-                    <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Marks</th>
-                    <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Date</th>
-                    <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
+                    <th className="text-left py-3 px-4 uppercase text-sm">No</th>
+                    <th className="text-left py-3 px-4 uppercase text-sm">Title</th>
+                    <th className="text-left py-3 px-4 uppercase text-sm">Description</th>
+                    <th className="text-left py-3 px-4 uppercase text-sm">Subject</th>
+                    <th className="text-left py-3 px-4 uppercase text-sm">Questions</th>
+                    <th className="text-left py-3 px-4 uppercase text-sm">Marks</th>
+                    <th className="text-left py-3 px-4 uppercase text-sm">Date</th>
+                    <th className="text-left py-3 px-4 uppercase text-sm">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className='divide-x divide-light'>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">1</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">SE Practical</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">chapter1-4</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">SE</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">25</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">25</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">12/05/2024</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
+                    <td className="text-left py-3 px-4 text-sm">1</td>
+                    <td className="text-left py-3 px-4 text-sm">SE Practical</td>
+                    <td className="text-left py-3 px-4 text-sm">chapter1-4</td>
+                    <td className="text-left py-3 px-4 text-sm">SE</td>
+                    <td className="text-left py-3 px-4 text-sm">25</td>
+                    <td className="text-left py-3 px-4 text-sm">25</td>
+                    <td className="text-left py-3 px-4 text-sm">12/05/2024</td>
+                    <td className="text-left py-3 px-4 text-sm">
                       <button className="text-green-600 text-lg font-bold py-1 px-3 rounded-lg mr-2">
                       <FiEdit />
                       </button>
@@ -64,14 +64,14 @@ const Manageexam = () => {
                     </td>
                   </tr>
                   <tr className='divide-x divide-light'>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">1</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">SE Practical</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">chapter1-4</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">SE</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">25</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">25</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">12/05/2024</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
+                    <td className="text-left py-3 px-4 text-sm">1</td>
+                    <td className="text-left py-3 px-4 text-sm">SE Practical</td>
+                    <td className="text-left py-3 px-4 text-sm">chapter1-4</td>
+                    <td className="text-left py-3 px-4 text-sm">SE</td>
+                    <td className="text-left py-3 px-4 text-sm">25</td>
+                    <td className="text-left py-3 px-4 text-sm">25</td>
+                    <td className="text-left py-3 px-4 text-sm">12/05/2024</td>
+                    <td className="text-left py-3 px-4 text-sm">
                       <button className="text-green-600 text-lg font-bold py-1 px-3 rounded-lg mr-2">
                       <FiEdit />
                       </button>
@@ -81,14 +81,14 @@ const Manageexam = () => {
                     </td>
                   </tr>
                   <tr className='divide-x divide-light'>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">2</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">DBMS Practical</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">DBMS Chapter1-4</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">DBMS</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">50</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">50</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">18/03/2024</td>
-                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
+                    <td className="text-left py-3 px-4 text-sm">2</td>
+                    <td className="text-left py-3 px-4 text-sm">DBMS Practical</td>
+                    <td className="text-left py-3 px-4 text-sm">DBMS Chapter1-4</td>
+                    <td className="text-left py-3 px-4 text-sm">DBMS</td>
+                    <td className="text-left py-3 px-4 text-sm">50</td>
+                    <td className="text-left py-3 px-4 text-sm">50</td>
+                    <td className="text-left py-3 px-4 text-sm">18/03/2024</td>
+                    <td className="text-left py-3 px-4 text-sm">
                       <button className="text-green-600  text-lg font-bold py-1 px-3 rounded-lg mr-2">
                       <FiEdit />
                       </button>
