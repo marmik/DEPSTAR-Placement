@@ -6,7 +6,7 @@ import { Route, Routes } from 'react-router-dom';
 import AddExam from '../pages/faculty/AddExam';
 import Manageexam from '../pages/faculty/Manageexam';
 import ManageFeedback from '../pages/faculty/ManageFeedback';
-import SystemFeedback from '../pages/student/SystemFeedback';
+import SystemFeedback from '../pages/faculty/SystemFeedback';
 
 
 
