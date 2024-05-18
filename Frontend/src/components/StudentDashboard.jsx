@@ -6,6 +6,7 @@ import { Route, Routes } from 'react-router-dom';
 import ViewQuiz from '../pages/student/ViewQuiz';
 import GivenFeedback from '../pages/student/GivenFeedback';
 import SystemFeedback from '../pages/student/SystemFeedback';
+import Manageexam3  from '../pages/student/Manageexam3';
 
 
 function StudentDashboard() {
@@ -50,6 +51,7 @@ function StudentDashboard() {
                         <Routes>
                             <Route path='/' element={<Dashboard />}></Route>
                             <Route path='/view-quiz' element={<ViewQuiz/>}></Route>
+                            <Route path='/manage-exams3' element={<Manageexam3 />}></Route>
                             <Route path='/given-feedback' element={<GivenFeedback/>}></Route>
                             <Route path='/system-feedback' element={<SystemFeedback/>}></Route>
                            

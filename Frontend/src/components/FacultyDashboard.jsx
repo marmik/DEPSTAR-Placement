@@ -7,6 +7,8 @@ import AddExam from '../pages/faculty/AddExam';
 import Manageexam from '../pages/faculty/Manageexam';
 import ManageFeedback from '../pages/faculty/ManageFeedback';
 import SystemFeedback from '../pages/faculty/SystemFeedback';
+import ManageFeedbackSecond from '../pages/faculty/ManageFeedbackSecond';
+import Manageexam2 from '../pages/faculty/Manageexam2';
 
 
 function FacultyDashboard() {
@@ -49,7 +51,9 @@ function FacultyDashboard() {
               <Route path='/' element={<Dashboard />}></Route>
               <Route path='/add-exam' element={<AddExam />}></Route>
               <Route path='/manage-exams' element={<Manageexam />}></Route>
+              <Route path='/manage-exams2' element={<Manageexam2 />}></Route>
               <Route path='/manage-feedbacks' element={<ManageFeedback />}></Route>
+              <Route path='/manage-feedbacks2' element={<ManageFeedbackSecond />}></Route>
               <Route path='/system-feedbacks' element={<SystemFeedback />}></Route>
             </Routes>
           </div>
