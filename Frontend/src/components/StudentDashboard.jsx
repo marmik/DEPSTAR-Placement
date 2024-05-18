@@ -8,6 +8,7 @@ import GivenFeedback from '../pages/student/GivenFeedback';
 import SystemFeedback from '../pages/student/SystemFeedback';
 
 
+
 function StudentDashboard() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -34,6 +35,7 @@ function StudentDashboard() {
                                 <Route path='/view-quiz' element={'View Quiz'}></Route>
                                 <Route path='/given-feedback' element={'Given Feedback'}></Route>
                                 <Route path='/system-feedback' element={'System Feedback'}></Route>
+                            
                                 </Routes>
 
                             </h2>
@@ -52,6 +54,7 @@ function StudentDashboard() {
                             <Route path='/view-quiz' element={<ViewQuiz/>}></Route>
                             <Route path='/given-feedback' element={<GivenFeedback/>}></Route>
                             <Route path='/system-feedback' element={<SystemFeedback/>}></Route>
+                            
                            
                         </Routes>
                       

@@ -60,6 +60,7 @@ const StudentSidebar = () => {
                         </Link>
                    
                     </li>
+                  
                 </ul>
             </nav>
             <div className="py-4 px-6 bg-blue-950">
