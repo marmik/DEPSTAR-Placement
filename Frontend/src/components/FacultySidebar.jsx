@@ -67,6 +67,18 @@ const FacultySidebar = () => {
                             </div>
                         </Link>
                     </li>
+                    <li className={`p-4 rounded-lg ${path == "/faculty/view-quiz" ? "bg-white shadow-2xl text-secondary":"" }  `}>
+                        <Link
+                            to="./view-quiz"
+                            
+                        >
+                            <div className="flex items-center space-x-2">
+                                <IoMdSettings className="w-5 h-5" />
+                                <span>View Quiz</span>
+                            </div>
+                        </Link>
+                    </li>
+                   
                 </ul>
             </nav>
             <div className="py-4 px-6 bg-blue-950">

@@ -9,6 +9,7 @@ import SystemFeedback from '../pages/student/SystemFeedback';
 import Manageexam3  from '../pages/student/Manageexam3';
 
 
+
 function StudentDashboard() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -35,6 +36,7 @@ function StudentDashboard() {
                                 <Route path='/view-quiz' element={'View Quiz'}></Route>
                                 <Route path='/given-feedback' element={'Given Feedback'}></Route>
                                 <Route path='/system-feedback' element={'System Feedback'}></Route>
+                            
                                 </Routes>
 
                             </h2>
@@ -54,6 +56,7 @@ function StudentDashboard() {
                             <Route path='/manage-exams3' element={<Manageexam3 />}></Route>
                             <Route path='/given-feedback' element={<GivenFeedback/>}></Route>
                             <Route path='/system-feedback' element={<SystemFeedback/>}></Route>
+                            
                            
                         </Routes>
                       

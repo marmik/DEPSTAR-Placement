@@ -97,7 +97,7 @@ const Manageexam2 = () => {
       <div className="mt-4  p-4 ">
         <div className="">
           <div className="flex gap-2">
-          <h3 className=" text-blue-600 font-bold ">1: Question DBMS Practical Exam Chapter 1 to 4</h3>
+          <h3 className=" text-secondary font-bold ">1: Question DBMS Practical Exam Chapter 1 to 4</h3>
           <p className="font-bold">
           (1 Mark)
           </p>
@@ -114,7 +114,7 @@ const Manageexam2 = () => {
 
         <div>
         <div className="flex gap-2">
-          <h3 className=" text-blue-600 font-bold mb-2">2: Question DBMS Practical Exam Chapter 1 to 4</h3>
+          <h3 className=" text-secondary font-bold mb-2">2: Question DBMS Practical Exam Chapter 1 to 4</h3>
           <p className="font-bold">
           (1 Mark)
           </p>

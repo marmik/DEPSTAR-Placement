@@ -7,8 +7,10 @@ import AddExam from '../pages/faculty/AddExam';
 import Manageexam from '../pages/faculty/Manageexam';
 import ManageFeedback from '../pages/faculty/ManageFeedback';
 import SystemFeedback from '../pages/faculty/SystemFeedback';
+import ViewQuiz from '../pages/student/ViewQuiz';
 import ManageFeedbackSecond from '../pages/faculty/ManageFeedbackSecond';
 import Manageexam2 from '../pages/faculty/Manageexam2';
+
 
 
 function FacultyDashboard() {
@@ -37,6 +39,7 @@ function FacultyDashboard() {
                   <Route path='/manage-exams' element={'Manage Exams'}></Route>
                   <Route path='/manage-feedbacks' element={'Manage Feedbacks'}></Route>
                   <Route path='/system-feedbacks' element={'System Feedbacks'}></Route>
+                  <Route path='/view-quiz' element={'View Quiz'}></Route>
                 </Routes>
               </h2>
             </div>
@@ -55,6 +58,8 @@ function FacultyDashboard() {
               <Route path='/manage-feedbacks' element={<ManageFeedback />}></Route>
               <Route path='/manage-feedbacks2' element={<ManageFeedbackSecond />}></Route>
               <Route path='/system-feedbacks' element={<SystemFeedback />}></Route>
+              <Route path='/view-quiz' element={<ViewQuiz/>}></Route>
+              
             </Routes>
           </div>
 
