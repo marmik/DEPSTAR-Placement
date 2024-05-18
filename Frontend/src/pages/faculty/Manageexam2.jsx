@@ -11,35 +11,35 @@ const Manageexam2 = () => {
         <table className=''>
           <tbody>
             <tr>
-              <td className="text-gray-600 font-bold pr-4">Subject</td>
+              <td className="text-secondary font-bold pr-4">Subject</td>
               <td className="text-gray-600">: DBMS</td>
             </tr>
             <tr>
-              <td className="text-gray-600 font-bold pr-4">Title</td>
+              <td className="text-secondary font-bold pr-4">Title</td>
               <td className="text-gray-600">: DBMS Practical</td>
             </tr>
             <tr>
-              <td className="text-gray-600 font-bold pr-4">Description</td>
+              <td className="text-secondary font-bold pr-4">Description</td>
               <td className="text-gray-600">: DBMS Practical Exam Chapter 1 to 4</td>
             </tr>
             <tr>
-              <td className="text-gray-600 font-bold pr-4">Questions</td>
+              <td className="text-secondary font-bold pr-4">Questions</td>
               <td className="text-gray-600">: 30</td>
             </tr>
             <tr>
-              <td className="text-gray-600 font-bold pr-4">Marks</td>
+              <td className="text-secondary font-bold pr-4">Marks</td>
               <td className="text-gray-600">: 30</td>
             </tr>
             <tr>
-              <td className="text-gray-600 font-bold pr-4">Date</td>
+              <td className="text-secondary font-bold pr-4">Date</td>
               <td className="text-gray-600">: 12/05/2024</td>
             </tr>
             <tr>
-              <td className="text-gray-600 font-bold pr-4">Time</td>
+              <td className="text-secondary font-bold pr-4">Time</td>
               <td className="text-gray-600">: <span className="">12:00 PM To 12:30 PM</span></td>
             </tr>
             <tr>
-              <td className="text-gray-600 font-bold pr-4">Status</td>
+              <td className="text-secondary font-bold pr-4">Status</td>
               <td className="text-gray-600">: Not Started</td>
             </tr>
           </tbody>
@@ -59,19 +59,19 @@ const Manageexam2 = () => {
             <table>
               <tbody>
                 <tr>
-                  <td className="text-gray-600 font-bold pr-4">Total Attendance</td>
+                  <td className="text-secondary font-bold pr-4">Total Attendance</td>
                   <td className="text-gray-600 font-bold">: 10</td>
                 </tr>
                 <tr>
-                  <td className="text-gray-600 font-bold pr-4">Maximum Marks</td>
+                  <td className="text-secondary font-bold pr-4">Maximum Marks</td>
                   <td className="text-gray-600 font-bold">: 30</td>
                 </tr>
                 <tr>
-                  <td className="text-gray-600 font-bold pr-4">Minimum Marks</td>
+                  <td className="text-secondary font-bold pr-4">Minimum Marks</td>
                   <td className="text-gray-600 font-bold">: 12</td>
                 </tr>
                 <tr>
-                  <td className="text-gray-600 font-bold pr-4">Average Marks</td>
+                  <td className="text-secondary font-bold pr-4">Average Marks</td>
                   <td className="text-gray-600 font-bold">: 22</td>
                 </tr>
               </tbody>
@@ -94,10 +94,10 @@ const Manageexam2 = () => {
         </div>
       </div>
 
-      <div className="mt-4  p-4 ">
+      <div className="mt-4  p-4 text-secondary">
         <div className="">
           <div className="flex gap-2">
-          <h3 className=" text-secondary font-bold ">1: Question DBMS Practical Exam Chapter 1 to 4</h3>
+          <h3 className=" text-blue-600 font-bold ">1: Question DBMS Practical Exam Chapter 1 to 4</h3>
           <p className="font-bold">
           (1 Mark)
           </p>
@@ -114,7 +114,7 @@ const Manageexam2 = () => {
 
         <div>
         <div className="flex gap-2">
-          <h3 className=" text-secondary font-bold mb-2">2: Question DBMS Practical Exam Chapter 1 to 4</h3>
+          <h3 className=" text-blue-600 font-bold mb-2">2: Question DBMS Practical Exam Chapter 1 to 4</h3>
           <p className="font-bold">
           (1 Mark)
           </p>
