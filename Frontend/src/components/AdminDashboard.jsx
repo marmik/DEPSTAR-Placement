@@ -10,7 +10,6 @@ import SystemSettings from '../pages/admin/SystemSettings';
 
 
 
-
 function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -31,7 +30,16 @@ function AdminDashboard() {
           <div className='bg-slate-200  flex justify-between items-center sticky top-0 w-full p-7'>
             <div className='flex justify-center items-center gap-10'>
               <GiHamburgerMenu className='text-2xl cursor-pointer ' onClick={toggleSidebar} />
-              <h2 className='font-bold text-2xl'>Admin Dashboard</h2>
+              <h2 className='font-bold text-2xl'>
+              <Routes>
+                <Route path='/' element={'Admin Dashboard'}></Route>
+                <Route path='/view-users' element={'View Users'}></Route>
+                <Route path='/view-exams' element={'View Exams'}></Route>
+                <Route path='/system-feedbacks' element={'System Feedbacks'}></Route>
+                <Route path='/system-settings' element={'System Settings'}></Route>
+              </Routes>
+
+              </h2>
             </div>
             <div className='flex justify-center items-center gap-4'>
               <p className='font-medium text-xl'>Raj Markana</p>
