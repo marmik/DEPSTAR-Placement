@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState  } from 'react';
 import { GiHamburgerMenu } from "react-icons/gi";
 import Dashboard from '../pages/faculty/Dashboard';
 import FacultySidebar from './FacultySidebar';
@@ -9,10 +9,8 @@ import ManageFeedback from '../pages/faculty/ManageFeedback';
 import SystemFeedback from '../pages/faculty/SystemFeedback';
 
 
-
 function FacultyDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -30,7 +28,15 @@ function FacultyDashboard() {
           <div className='bg-slate-200  flex justify-between items-center sticky top-0 w-full p-7'>
             <div className='flex justify-center items-center gap-10'>
               <GiHamburgerMenu className='text-2xl cursor-pointer ' onClick={toggleSidebar} />
-              <h2 className='font-bold text-2xl'>Dashboard</h2>
+              <h2 className='font-bold text-2xl'>
+              <Routes>
+              <Route path='/' element={'Dashboard'}></Route>
+              <Route path='/add-exam' element={'Add Exam'}></Route>
+              <Route path='/manage-exams' element={'Manage Exams'}></Route>
+              <Route path='/manage-feedbacks' element={'Manage Feedbacks'}></Route>
+              <Route path='/system-feedbacks' element={'System Feedbacks'}></Route>
+            </Routes>
+                </h2>
             </div>
             <div className='flex justify-center items-center gap-4'>
               <p className='font-medium text-xl'>Raj Markana</p>
@@ -38,9 +44,7 @@ function FacultyDashboard() {
             </div>
           </div>
 
-          <br />
-
-          <div className='p-3 '>
+          <div className='p-3'>
             <Routes>
               <Route path='/' element={<Dashboard/>}></Route>
               <Route path='/add-exam' element={<AddExam/>}></Route>
@@ -55,5 +59,6 @@ function FacultyDashboard() {
     </>
   );
 }
+
 
 export default FacultyDashboard;
