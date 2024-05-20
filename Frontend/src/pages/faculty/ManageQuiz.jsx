@@ -1,9 +1,10 @@
 import React from 'react';
 import { FiEdit } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
+import { Link } from 'react-router-dom';
 
 
-const Manageexam = () => {
+const ManageQuiz = () => {
   return (
     <div>
     <div className="flex flex-wrap">
@@ -48,7 +49,7 @@ const Manageexam = () => {
                 <tbody>
                   <tr className='divide-x divide-light'>
                     <td className="text-left py-3 px-4 text-sm">1</td>
-                    <td className="text-left py-3 px-4 text-sm">SE Practical</td>
+                    <td className="text-left py-3 px-4 text-sm"><Link to={`../view-quiz`}>SE Practical</Link></td>
                     <td className="text-left py-3 px-4 text-sm">chapter1-4</td>
                     <td className="text-left py-3 px-4 text-sm">SE</td>
                     <td className="text-left py-3 px-4 text-sm">25</td>
@@ -107,4 +108,4 @@ const Manageexam = () => {
   );
 };
 
-export default Manageexam;
+export default ManageQuiz;

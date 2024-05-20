@@ -1,6 +1,8 @@
 import React from 'react'
+import { Navigate, useNavigate } from 'react-router-dom'
 
 const ViewQuiz = () => {
+  const navigate = useNavigate();
   return (
     <div>
     <div className="flex flex-wrap">
@@ -48,7 +50,7 @@ const ViewQuiz = () => {
                       <td className="text-left py-3 px-4 text-sm">30</td>
                       <td className="text-left py-3 px-4 text-sm">25</td>
                       <td className="text-left py-3 px-4 text-sm">
-                        <button className="text-light bg-primary text-lg font-bold py-1 px-3 rounded-lg mr-2">
+                        <button onClick={()=>{navigate("../view-given-quiz")}} className="text-light bg-primary text-lg font-bold py-1 px-3 rounded-lg mr-2">
                           View
                         </button>
                       </td>

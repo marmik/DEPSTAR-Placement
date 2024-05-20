@@ -26,7 +26,7 @@ const StudentSidebar = () => {
                             </div>
                         </Link>
                     </li>
-                    <li className={`p-4 rounded-lg ${path == "/student/view-quiz" ? "bg-white shadow-2xl text-secondary":"" }  `}>
+                    <li className={`p-4 rounded-lg ${path == "/student/view-quiz" || path=="/student/view-given-quiz" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
                             to="./view-quiz"
                            

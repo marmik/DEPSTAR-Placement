@@ -1,12 +1,14 @@
 import React from 'react';
 import { FiEdit } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
+import { useNavigate } from 'react-router-dom';
 
 
-const Manageexam2 = () => {
+const ViewQuiz = () => {
+  const navigate = useNavigate();
   return (
     <div className="flex-wrap">
-      <div className="bg-white p-4 rounded-lg shadow-md ">
+      <div className="bg-white text-lg p-8 rounded-lg shadow-2xl ">
         <div className="flex sm:flex-row flex-col justify-between ">
         <table className=''>
           <tbody>
@@ -45,7 +47,7 @@ const Manageexam2 = () => {
           </tbody>
         </table>
         <div className=''>
-          <div className='flex-row'>
+          <div className='flex sm:justify-center'>
             <button className='sm:col-span-1 col-span-4 group   rounded-xl p-6'>
               <p className=' text-s '>Total Feedbacks</p>
               <h3 className=' mt-3 text-4xl text-primary  font-bold'>10</h3>
@@ -55,24 +57,24 @@ const Manageexam2 = () => {
               <h3 className=' mt-3 text-4xl text-primary font-bold'>1</h3>
             </button>
           </div>
-          <div className='grid px-11 justify-between gap-10 grid-cols-2 '>
+          <div className='grid  justify-between gap-10 grid-cols-2 '>
             <table>
               <tbody>
                 <tr>
                   <td className="text-secondary font-bold pr-4">Total Attendance</td>
-                  <td className="text-gray-600 font-bold">: 10</td>
+                  <td className="text-gray-600">: 10</td>
                 </tr>
                 <tr>
                   <td className="text-secondary font-bold pr-4">Maximum Marks</td>
-                  <td className="text-gray-600 font-bold">: 30</td>
+                  <td className="text-gray-600">: 30</td>
                 </tr>
                 <tr>
                   <td className="text-secondary font-bold pr-4">Minimum Marks</td>
-                  <td className="text-gray-600 font-bold">: 12</td>
+                  <td className="text-gray-600">: 12</td>
                 </tr>
                 <tr>
                   <td className="text-secondary font-bold pr-4">Average Marks</td>
-                  <td className="text-gray-600 font-bold">: 22</td>
+                  <td className="text-gray-600">: 22</td>
                 </tr>
               </tbody>
             </table>
@@ -81,20 +83,20 @@ const Manageexam2 = () => {
           </div>
         </div>
 
-          <div className="w-full flex sm:flex-row gap-2 flex-col rounded-md mt-16 items-center justify-center">
-            <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">
+          <div className="w-full flex gap-2 flex-wrap  rounded-md mt-16 items-center justify-center">
+            <button className="bg-green-500 text-white font-bold py-2 px-4 rounded mr-2">
               Update
             </button>
-            <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2">
+            <button className="bg-red-500 text-white font-bold py-2 px-4 rounded mr-2">
               Delete
             </button>
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
+            <button onClick={()=>{navigate("../view-data")}} className="bg-primary text-white font-bold py-2 px-4 rounded mr-2">
               View More
             </button>
         </div>
       </div>
 
-      <div className="mt-4  p-4 text-secondary">
+      <div className="mt-4 text-lg  p-4 text-secondary">
         <div className="">
           <div className="flex gap-2">
           <h3 className=" text-blue-600 font-bold ">1: Question DBMS Practical Exam Chapter 1 to 4</h3>
@@ -133,4 +135,4 @@ const Manageexam2 = () => {
   );
 };
 
-export default Manageexam2;
+export default ViewQuiz;

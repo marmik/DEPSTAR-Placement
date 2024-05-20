@@ -3,13 +3,12 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import Dashboard from '../pages/faculty/Dashboard';
 import FacultySidebar from './FacultySidebar';
 import { Route, Routes } from 'react-router-dom';
-import AddExam from '../pages/faculty/AddExam';
-import Manageexam from '../pages/faculty/Manageexam';
 import ManageFeedback from '../pages/faculty/ManageFeedback';
 import SystemFeedback from '../pages/faculty/SystemFeedback';
-import ViewQuiz from '../pages/student/ViewQuiz';
-import ManageFeedbackSecond from '../pages/faculty/ManageFeedbackSecond';
-import Manageexam2 from '../pages/faculty/Manageexam2';
+import ViewQuiz from '../pages/faculty/ViewQuiz';
+import ManageQuiz from '../pages/faculty/ManageQuiz';
+import AddQuiz from '../pages/faculty/AddQuiz';
+import ViewData from '../pages/faculty/ViewData';
 
 
 
@@ -35,11 +34,13 @@ function FacultyDashboard() {
               <h2 className='font-bold text-2xl'>
               <Routes>
                   <Route path='/' element={'Faculty Dashboard'}></Route>
-                  <Route path='/add-exam' element={'Add Exam'}></Route>
-                  <Route path='/manage-exams' element={'Manage Exams'}></Route>
+                  <Route path='/add-quiz' element={'Add Quiz'}></Route>
+                  <Route path='/manage-quiz' element={'Manage Quiz'}></Route>
+                  <Route path='/view-quiz' element={'View Quiz'}></Route>
+                  <Route path='/view-data' element={'View Quiz'}></Route>
                   <Route path='/manage-feedbacks' element={'Manage Feedbacks'}></Route>
                   <Route path='/system-feedbacks' element={'System Feedbacks'}></Route>
-                  <Route path='/view-quiz' element={'View Quiz'}></Route>
+                 
                 </Routes>
               </h2>
             </div>
@@ -52,13 +53,13 @@ function FacultyDashboard() {
           <div className='p-3'>
             <Routes>
               <Route path='/' element={<Dashboard />}></Route>
-              <Route path='/add-exam' element={<AddExam />}></Route>
-              <Route path='/manage-exams' element={<Manageexam />}></Route>
-              <Route path='/manage-exams2' element={<Manageexam2 />}></Route>
+              <Route path='/add-quiz' element={<AddQuiz />}></Route>
+              <Route path='/manage-quiz' element={<ManageQuiz />}></Route>
+              <Route path='/view-quiz' element={<ViewQuiz />}></Route>
               <Route path='/manage-feedbacks' element={<ManageFeedback />}></Route>
-              <Route path='/manage-feedbacks2' element={<ManageFeedbackSecond />}></Route>
+              <Route path='/view-data' element={<ViewData />}></Route>
               <Route path='/system-feedbacks' element={<SystemFeedback />}></Route>
-              <Route path='/view-quiz' element={<ViewQuiz/>}></Route>
+            
               
             </Routes>
           </div>

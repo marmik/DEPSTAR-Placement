@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from 'react'
 import Questions from '../../components/Questions';
 
-const AddExam = () => {
+const AddQuiz = () => {
   const [QuestionsNo,setQuestionsNo]=useState(0);
   const [QuestionList, setQuestionList] = useState([]);
 
@@ -119,4 +119,4 @@ const AddExam = () => {
 }
 
 
-export default AddExam
+export default AddQuiz

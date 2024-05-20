@@ -23,25 +23,25 @@ const FacultySidebar = () => {
                             </div>
                         </Link>
                     </li>
-                    <li className={`p-4 rounded-lg ${path == "/faculty/add-exam" ? "bg-white shadow-2xl text-secondary":"" }  `}>
+                    <li className={`p-4 rounded-lg ${path == "/faculty/add-quiz" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
-                            to="./add-exam"
+                            to="./add-quiz"
                            
                         >
                             <div className="flex items-center space-x-2">
                                 <HiPlusCircle className="w-5 h-5" />
-                                <span>Add New Exam</span>
+                                <span>Add New Quiz</span>
                             </div>
                         </Link>
                     </li>
-                    <li className={`p-4 rounded-lg ${path == "/faculty/manage-exams" ? "bg-white shadow-2xl text-secondary":"" }  `}>
+                    <li className={`p-4 rounded-lg ${path == "/faculty/manage-quiz" || path=="/faculty/view-quiz" || path=="/faculty/view-data" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
-                            to="./manage-exams"
+                            to="./manage-quiz"
                             
                         >
                             <div className="flex items-center space-x-2">
                                 <HiBookOpen className="w-5 h-5" />
-                                <span>Manage Exams</span>
+                                <span>Manage Quiz</span>
                             </div>
                         </Link>
                     </li>
@@ -67,17 +67,7 @@ const FacultySidebar = () => {
                             </div>
                         </Link>
                     </li>
-                    <li className={`p-4 rounded-lg ${path == "/faculty/view-quiz" ? "bg-white shadow-2xl text-secondary":"" }  `}>
-                        <Link
-                            to="./view-quiz"
-                            
-                        >
-                            <div className="flex items-center space-x-2">
-                                <IoMdSettings className="w-5 h-5" />
-                                <span>View Quiz</span>
-                            </div>
-                        </Link>
-                    </li>
+                   
                    
                 </ul>
             </nav>

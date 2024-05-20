@@ -1,6 +1,6 @@
 import React from 'react'
 
-const ManageFeedbackSecond = () => {
+const ViewData = () => {
   return (
     <div>
      <div className="items-center justify-between  mb-8">
@@ -76,4 +76,4 @@ const ManageFeedbackSecond = () => {
   )
 }
 
-export default ManageFeedbackSecond
+export default ViewData
