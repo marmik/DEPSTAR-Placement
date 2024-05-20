@@ -60,6 +60,18 @@ const StudentSidebar = () => {
                         </Link>
                    
                     </li>
+                    <li className={`p-4 rounded-lg ${path == "/student/start-quiz" ? "bg-white shadow-2xl text-secondary":"" }  `}>
+                        <Link
+                            to="./start-quiz"
+                            
+                        >
+                            <div className="flex items-center space-x-2">
+                                <HiChatAlt className="w-5 h-5" />
+                                <span>Start Quiz</span>
+                            </div>
+                        </Link>
+                   
+                    </li>
                   
                 </ul>
             </nav>
