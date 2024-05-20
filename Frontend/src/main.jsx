@@ -11,18 +11,19 @@ import FacultyDashboard from './components/FacultyDashboard.jsx';
 import StudentDashboard from './components/StudentDashboard.jsx';
 import AdminDashboard from './components/AdminDashboard.jsx';
 
+
 const router = createBrowserRouter([
   {
     path: "/admin/login",
-    element: <LoginAdmin/>,
+    element: <LoginAdmin/>
   },
   {
     path: "/",
-    element: <App/>,
+    element: <App/>
   },
   {
     path: "/Faculty/*",
-    element: <FacultyDashboard/>,
+    element: <FacultyDashboard/>
   },
   {
     path: "/Student/*",
@@ -30,8 +31,8 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin/dashboard/*",
-    element: <AdminDashboard/>,
-  },
+    element: <AdminDashboard/>
+  }
 ]);
 
 
