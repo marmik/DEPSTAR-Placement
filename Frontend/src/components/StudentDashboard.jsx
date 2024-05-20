@@ -7,6 +7,7 @@ import ViewQuiz from '../pages/student/ViewQuiz';
 import GivenFeedback from '../pages/student/GivenFeedback';
 import SystemFeedback from '../pages/student/SystemFeedback';
 import ViewGivenQuiz from '../pages/student/ViewGivenQuiz';
+import StartQuiz from '../pages/student/StartQuiz';
 
 
 
@@ -37,6 +38,7 @@ function StudentDashboard() {
                                 <Route path='/view-given-quiz' element={'View Quiz'}></Route>
                                 <Route path='/given-feedback' element={'Given Feedback'}></Route>
                                 <Route path='/system-feedback' element={'System Feedback'}></Route>
+                                <Route path='/start-quiz' element={'Start Quiz'}></Route>
 
                                 </Routes>
 
@@ -57,6 +59,7 @@ function StudentDashboard() {
                             <Route path='/view-given-quiz' element={<ViewGivenQuiz />}></Route>
                             <Route path='/given-feedback' element={<GivenFeedback/>}></Route>
                             <Route path='/system-feedback' element={<SystemFeedback/>}></Route>
+                            <Route path='/start-quiz' element={<StartQuiz/>}></Route>
                         </Routes>
                       
                     </div>
