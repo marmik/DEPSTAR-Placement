@@ -1,1 +1,0 @@
-const asyncHandler = require('asyncHandler');
