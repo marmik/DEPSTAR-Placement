@@ -15,11 +15,13 @@ app.use(cookieparser());
 
 const loginRoute = require('./routes/login.js');
 const adminRoute = require('./routes/admin.js');
+const facultyRoute = require('./routes/faculty.js');
 
 
 // declaring routes
 app.use("/api/login",loginRoute);
 app.use("/api/admin",adminRoute);
+app.use("/api/faculty",facultyRoute);
 
 
 
