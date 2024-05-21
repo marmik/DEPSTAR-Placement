@@ -34,7 +34,7 @@ function AdminDashboard() {
               <Routes>
                 <Route path='/' element={'Admin Dashboard'}></Route>
                 <Route path='/view-users' element={'View Users'}></Route>
-                <Route path='/view-exams' element={'View Exams'}></Route>
+                <Route path='/view-exams' element={'View Quiz'}></Route>
                 <Route path='/system-feedbacks' element={'System Feedbacks'}></Route>
                 <Route path='/system-settings' element={'System Settings'}></Route>
               </Routes>
