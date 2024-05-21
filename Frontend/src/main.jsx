@@ -10,11 +10,12 @@ import LoginAdmin from './pages/admin/LoginAdmin.jsx';
 import FacultyDashboard from './components/FacultyDashboard.jsx';
 import StudentDashboard from './components/StudentDashboard.jsx';
 import AdminDashboard from './components/AdminDashboard.jsx';
+import Error404 from './pages/Error404.jsx';
 
 
 const router = createBrowserRouter([
   {
-    path: "/admin/login",
+    path: "/admin/login/",
     element: <LoginAdmin/>
   },
   {
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
   {
     path: "/admin/dashboard/*",
     element: <AdminDashboard/>
+  },
+  {
+    path: "*",
+    element: <Error404/>
   }
 ]);
 

@@ -19,7 +19,7 @@ const SystemFeedbacks = () => {
   };
 
   return (
-    <div>
+    <div className='p-4 text-secondary'>
       <div className="items-center justify-between mb-8">
         <h2 className="text-xl font-bold mb-2">Search Feedbacks</h2>
         <div className="bg-white flex">

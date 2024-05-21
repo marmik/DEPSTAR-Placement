@@ -7,6 +7,7 @@ import ViewUsers from '../pages/admin/ViewUsers';
 import ViewExams from '../pages/admin/ViewExams';
 import SystemFeedbacks from '../pages/admin/SystemFeedbacks';
 import SystemSettings from '../pages/admin/SystemSettings';
+import Error404 from '../pages/Error404';
 
 
 
@@ -56,6 +57,7 @@ function AdminDashboard() {
               <Route path='/view-exams' element={<ViewExams/>}></Route>
               <Route path='/system-feedbacks' element={<SystemFeedbacks/>}></Route>
               <Route path='/system-settings' element={<SystemSettings/>}></Route>
+              <Route path='*' element={<Error404 />}></Route>
             </Routes>
           </div>
 

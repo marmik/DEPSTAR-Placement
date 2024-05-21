@@ -9,6 +9,7 @@ import ViewQuiz from '../pages/faculty/ViewQuiz';
 import ManageQuiz from '../pages/faculty/ManageQuiz';
 import AddQuiz from '../pages/faculty/AddQuiz';
 import ViewData from '../pages/faculty/ViewData';
+import Error404 from '../pages/Error404';
 
 
 
@@ -59,7 +60,7 @@ function FacultyDashboard() {
               <Route path='/manage-feedbacks' element={<ManageFeedback />}></Route>
               <Route path='/view-data' element={<ViewData />}></Route>
               <Route path='/system-feedbacks' element={<SystemFeedback />}></Route>
-            
+              <Route path='*' element={<Error404 />}></Route>
               
             </Routes>
           </div>
