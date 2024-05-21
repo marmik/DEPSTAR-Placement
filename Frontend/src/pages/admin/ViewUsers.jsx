@@ -27,17 +27,17 @@ const ViewUsers = () => {
   return (
     <div>
       <div className="items-center justify-between  mb-8">
-     <h2 className="text-xl px-6 font-bold mb-4">Search User</h2>
-        <div className="bg-white p-2 flex ">
+     <h2 className="text-xl  font-bold mb-2">Search User</h2>
+        <div className="bg-white  flex ">
         <label className="flex flex-col ">
               <input type="text"  placeholder="Search User" className="p-4 mt-2 border-2 border-slate-300 rounded-md  focus:border-primary focus:outline-none" />
             </label>
         </div>
       </div>
-      <div className="flex border-b-2 border-gray-600">
+      <div className="flex border-b-2 border-gray-600  pb-4 mb-4">
         <div className="bg-white p-2 flex">
           <button
-            className={`  text-lg px-4 py-3 rounded-full lg:self-end ${activeTable === 'admin' ? 'text-white bg-primary' : 'text-secondary'}`}
+            className={`  text-lg px-4 py-2 rounded-full lg:self-end ${activeTable === 'admin' ? 'text-white bg-primary' : 'text-secondary'}`}
             onClick={() => setActiveTable('admin')}
           >
             Admin {activeTable === 'admin'?"10":""}
@@ -45,7 +45,7 @@ const ViewUsers = () => {
         </div>
         <div className="bg-white p-2 flex">
           <button
-            className={`  text-lg px-4 py-3 rounded-full lg:self-end ${activeTable === 'faculty' ? 'text-white bg-primary' : 'text-secondary'}`}
+            className={`  text-lg px-4 py-2 rounded-full lg:self-end ${activeTable === 'faculty' ? 'text-white bg-primary' : 'text-secondary'}`}
             onClick={() => setActiveTable('faculty')}
           >
             Faculty {activeTable === 'faculty'?"10":""}
@@ -53,7 +53,7 @@ const ViewUsers = () => {
         </div>
         <div className="bg-white p-2 flex">
           <button
-            className={`  text-lg px-4 py-3 rounded-full lg:self-end ${activeTable === 'students' ? 'text-white bg-primary' : 'text-secondary'}`}
+            className={`  text-lg px-4 py-2  rounded-full lg:self-end ${activeTable === 'students' ? 'text-white bg-primary' : 'text-secondary'}`}
             onClick={() => setActiveTable('students')}
           >
             Students {activeTable === 'students'?"10":""}
@@ -64,7 +64,7 @@ const ViewUsers = () => {
 
         <table className="min-w-full border rounded-lg overflow-hidden ">
           <thead className="bg-primary text-light border">
-            <tr className="divide-x divide-light">
+            <tr className="divide-x ">
               {userTables[activeTable].headers.map((header, index) => (
                 <th key={index} className="text-left py-3 px-4 uppercase text-sm">{header}</th>
               ))}
@@ -72,7 +72,7 @@ const ViewUsers = () => {
           </thead>
           <tbody>
             {userTables[activeTable].data.map((row, index) => (
-              <tr key={index} className="divide-x divide-light">
+              <tr key={index} className="divide-x ">
                 {Object.entries(row).map(([key, value], cellIndex) => (
                   <td key={cellIndex} className="text-left py-3 px-4 text-sm">
                     {key === 'Status' && value === 'Online' ? (
