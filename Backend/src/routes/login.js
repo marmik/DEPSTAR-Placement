@@ -1,38 +1,30 @@
 // Import required modules
 const express = require('express');
 const mysql = require('mysql');
-const vToken = require('./../middlewares/middleware.js');
-const bcrypt = require('bcryptjs'); // Import bcrypt for password hashing
 const jwt = require('jsonwebtoken');
-const cookieparser = require('cookie-parser');
-const secretKey = 'yourSecretKey'; // Replace with your actual secret key
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
-
-
-console.log(process.env.DB_HOST);
-// Generate a random secret key
-// const secretKey = crypto.randomBytes(32).toString('hex');
-// console.log('Secret key:', secretKey);
 
 // Create connection pool for MySQL
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
-    password: '',
-    database: process.env.DB_NAME
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
+    socketPath: process.env.DB_SOCKET_PATH // Ensure the correct path variable
 });
 
 // Create express app
 const app = express();
 const router = express.Router();
 
-// app.use(cookieParser()); 
+app.use(cookieParser());
+
 // Middleware to parse JSON bodies
 router.use(express.json());
 
-
-
-router.post('/', (req, res) => {
+router.post('/login', (req, res) => {
     const { username, password } = req.body;
 
     // Check if username and password are provided
@@ -46,7 +38,6 @@ router.post('/', (req, res) => {
             console.error(error);
             return res.status(500).json({ message: 'Internal server error' });
         }
-        console.log(results);
 
         if (results.length === 0) {
             return res.status(401).json({ message: 'Invalid username or password' });
@@ -54,82 +45,44 @@ router.post('/', (req, res) => {
 
         const user = results[0];
 
-        // Compare provided password with stored password
+        // Compare provided password with stored password (not using bcrypt)
         if (password !== user.Password) {
             return res.status(401).json({ message: 'Invalid username or password' });
         }
 
-        const userId = user.userID;
+        const userId = user.UserID;
         const role = user.Role;
 
         let dashboard;
         if (role === "Admin") {
             dashboard = "Admin";
-        } else if (role === "Teacher") {
-            dashboard = "Teacher";
+        } else if (role === "Faculty") {
+            dashboard = "Faculty";
         } else {
             dashboard = "Student";
         }
 
         // Generate JWT token
-        const access_token = jwt.sign({ username: username, role: role, userID: userId }, secretKey, { expiresIn: '1h' });
+        const accessToken = jwt.sign({ username: username, role: role, userID: userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        const loggedUser = username;
+        // Cookie options
+        const cookieOptions = {
+            httpOnly: true, // Accessible only by web server
+            secure: process.env.NODE_ENV === 'production', // Send only over HTTPS when in production
+            sameSite: 'strict', // Helps prevent CSRF attacks
+            maxAge: 60 * 60 * 1000 // 1 hour
+        };
 
-        const options = {
-            httpOnly : true,
-            secure : true
-        }
+        // Set the cookie
+        res.cookie('accessToken', accessToken, cookieOptions);
 
-        res.cookie("accessToken",access_token,options)
-        .json({
-            dashboard: dashboard, token: access_token , status : "user loogen in successfully"
-        })
-
-        // const refresh_token = jwt.sign({ userid: userId }, secretKey, { expiresIn: '1h' });
-
-        // Send the response with appropriate data
-        // res.json({ dashboard: dashboard, token: access_token });   // role same as dashboaed
+        // Send response
+        res.json({
+            dashboard: dashboard,
+            token: accessToken,
+            status: "User logged in successfully"
+        });
     });
 });
 
-// Protected endpoint example
-router.get('/dashboard', vToken, (req, res) => {
-  res.status(200).json({ message: 'You have access to this protected endpoint' });
-});
-
 module.exports = router;
-
-
-
-
-
-// Function to verify JWT token
-// function verifyToken(req, res, next) {
-//   const token = req.headers['authorization'];
-
-//   if (!token) {
-//     return res.status(403).json({ message: 'Token is missing' });
-//   }
-
-//   jwt.verify(token, secretKey, (error, authData) => {
-//     if (error) {
-//       console.error(error);
-//       return res.status(401).json({ message: 'Invalid token' });
-//     }
-//     else{
-//         res.send({message:"dashboasrd access",
-//                     authData
-//         })
-//     }
-
-//     req.username = decoded.username;
-//     next();
-//   });
-// }
-
-// Start server
-// const PORT = process.env.PORT || 3000;
-// app.listen(PORT, () => {
-//   console.log(`Server is running on port ${PORT}`);
-// });

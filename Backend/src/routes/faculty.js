@@ -1,45 +1,28 @@
+
 const express = require('express');
 const app = express();
 const router = express.Router();
 const mysql = require('mysql');
 const jwt = require('jsonwebtoken');
+const vToken = require('./../middlewares/middleware.js');
+require('dotenv').config();
+
 
 // Secret key for JWT (in a real application, store this securely and not in the source code)
-const secret = 'secretKey'; // Replace 'secretKey' with your actual secret key
+const JWT_SECRET = process.env.JWT_SECRET; // Replace 'secretKey' with your actual secret key
 
 app.use(express.json()); // Middleware to parse JSON bodies
 
-// JWT verification middleware
-const verifyToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  if (!authHeader) {
-    return res.status(403).json({ error: 'No token provided' });
-  }
-
-  const token = authHeader.split(' ')[1];
-  if (!token) {
-    return res.status(403).json({ error: 'Malformed token' });
-  }
-
-  jwt.verify(token, secret, (err, decoded) => {
-    if (err) {
-      return res.status(401).json({ error: 'Failed to authenticate token' });
-    }
-    
-    // Save the decoded token to the request object
-    req.user = decoded;
-    next();
-  });
-};
+const { verifyToken, checkRole } = vToken;
 
 // Database connection
 const connection = mysql.createConnection({
-  host: 'localhost',
-  port: 8889,
-  user: 'root',
-  password: 'root',
-  database: 'db_QuizApp',
-  socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock'
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD, // Use environment variable for the password
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
+    path: process.env.DB_SOCKET_PATH
 });
 
 connection.connect((err) => {
@@ -51,9 +34,10 @@ connection.connect((err) => {
 });
 
 // Create a new quiz
-router.post('/quizzes', verifyToken, (req, res) => {
+router.post('/createNewQuiz',verifyToken, checkRole('Faculty'),(req, res) => {
   const { title, description, questions, subject, number_of_questions, exam_date, start_time, end_time, total_marks } = req.body;
-  const userID = req.user ? req.user.UserID : null; // Check if req.user exists
+  const userID = req.user ? req.user.userID : null;
+  console.log(userID); // Check if req.user exists
 
   // Insert quiz into Exams table
   const quizInsertQuery = 'INSERT INTO Exams (Title, Description, Subject, CreatorID, Number_of_Questions, ExamDate, StartTime, EndTime, Exam_Total_Marks, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
@@ -64,10 +48,11 @@ router.post('/quizzes', verifyToken, (req, res) => {
     }
 
     const examID = result.insertId;
+    
 
     // Insert questions into Questions table
-    const questionInsertQuery = 'INSERT INTO Questions (ExamID, QuestionText, QuestionType, CorrectAnswer, Mark) VALUES ?';
-    const values = questions.map(question => [examID, question.text, question.type, question.correctAnswer, question.mark]);
+    const questionInsertQuery = 'INSERT INTO Questions (ExamID, QuestionText, QuestionType, Correct_Option, Mark) VALUES ?';
+    const values = questions.map(question => [examID, question.text, question.type, question.Correct_Option, question.mark]);
 
     connection.query(questionInsertQuery, [values], (err, result) => {
       if (err) {
@@ -103,10 +88,10 @@ router.post('/quizzes', verifyToken, (req, res) => {
       }
     });
   });
-});
+});  // tested
 
 // Update quiz information
-router.put('/quizzes/:id', verifyToken, (req, res) => {
+router.put('/updateQuiz/:id',verifyToken, checkRole('Faculty'), (req, res) => {
   const quizId = req.params.id;
   const { title, description, subject, number_of_questions } = req.body;
 
@@ -121,21 +106,74 @@ router.put('/quizzes/:id', verifyToken, (req, res) => {
 });
 
 // Delete a quiz
-router.delete('/quizzes/:id', verifyToken, (req, res) => {
+router.delete('/deleteQuiz/:id',verifyToken, checkRole('Faculty'), (req, res) => {
   const quizId = req.params.id;
 
-  const deleteQuery = 'DELETE FROM Exams WHERE ExamID = ?';
+  const deleteQuery = 'DELETE FROM exams WHERE ExamID = ?';
   connection.query(deleteQuery, [quizId], (err, result) => {
     if (err) {
       console.error('Error deleting quiz:', err);
       return res.status(500).json({ error: 'Could not delete quiz' });
     }
-    res.json({ message: 'Quiz deleted successfully' });
+    res.json({ message: 'Quiz deleted successfully'});
+  });
+});  // tested
+
+
+// Create a new class
+router.post('/creteClasses', verifyToken, checkRole('Faculty'), (req, res) => {
+  const { className } = req.body;
+  const facultyID = req.user ? req.user.userID : null;
+  const facultyname =  req.user ? req.user.username : null;// Check if req.user exists
+  console.log(facultyID);
+  console.log(facultyname);
+
+  const classInsertQuery = 'INSERT INTO Classes (ClassName, UserID , facultyname) VALUES (?, ? , ?)';
+  connection.query(classInsertQuery, [className, facultyID , facultyname], (err, result) => {
+    if (err) {
+      console.error('Error creating class:', err);
+      return res.status(500).json({ error: 'Could not create class' });
+    }
+    res.status(201).json({ message: 'Class created successfully' });
+  });
+}); //tested
+
+// Assign a student to a class
+
+router.post('/add_student_classes/:classId',verifyToken, checkRole('Faculty'), (req, res) => {
+  const classId = req.params.classId;
+  const student_name = req.body.student_name;
+  
+
+  const classStudentInsertQuery = 'INSERT INTO ClassStudents (ClassID, studentname) VALUES (?, ?)';
+  connection.query(classStudentInsertQuery, [classId, student_name], (err, result) => {
+    if (err) {
+      console.error('Error assigning student to class:', err);
+      return res.status(500).json({ error: 'Could not assign student to class' });
+    }
+    res.status(201).json({ message: 'Student assigned to class successfully' });
+  });
+});  // tested
+
+
+// Assign an exam to a class
+router.post('/classes/:classId/exams',verifyToken, checkRole('Faculty'), (req, res) => {
+  const classId = req.params.classId;
+  const { examID } = req.body;
+
+  const classExamInsertQuery = 'INSERT INTO ClassExams (ClassID, ExamID) VALUES (?, ?)';
+  connection.query(classExamInsertQuery, [classId, examID], (err, result) => {
+    if (err) {
+      console.error('Error assigning exam to class:', err);
+      return res.status(500).json({ error: 'Could not assign exam to class' });
+    }
+    res.status(201).json({ message: 'Exam assigned to class successfully' });
   });
 });
 
+
 // Assign a quiz to students or classes
-router.post('/assignments', verifyToken, (req, res) => {
+router.post('/assignments', verifyToken, checkRole('Faculty'), (req, res) => {
   const { examID, userID, assignedDate, dueDate } = req.body;
 
   const assignmentInsertQuery = 'INSERT INTO ExamAssignments (ExamID, UserID, AssignedDate, DueDate) VALUES (?, ?, ?, ?)';
@@ -149,7 +187,7 @@ router.post('/assignments', verifyToken, (req, res) => {
 });
 
 // Get assignments for a specific quiz
-router.get('/assignments/:id', verifyToken, (req, res) => {
+router.get('/assignments/:id',verifyToken, checkRole('Faculty'), (req, res) => {
   const quizId = req.params.id;
 
   const assignmentsQuery = 'SELECT * FROM ExamAssignments WHERE ExamID = ?';
@@ -163,7 +201,7 @@ router.get('/assignments/:id', verifyToken, (req, res) => {
 });
 
 // Provide feedback on a quiz submission
-router.post('/feedback/:submissionId', verifyToken, (req, res) => {
+router.post('/feedback/:submissionId',verifyToken, checkRole('Faculty'), (req, res) => {
   const submissionId = req.params.submissionId;
   const { feedback } = req.body;
 
@@ -177,49 +215,8 @@ router.post('/feedback/:submissionId', verifyToken, (req, res) => {
   });
 });
 
-// Create a new class
-router.post('/classes', verifyToken, (req, res) => {
-  const { className } = req.body;
-  const teacherID = req.user ? req.user.UserID : null; // Check if req.user exists
 
-  const classInsertQuery = 'INSERT INTO Classes (ClassName, TeacherID) VALUES (?, ?)';
-  connection.query(classInsertQuery, [className, teacherID], (err, result) => {
-    if (err) {
-      console.error('Error creating class:', err);
-      return res.status(500).json({ error: 'Could not create class' });
-    }
-    res.status(201).json({ message: 'Class created successfully' });
-  });
-});
 
-// Assign a student to a class
-router.post('/classes/:classId/students', verifyToken, (req, res) => {
-  const classId = req.params.classId;
-  const { studentID } = req.body;
 
-  const classStudentInsertQuery = 'INSERT INTO ClassStudents (ClassID, StudentID) VALUES (?, ?)';
-  connection.query(classStudentInsertQuery, [classId, studentID], (err, result) => {
-    if (err) {
-      console.error('Error assigning student to class:', err);
-      return res.status(500).json({ error: 'Could not assign student to class' });
-    }
-    res.status(201).json({ message: 'Student assigned to class successfully' });
-  });
-});
-
-// Assign an exam to a class
-router.post('/classes/:classId/exams', verifyToken, (req, res) => {
-  const classId = req.params.classId;
-  const { examID } = req.body;
-
-  const classExamInsertQuery = 'INSERT INTO ClassExams (ClassID, ExamID) VALUES (?, ?)';
-  connection.query(classExamInsertQuery, [classId, examID], (err, result) => {
-    if (err) {
-      console.error('Error assigning exam to class:', err);
-      return res.status(500).json({ error: 'Could not assign exam to class' });
-    }
-    res.status(201).json({ message: 'Exam assigned to class successfully' });
-  });
-});
 
 module.exports = router;

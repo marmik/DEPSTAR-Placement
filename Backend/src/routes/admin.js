@@ -142,20 +142,23 @@ const jwt = require('jsonwebtoken');
 const mysql = require('mysql');
 const vToken = require('./../middlewares/middleware.js');
 require('dotenv').config();
+const { verifyToken, checkRole } = vToken;
 
 const app = express();
 const router = express.Router();
 router.use(express.json());
 
 const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: '',
-    database: process.env.DB_NAME
-});
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD, // Use environment variable for the password
+        database: process.env.DB_NAME,
+        port: process.env.DB_PORT,
+        path: process.env.DB_SOCKET_PATH
+    });
 
 // Route to add a new user
-router.post('/add_user', vToken, (req, res) => {
+router.post('/add_user', verifyToken, checkRole('Admin'), (req, res) => {
     const { username, password, role } = req.body;
     const query = 'INSERT INTO users (Username, Password, Role) VALUES (?, ?, ?)';
     connection.query(query, [username, password, role], (error, results, fields) => {
@@ -169,7 +172,7 @@ router.post('/add_user', vToken, (req, res) => {
 });
 
 // Route to update user information
-router.put('/update_user/:old_username', vToken, (req, res) => {
+router.put('/update_user/:old_username', verifyToken, checkRole('Admin'), (req, res) => {
     const old_username = req.params.old_username;
     const { new_username, new_password } = req.body;
     const query = 'UPDATE users SET username = ?, password = ? WHERE username = ?';
@@ -184,7 +187,7 @@ router.put('/update_user/:old_username', vToken, (req, res) => {
 });
 
 // Route to delete a user
-router.delete('/delete_user/:username', vToken, (req, res) => {
+router.delete('/delete_user/:username', verifyToken, checkRole('Admin'), (req, res) => {
     const username = req.params.username;
     const query = 'DELETE FROM users WHERE Username = ?';
     connection.query(query, [username], (error, results) => {
@@ -202,7 +205,7 @@ router.delete('/delete_user/:username', vToken, (req, res) => {
 });
 
 // Route to get all system settings
-router.get('/settings', vToken, (req, res) => {
+router.get('/settings', verifyToken, checkRole('Admin'), (req, res) => {
     const query = 'SELECT * FROM systemsettings';
     connection.query(query, (error, results) => {
         if (error) {
@@ -215,7 +218,7 @@ router.get('/settings', vToken, (req, res) => {
 });
 
 // Route to update a specific system setting
-router.put('/update_settings/:settingname', vToken, (req, res) => {
+router.put('/update_settings/:settingname', verifyToken, checkRole('Admin'), (req, res) => {
     const settingName = req.params.settingname;
     const settingValue = req.body.settingvalue;
     if (settingValue === undefined || settingValue === null) {
