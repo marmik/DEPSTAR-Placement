@@ -38,7 +38,7 @@ Open your browser and go to http://localhost:3000 to view the app.
 
 ## Technologies Used
 
-- **MongoDB**: Database for storing quiz data and user information.
+- **MySQL**: Database for storing quiz data and user information.
 - **Express.js**: Web application framework for building the backend API.
 - **React.js**: Frontend library for building the user interface.
 - **Node.js**: JavaScript runtime environment for running the backend server.
