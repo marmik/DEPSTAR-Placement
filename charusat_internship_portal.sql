@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: May 22, 2024 at 07:24 AM
+-- Generation Time: May 22, 2024 at 11:54 AM
 -- Server version: 5.7.39
 -- PHP Version: 7.4.33
 
@@ -74,10 +74,10 @@ CREATE TABLE `examassignments` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `exams`
+-- Table structure for table `Exams`
 --
 
-CREATE TABLE `exams` (
+CREATE TABLE `Exams` (
   `ExamID` int(11) NOT NULL,
   `Title` varchar(100) NOT NULL,
   `Description` text,
@@ -90,6 +90,24 @@ CREATE TABLE `exams` (
   `EndTime` time DEFAULT NULL,
   `Feedback` text,
   `CreatorID` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `sem` enum('all','sem1','sem2','sem3','sem4','sem5','sem6','sem7','sem8') NOT NULL DEFAULT 'all',
+  `className` varchar(255) DEFAULT NULL,
+  `batch` enum('all','batchA','batchB','batchC','batchD') NOT NULL DEFAULT 'all'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `feedback`
+--
+
+CREATE TABLE `feedback` (
+  `id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `student_name` varchar(255) NOT NULL,
+  `feedback` text,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -158,6 +176,39 @@ CREATE TABLE `quizsubmissions` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `quiz_feedback`
+--
+
+CREATE TABLE `quiz_feedback` (
+  `id` int(11) NOT NULL,
+  `quiz_id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `feedback` text,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `student_quiz_details`
+--
+
+CREATE TABLE `student_quiz_details` (
+  `id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `student_name` varchar(255) NOT NULL,
+  `exam_id` int(11) NOT NULL,
+  `total_questions` int(11) DEFAULT NULL,
+  `total_marks` int(11) DEFAULT NULL,
+  `time` time DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `systemlogs`
 --
 
@@ -166,6 +217,7 @@ CREATE TABLE `systemlogs` (
   `LogDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `UserID` int(11) DEFAULT NULL,
   `ActionTaken` text,
+  `feedback` text,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -195,6 +247,9 @@ CREATE TABLE `users` (
   `Username` varchar(50) NOT NULL,
   `Password` varchar(255) NOT NULL,
   `Role` enum('Admin','Faculty','Student') NOT NULL,
+  `sem` enum('all','sem1','sem2','sem3','sem4','sem5','sem6','sem7','sem8') NOT NULL DEFAULT 'all',
+  `class` enum('all','ce1','ce2') NOT NULL DEFAULT 'all',
+  `batch` enum('all','batchA','batchB','batchC','batchD') NOT NULL DEFAULT 'all',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -203,10 +258,10 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`UserID`, `Username`, `Password`, `Role`, `created_at`, `updated_at`) VALUES
-(1, 'admin', 'admin', 'Admin', '2024-05-22 06:08:02', '2024-05-22 06:08:02'),
-(2, 'faculty', 'faculty', 'Faculty', '2024-05-22 07:24:19', '2024-05-22 07:24:19'),
-(3, 'student', 'student', 'Student', '2024-05-22 07:24:35', '2024-05-22 07:24:35');
+INSERT INTO `users` (`UserID`, `Username`, `Password`, `Role`, `sem`, `class`, `batch`, `created_at`, `updated_at`) VALUES
+(1, 'admin', 'admin', 'Admin', 'all', 'all', 'all', '2024-05-22 06:08:02', '2024-05-22 06:08:02'),
+(2, 'faculty', 'faculty', 'Faculty', 'all', 'all', 'all', '2024-05-22 07:24:19', '2024-05-22 07:24:19'),
+(3, 'student', 'student', 'Student', 'all', 'all', 'all', '2024-05-22 07:24:35', '2024-05-22 07:24:35');
 
 --
 -- Indexes for dumped tables
@@ -242,11 +297,18 @@ ALTER TABLE `examassignments`
   ADD KEY `UserID` (`UserID`);
 
 --
--- Indexes for table `exams`
+-- Indexes for table `Exams`
 --
-ALTER TABLE `exams`
+ALTER TABLE `Exams`
   ADD PRIMARY KEY (`ExamID`),
   ADD KEY `CreatorID` (`CreatorID`);
+
+--
+-- Indexes for table `feedback`
+--
+ALTER TABLE `feedback`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `student_id` (`student_id`);
 
 --
 -- Indexes for table `questionanswers`
@@ -277,6 +339,22 @@ ALTER TABLE `quizsubmissions`
   ADD PRIMARY KEY (`SubmissionID`),
   ADD KEY `ExamID` (`ExamID`),
   ADD KEY `UserID` (`UserID`);
+
+--
+-- Indexes for table `quiz_feedback`
+--
+ALTER TABLE `quiz_feedback`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `quiz_id` (`quiz_id`),
+  ADD KEY `student_id` (`student_id`);
+
+--
+-- Indexes for table `student_quiz_details`
+--
+ALTER TABLE `student_quiz_details`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `student_id` (`student_id`),
+  ADD KEY `exam_id` (`exam_id`);
 
 --
 -- Indexes for table `systemlogs`
@@ -316,10 +394,16 @@ ALTER TABLE `examassignments`
   MODIFY `AssignmentID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `exams`
+-- AUTO_INCREMENT for table `Exams`
 --
-ALTER TABLE `exams`
+ALTER TABLE `Exams`
   MODIFY `ExamID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `feedback`
+--
+ALTER TABLE `feedback`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `questionanswers`
@@ -344,6 +428,18 @@ ALTER TABLE `questions`
 --
 ALTER TABLE `quizsubmissions`
   MODIFY `SubmissionID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `quiz_feedback`
+--
+ALTER TABLE `quiz_feedback`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `student_quiz_details`
+--
+ALTER TABLE `student_quiz_details`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `systemlogs`
@@ -397,11 +493,17 @@ ALTER TABLE `examassignments`
   ADD CONSTRAINT `fk_examassignments_user` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`);
 
 --
--- Constraints for table `exams`
+-- Constraints for table `Exams`
 --
-ALTER TABLE `exams`
+ALTER TABLE `Exams`
   ADD CONSTRAINT `exams_ibfk_1` FOREIGN KEY (`CreatorID`) REFERENCES `users` (`UserID`),
   ADD CONSTRAINT `fk_exams_user` FOREIGN KEY (`CreatorID`) REFERENCES `users` (`UserID`);
+
+--
+-- Constraints for table `feedback`
+--
+ALTER TABLE `feedback`
+  ADD CONSTRAINT `feedback_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `users` (`UserID`);
 
 --
 -- Constraints for table `questionanswers`
@@ -434,6 +536,20 @@ ALTER TABLE `quizsubmissions`
   ADD CONSTRAINT `fk_quizsubmissions_user` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`),
   ADD CONSTRAINT `quizsubmissions_ibfk_1` FOREIGN KEY (`ExamID`) REFERENCES `exams` (`ExamID`),
   ADD CONSTRAINT `quizsubmissions_ibfk_2` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`);
+
+--
+-- Constraints for table `quiz_feedback`
+--
+ALTER TABLE `quiz_feedback`
+  ADD CONSTRAINT `quiz_feedback_ibfk_1` FOREIGN KEY (`quiz_id`) REFERENCES `exams` (`ExamID`),
+  ADD CONSTRAINT `quiz_feedback_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `users` (`UserID`);
+
+--
+-- Constraints for table `student_quiz_details`
+--
+ALTER TABLE `student_quiz_details`
+  ADD CONSTRAINT `student_quiz_details_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `users` (`UserID`),
+  ADD CONSTRAINT `student_quiz_details_ibfk_2` FOREIGN KEY (`exam_id`) REFERENCES `exams` (`ExamID`);
 
 --
 -- Constraints for table `systemlogs`
