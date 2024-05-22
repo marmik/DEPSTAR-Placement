@@ -15,10 +15,14 @@ app.use(cors()); // Enable CORS for all routes
 const loginRoute = require('./routes/login.js');
 const adminRoute = require('./routes/admin.js');
 const facultyRoute = require('./routes/faculty.js');
+const studentRoutes = require('./routes/student.js');
+
 
 // Declaring routes
 app.use("/api", loginRoute);
 app.use("/api/admin", adminRoute);
 app.use("/api/faculty", facultyRoute);
+app.use('/api/student', studentRoutes);
+
 
 module.exports = app;

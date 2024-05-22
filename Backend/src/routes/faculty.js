@@ -1,17 +1,17 @@
-
 const express = require('express');
 const app = express();
 const router = express.Router();
 const mysql = require('mysql');
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser'); // Add this line
 const vToken = require('./../middlewares/middleware.js');
 require('dotenv').config();
-
 
 // Secret key for JWT (in a real application, store this securely and not in the source code)
 const JWT_SECRET = process.env.JWT_SECRET; // Replace 'secretKey' with your actual secret key
 
 app.use(express.json()); // Middleware to parse JSON bodies
+app.use(cookieParser()); // Add this line to parse cookies
 
 const { verifyToken, checkRole } = vToken;
 
@@ -33,22 +33,39 @@ connection.connect((err) => {
   console.log('Connected to MySQL as id', connection.threadId);
 });
 
+// Middleware to verify token from cookies
+const verifyTokenFromCookie = (req, res, next) => {
+  const token = req.cookies.jwt; // Extract token from cookies
+  if (!token) {
+    return res.status(403).json({ error: 'No token provided' });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: 'Failed to authenticate token' });
+    }
+
+    // Save the decoded token to the request object
+    req.user = decoded;
+    next();
+  });
+};
+
 // Create a new quiz
-router.post('/createNewQuiz',verifyToken, checkRole('Faculty'),(req, res) => {
-  const { title, description, questions, subject, number_of_questions, exam_date, start_time, end_time, total_marks } = req.body;
+router.post('/createNewQuiz', verifyTokenFromCookie, checkRole('Faculty'), (req, res) => {
+  const { title, description, questions, subject, number_of_questions, exam_date, start_time, end_time, total_marks, sem, className, batch } = req.body;
   const userID = req.user ? req.user.userID : null;
   console.log(userID); // Check if req.user exists
 
   // Insert quiz into Exams table
-  const quizInsertQuery = 'INSERT INTO Exams (Title, Description, Subject, CreatorID, Number_of_Questions, ExamDate, StartTime, EndTime, Exam_Total_Marks, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-  connection.query(quizInsertQuery, [title, description, subject, userID, number_of_questions, exam_date, start_time, end_time, total_marks, 'Not Started'], (err, result) => {
-    if (err) {
+  const quizInsertQuery = 'INSERT INTO Exams (Title, Description, Subject, CreatorID, Number_of_Questions, ExamDate, StartTime, EndTime, Exam_Total_Marks, Status, sem, className, batch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  connection.query(quizInsertQuery, [title, description, subject, userID, number_of_questions, exam_date, start_time, end_time, total_marks, 'Not Started', sem, className, batch], (err, result) => {
+      if (err) {
       console.error('Error creating quiz:', err);
       return res.status(500).json({ error: 'Could not create quiz' });
     }
 
     const examID = result.insertId;
-    
 
     // Insert questions into Questions table
     const questionInsertQuery = 'INSERT INTO Questions (ExamID, QuestionText, QuestionType, Correct_Option, Mark) VALUES ?';
@@ -61,7 +78,7 @@ router.post('/createNewQuiz',verifyToken, checkRole('Faculty'),(req, res) => {
       }
 
       const questionIDs = Array.from({ length: questions.length }, (_, i) => result.insertId + i);
-      
+
       const optionsInsertQueries = [];
       questions.forEach((question, index) => {
         if (question.type === 'Multiple Choice' && question.options) {
@@ -91,12 +108,14 @@ router.post('/createNewQuiz',verifyToken, checkRole('Faculty'),(req, res) => {
 });  // tested
 
 // Update quiz information
-router.put('/updateQuiz/:id',verifyToken, checkRole('Faculty'), (req, res) => {
+router.put('/updateQuiz/:id', verifyTokenFromCookie, checkRole('Faculty'), (req, res) => {
   const quizId = req.params.id;
-  const { title, description, subject, number_of_questions } = req.body;
+  const { title, description, subject, number_of_questions, sem, className, batch } = req.body;
 
-  const updateQuery = 'UPDATE Exams SET Title = ?, Description = ?, Subject = ?, Number_of_Questions = ? WHERE ExamID = ?';
-  connection.query(updateQuery, [title, description, subject, number_of_questions, quizId], (err, result) => {
+
+  const updateQuery = 'UPDATE Exams SET Title = ?, Description = ?, Subject = ?, Number_of_Questions = ?, sem = ?, class = ?, batch = ? WHERE ExamID = ?';
+  connection.query(updateQuery, [title, description, subject, number_of_questions, sem, className, batch, quizId], (err, result) => {
+
     if (err) {
       console.error('Error updating quiz:', err);
       return res.status(500).json({ error: 'Could not update quiz' });
@@ -106,44 +125,41 @@ router.put('/updateQuiz/:id',verifyToken, checkRole('Faculty'), (req, res) => {
 });
 
 // Delete a quiz
-router.delete('/deleteQuiz/:id',verifyToken, checkRole('Faculty'), (req, res) => {
+router.delete('/deleteQuiz/:id', verifyTokenFromCookie, checkRole('Faculty'), (req, res) => {
   const quizId = req.params.id;
 
-  const deleteQuery = 'DELETE FROM exams WHERE ExamID = ?';
+  const deleteQuery = 'DELETE FROM Exams WHERE ExamID = ?';
   connection.query(deleteQuery, [quizId], (err, result) => {
     if (err) {
       console.error('Error deleting quiz:', err);
       return res.status(500).json({ error: 'Could not delete quiz' });
     }
-    res.json({ message: 'Quiz deleted successfully'});
+    res.json({ message: 'Quiz deleted successfully' });
   });
 });  // tested
 
-
 // Create a new class
-router.post('/creteClasses', verifyToken, checkRole('Faculty'), (req, res) => {
+router.post('/createClass', verifyTokenFromCookie, checkRole('Faculty'), (req, res) => {
   const { className } = req.body;
   const facultyID = req.user ? req.user.userID : null;
-  const facultyname =  req.user ? req.user.username : null;// Check if req.user exists
+  const facultyname = req.user ? req.user.username : null; // Check if req.user exists
   console.log(facultyID);
   console.log(facultyname);
 
-  const classInsertQuery = 'INSERT INTO Classes (ClassName, UserID , facultyname) VALUES (?, ? , ?)';
-  connection.query(classInsertQuery, [className, facultyID , facultyname], (err, result) => {
+  const classInsertQuery = 'INSERT INTO Classes (ClassName, UserID, facultyname) VALUES (?, ?, ?)';
+  connection.query(classInsertQuery, [className, facultyID, facultyname], (err, result) => {
     if (err) {
       console.error('Error creating class:', err);
       return res.status(500).json({ error: 'Could not create class' });
     }
     res.status(201).json({ message: 'Class created successfully' });
   });
-}); //tested
+}); // tested
 
 // Assign a student to a class
-
-router.post('/add_student_classes/:classId',verifyToken, checkRole('Faculty'), (req, res) => {
+router.post('/addClassStudent/:classId', verifyTokenFromCookie, checkRole('Faculty'), (req, res) => {
   const classId = req.params.classId;
   const student_name = req.body.student_name;
-  
 
   const classStudentInsertQuery = 'INSERT INTO ClassStudents (ClassID, studentname) VALUES (?, ?)';
   connection.query(classStudentInsertQuery, [classId, student_name], (err, result) => {
@@ -153,11 +169,10 @@ router.post('/add_student_classes/:classId',verifyToken, checkRole('Faculty'), (
     }
     res.status(201).json({ message: 'Student assigned to class successfully' });
   });
-});  // tested
-
+}); // tested
 
 // Assign an exam to a class
-router.post('/classes/:classId/exams',verifyToken, checkRole('Faculty'), (req, res) => {
+router.post('/assignExamToClass/:classId', verifyTokenFromCookie, checkRole('Faculty'), (req, res) => {
   const classId = req.params.classId;
   const { examID } = req.body;
 
@@ -171,9 +186,8 @@ router.post('/classes/:classId/exams',verifyToken, checkRole('Faculty'), (req, r
   });
 });
 
-
 // Assign a quiz to students or classes
-router.post('/assignments', verifyToken, checkRole('Faculty'), (req, res) => {
+router.post('/assignments', verifyTokenFromCookie, checkRole('Faculty'), (req, res) => {
   const { examID, userID, assignedDate, dueDate } = req.body;
 
   const assignmentInsertQuery = 'INSERT INTO ExamAssignments (ExamID, UserID, AssignedDate, DueDate) VALUES (?, ?, ?, ?)';
@@ -187,7 +201,7 @@ router.post('/assignments', verifyToken, checkRole('Faculty'), (req, res) => {
 });
 
 // Get assignments for a specific quiz
-router.get('/assignments/:id',verifyToken, checkRole('Faculty'), (req, res) => {
+router.get('/assignments/:id', verifyTokenFromCookie, checkRole('Faculty'), (req, res) => {
   const quizId = req.params.id;
 
   const assignmentsQuery = 'SELECT * FROM ExamAssignments WHERE ExamID = ?';
@@ -201,7 +215,7 @@ router.get('/assignments/:id',verifyToken, checkRole('Faculty'), (req, res) => {
 });
 
 // Provide feedback on a quiz submission
-router.post('/feedback/:submissionId',verifyToken, checkRole('Faculty'), (req, res) => {
+router.post('/feedback/:submissionId', verifyTokenFromCookie, checkRole('Faculty'), (req, res) => {
   const submissionId = req.params.submissionId;
   const { feedback } = req.body;
 
@@ -215,8 +229,5 @@ router.post('/feedback/:submissionId',verifyToken, checkRole('Faculty'), (req, r
   });
 });
 
-
-
-
-
 module.exports = router;
+

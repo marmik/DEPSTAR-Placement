@@ -46,11 +46,20 @@ const verifyToken = (req, res, next) => {
 // Middleware to check if user has the required role
 const checkRole = (requiredRole) => {
     return (req, res, next) => {
-        if (!req.user || req.user.Role !== requiredRole) {
-            return res.status(403).json({ error: 'Access denied. Insufficient permissions.' });
-        }
-        next();
+      if (!req.user || req.user.Role !== requiredRole) {
+        return res.status(403).json({ error: 'Access denied. Insufficient permissions.' });
+      }
+      next();
     };
-};
-
-module.exports = { verifyToken, checkRole };
+  };
+  
+  const checkSemesterBatchClass = (requiredSem, requiredClass, requiredBatch) => {
+    return (req, res, next) => {
+      if (!req.user || req.user.sem !== requiredSem || req.user.class !== requiredClass || req.user.batch !== requiredBatch) {
+        return res.status(403).json({ error: 'Access denied. Insufficient permissions or incorrect semester, batch, or class.' });
+      }
+      next();
+    };
+  };
+  
+  module.exports = { verifyToken, checkRole, checkSemesterBatchClass };
