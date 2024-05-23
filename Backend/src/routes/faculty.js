@@ -229,5 +229,113 @@ router.post('/feedback/:submissionId', verifyTokenFromCookie, checkRole('Faculty
   });
 });
 
+//.GET all quizzes
+router.get('/allQuizzes', verifyToken, checkRole('Faculty'), (req, res) => {
+  const query = `SELECT * FROM Exams ORDER BY ExamDate DESC`;
+  
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching all quizzes:', err);
+      return res.status(500).json({ error: 'Could not fetch quizzes' });
+    }
+    res.json(results);
+  });
+});
+
+//.GET Total Quizzes
+router.get('/totalQuizzes', verifyToken, checkRole('Faculty'), (req, res) => {
+  const query = `SELECT COUNT(*) as totalQuizzes FROM Exams`;
+  
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching total quizzes:', err);
+      return res.status(500).json({ error: 'Could not fetch total quizzes' });
+    }
+    res.json(results[0]);
+  });
+});
+
+//.GET Display Scheduled Quizzes API 
+router.get('/scheduledQuizzes', verifyToken, checkRole('Faculty'), (req, res) => {
+  const query = `SELECT * FROM Exams WHERE ExamDate >= CURDATE() ORDER BY ExamDate ASC`;
+  
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching scheduled quizzes:', err);
+      return res.status(500).json({ error: 'Could not fetch scheduled quizzes' });
+    }
+    res.json(results);
+  });
+});
+
+//GET Display Quizzes API
+router.get('/quizDetails/:id', verifyToken, checkRole('Faculty'), (req, res) => {
+  const quizId = req.params.id;
+  const query = `SELECT * FROM Exams WHERE ExamID = ?`;
+  
+  connection.query(query, [quizId], (err, results) => {
+    if (err) {
+      console.error('Error fetching quiz details:', err);
+      return res.status(500).json({ error: 'Could not fetch quiz details' });
+    }
+    res.json(results[0]);
+  });
+});
+
+// POST Save Quiz Questions
+router.post('/saveQuizQuestion/:quizId', verifyToken, checkRole('Faculty'), (req, res) => {
+  const quizId = req.params.quizId;
+  const { questionText, questionType, correctOption, mark, options } = req.body;
+
+  const questionInsertQuery = 'INSERT INTO Questions (ExamID, QuestionText, QuestionType, Correct_Option, Mark) VALUES (?, ?, ?, ?, ?)';
+  connection.query(questionInsertQuery, [quizId, questionText, questionType, correctOption, mark], (err, result) => {
+    if (err) {
+      console.error('Error saving quiz question:', err);
+      return res.status(500).json({ error: 'Failed to save quiz question' });
+    }
+
+    const questionId = result.insertId;
+
+    if (questionType === 'Multiple Choice' && options.length > 0) {
+      const optionsInsertQuery = 'INSERT INTO QuestionOptions (QuestionID, OptionText) VALUES ?';
+      const optionsValues = options.map(option => [questionId, option]);
+      connection.query(optionsInsertQuery, [optionsValues], (err, result) => {
+        if (err) {
+          console.error('Error saving quiz question options:', err);
+          return res.status(500).json({ error: 'Failed to save quiz question options' });
+        }
+        res.status(201).json({ message: 'Quiz question and options saved successfully' });
+      });
+    } else {
+      res.status(201).json({ message: 'Quiz question saved successfully' });
+    }
+  });
+});
+
+//GET Faculty Analytics
+router.get('/facultyAnalytics', verifyToken, checkRole('Faculty'), (req, res) => {
+  const query = `
+    SELECT e.Title, COUNT(s.SubmissionID) AS TotalSubmissions,
+           AVG((SELECT SUM(CASE WHEN q.CorrectAnswer = a.AnswerText THEN 1 ELSE 0 END) 
+                FROM QuestionAnswers a 
+                JOIN Questions q ON a.QuestionID = q.QuestionID 
+                WHERE a.SubmissionID = s.SubmissionID)) AS AverageScore
+    FROM Exams e 
+    LEFT JOIN QuizSubmissions s ON e.ExamID = s.ExamID
+    GROUP BY e.ExamID
+  `;
+  
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching faculty analytics:', err);
+      return res.status(500).json({ error: 'Failed to fetch faculty analytics' });
+    }
+    res.json(results);
+  });
+});
+
+
+
+
 module.exports = router;
 

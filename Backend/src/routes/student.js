@@ -336,5 +336,155 @@ router.get('/quizzes/history', verifyToken,checkRole('Student'), (req, res) => {
     }
   );
 });
+//. GET /api/student/upcomingExams - View upcoming exams
+router.get('/upcomingExams', verifyToken, checkRole('Student'), (req, res) => {
+  const query = `SELECT * FROM Exams WHERE ExamDate >= CURDATE() ORDER BY ExamDate ASC`;
+  
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching upcoming exams:', err);
+      return res.status(500).json({ error: 'Could not fetch upcoming exams' });
+    }
+    res.json(results);
+  });
+});
+
+//. GET /api/student/recentExams - View recent exams
+router.get('/recentExams', verifyToken, checkRole('Student'), (req, res) => {
+  const query = `SELECT * FROM Exams WHERE ExamDate < CURDATE() ORDER BY ExamDate DESC`;
+  
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching recent exams:', err);
+      return res.status(500).json({ error: 'Could not fetch recent exams' });
+    }
+    res.json(results);
+  });
+});
+
+//. GET /api/student/recentAttemptedQuizzes - View recent attempted quizzes
+router.get('/recentAttemptedQuizzes', verifyToken, checkRole('Student'), (req, res) => {
+  const userId = req.user.userID;
+  const query = `
+    SELECT e.Title, s.SubmissionDate, q.QuestionText, a.AnswerText
+    FROM QuizSubmissions s
+    JOIN Exams e ON s.ExamID = e.ExamID
+    JOIN QuestionAnswers a ON s.SubmissionID = a.SubmissionID
+    JOIN Questions q ON a.QuestionID = q.QuestionID
+    WHERE s.UserID = ?
+    ORDER BY s.SubmissionDate DESC
+  `;
+  
+  connection.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Error fetching recent attempted quizzes:', err);
+      return res.status(500).json({ error: 'Could not fetch recent attempted quizzes' });
+    }
+    res.json(results);
+  });
+});
+
+//. GET /api/student/studentAttemptedQuizDetails - View student attempted quiz details
+router.get('/studentAttemptedQuizDetails', verifyToken, checkRole('Student'), (req, res) => {
+  const userId = req.user.userID;
+  const query = `
+    SELECT e.Title, s.SubmissionDate, q.QuestionText, a.AnswerText
+    FROM QuizSubmissions s
+    JOIN Exams e ON s.ExamID = e.ExamID
+    JOIN QuestionAnswers a ON s.SubmissionID = a.SubmissionID
+    JOIN Questions q ON a.QuestionID = q.QuestionID
+    WHERE s.UserID = ?
+    ORDER BY s.SubmissionDate DESC
+  `;
+  
+  connection.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Error fetching student attempted quiz details:', err);
+      return res.status(500).json({ error: 'Could not fetch student attempted quiz details' });
+    }
+    res.json(results);
+  });
+});
+
+//. GET /api/student/afterAttemptedQuizDetails - View after attempted quiz details
+router.get('/afterAttemptedQuizDetails', verifyToken, checkRole('Student'), (req, res) => {
+  const userId = req.user.userID;
+  const query = `
+    SELECT e.Title, s.SubmissionDate, q.QuestionText, q.CorrectAnswer, a.AnswerText
+    FROM QuizSubmissions s
+    JOIN Exams e ON s.ExamID = e.ExamID
+    JOIN QuestionAnswers a ON s.SubmissionID = a.SubmissionID
+    JOIN Questions q ON a.QuestionID = q.QuestionID
+    WHERE s.UserID = ?
+    ORDER BY s.SubmissionDate DESC
+  `;
+  
+  connection.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Error fetching after attempted quiz details:', err);
+      return res.status(500).json({ error: 'Could not fetch after attempted quiz details' });
+    }
+    res.json(results);
+  });
+});
+
+//. GET /api/student/quizFeedback - View quiz feedback
+router.post('/systemFeedback', verifyToken, checkRole('Student'), (req, res) => {
+  const { feedback } = req.body;
+  const student_id = req.user.userID;
+  const student_name = req.user.username;
+
+  const feedbackInsertQuery = 'INSERT INTO system_feedback (student_id, student_name, feedback) VALUES (?, ?, ?)';
+  connection.query(feedbackInsertQuery, [student_id, student_name, feedback], (err, result) => {
+    if (err) {
+      console.error('Error saving system feedback:', err);
+      return res.status(500).json({ error: 'Failed to save system feedback' });
+    }
+    res.status(201).json({ message: 'System feedback saved successfully' });
+  });
+});
+
+//. GET /api/studentPerformanceGraph - View student performance graph
+router.get('/studentPerformanceGraph', verifyToken, checkRole('Student'), (req, res) => {
+  const student_id = req.user.userID;
+  const query = `
+    SELECT e.Title, s.SubmissionDate, 
+           (SELECT SUM(CASE WHEN q.CorrectAnswer = a.AnswerText THEN 1 ELSE 0 END) 
+            FROM QuestionAnswers a 
+            JOIN Questions q ON a.QuestionID = q.QuestionID 
+            WHERE a.SubmissionID = s.SubmissionID) AS Score
+    FROM QuizSubmissions s 
+    JOIN Exams e ON s.ExamID = e.ExamID 
+    WHERE s.UserID = ?
+  `;
+  
+  connection.query(query, [student_id], (err, results) => {
+    if (err) {
+      console.error('Error fetching student performance graph:', err);
+      return res.status(500).json({ error: 'Failed to fetch student performance graph' });
+    }
+    res.json(results);
+  });
+});
+
+//. GET /api/student/upcomingExams/:semester/:batch - View upcoming exams by semester and batch
+router.get('/upcomingExams/:semester/:batch', verifyToken, checkRole('Student'), (req, res) => {
+  const { semester, batch } = req.params;
+  const query = `
+    SELECT * FROM Exams 
+    WHERE sem = ? AND batch = ? AND ExamDate >= CURDATE() 
+    ORDER BY ExamDate ASC
+  `;
+  
+  connection.query(query, [semester, batch], (err, results) => {
+    if (err) {
+      console.error('Error fetching upcoming exams by semester and batch:', err);
+      return res.status(500).json({ error: 'Failed to fetch upcoming exams' });
+    }
+    res.json(results);
+  });
+});
+
+
 
 module.exports = router;
