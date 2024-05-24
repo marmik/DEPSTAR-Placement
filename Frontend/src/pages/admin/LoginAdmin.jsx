@@ -3,46 +3,63 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { CiUser } from 'react-icons/ci';
 import { RiLockPasswordLine } from 'react-icons/ri';
+import { parseJwt } from '../../model/JwtDecode';
 
 
 function LoginAdmin() {
-  const [isStudent, setIsStudent] = useState(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const handleLoggedInUser= async () => {
+    // e.preventDefault();
+
+    if(localStorage.getItem("token")){
+      const token = localStorage.getItem("token");
+      const parse = parseJwt(token);
+      if(parse.role=="Admin"){
+        navigate("/admin/dashboard");
+      } 
+      else{
+        navigate("/admin/login");
+      }
+    }
+    
+  }
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    handleLoggedInUser();
+    try {
+      const response = await axios.post('http://localhost:3000/api/login', {
+        username,
+        password
 
-    // try {
-    //   const response = await axios.post('http://localhost:3000/api/login', {
-    //     username,
-    //     password
-
-    //   });
-    //   console.log(response);
-    //   if (response.status === 200) {
-    //     const role = response.data.dashboard;
-    //     if (role === 'Admin') {
-    //       navigate('/admin/dashboard');
-    //     }
-    //     else {
-    //       setError('Invalid User');
-    //     }
-    //   } else {
-    //     setError('Invalid credentials');
-    //   }
-    // } catch (error) {
-    //   setError(error.response);
-    // }
+      });
+      // console.log(response);
+      if (response.status === 200) {
+        const role = response.data.dashboard;
+        if (role == 'Admin') {
+          localStorage.setItem("token",response.data.token)
+      
+          navigate('/admin/dashboard');
+        }
+        else {
+          setError('Invalid User');
+        }
+      } else {
+        setError('Invalid credentials');
+      }
+    } catch (error) {
+      setError(error.response);
+    }
   };
 
 
 
   return (
     <>
-      <div className="bg-white text-secondary h-full flex items-center flex-col ">
+      <div onLoad={handleLoggedInUser} className="bg-white text-secondary h-full flex items-center flex-col ">
         <div className="flex-row items-center hidden lg:flex md:flex justify-between w-full">
           <img src='../../images/image_charusat.png' alt="charusat" className="h-20 m-5" />
           <img src='../../images/image_depstar.png' alt="depstar" className="h-20 m-5" />

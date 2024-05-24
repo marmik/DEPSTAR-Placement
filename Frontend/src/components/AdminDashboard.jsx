@@ -1,22 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { GiHamburgerMenu } from "react-icons/gi";
 import Dashboard from '../pages/admin/Dashboard';
 import AdminSidebar from './AdminSidebar';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import ViewUsers from '../pages/admin/ViewUsers';
 import ViewExams from '../pages/admin/ViewExams';
 import SystemFeedbacks from '../pages/admin/SystemFeedbacks';
 import SystemSettings from '../pages/admin/SystemSettings';
 import Error404 from '../pages/Error404';
+import { parseJwt } from '../model/JwtDecode';
 
 
 
 function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [UserName, setUserName] = useState();
+  const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
+
+  const handleAuthUser = async()=>{
+    if(localStorage.getItem("token")){
+      const token = localStorage.getItem("token");
+      const parse = parseJwt(token);
+      setUserName(parse.usename)
+      if(parse.role=="Admin"){
+        navigate("/admin/dashboard");
+      }  
+      else{
+        navigate("/admin/login");
+      }
+    }
+    else{
+      navigate("/admin/login");
+    }
+  } 
+
+  useEffect(() => {
+    handleAuthUser();
+  },[navigate])
+
+
 
   return (
     <>
@@ -43,7 +69,7 @@ function AdminDashboard() {
               </h2>
             </div>
             <div className='flex justify-center items-center gap-4'>
-              <p className='font-medium text-xl'>Raj Markana</p>
+              <p className='font-medium text-xl'>{UserName}</p>
               <img src="../../vite.svg" alt="Image" className='rounded-full' />
             </div>
           </div>

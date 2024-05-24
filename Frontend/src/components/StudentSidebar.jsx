@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation,useNavigate } from 'react-router-dom';
 import { HiHome,HiBookOpen, HiChatAlt, HiLogout } from 'react-icons/hi';
 import { PiExam } from "react-icons/pi";
 
@@ -8,6 +8,14 @@ import { PiExam } from "react-icons/pi";
 const StudentSidebar = () => {
     const location = useLocation();
     const path = location.pathname;
+    const navigate = useNavigate();
+
+    const handleLogout = async()=>{
+        localStorage.removeItem("token");
+        localStorage.clear();
+        navigate("/")
+    }
+
     return (
         <div className=" flex flex-col bg-primary text-white h-screen overflow-hidden">
             <div className="flex items-center justify-center h-20">
@@ -76,13 +84,13 @@ const StudentSidebar = () => {
                 </ul>
             </nav>
             <div className="py-4 px-6 bg-blue-950">
-                <Link
-                    to="/"
+                <button
+                    onClick={handleLogout}
                     className="flex items-center space-x-2  text-white"
                 >
                     <HiLogout className="w-5 h-5" />
                     <span>Logout</span>
-                </Link>
+                </button>
             </div>
         </div>
     );

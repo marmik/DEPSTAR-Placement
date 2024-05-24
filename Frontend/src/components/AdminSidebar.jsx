@@ -1,11 +1,18 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { HiHome, HiUser, HiBookOpen, HiChatAlt, HiLogout } from 'react-icons/hi';
 import { IoMdSettings } from "react-icons/io";
 
 const AdminSidebar = () => {
     const location = useLocation();
     const path = location.pathname;
+    const navigate = useNavigate();
+
+    const handleLogout = async()=>{
+        localStorage.removeItem("token");
+        localStorage.clear();
+        navigate("/admin/login")
+    }
     return (
         <div className=" flex flex-col bg-primary text-light h-screen overflow-hidden">
             <div className="flex items-center justify-center h-20">
@@ -65,13 +72,13 @@ const AdminSidebar = () => {
                 </ul>
             </nav>
             <div className="py-4 px-6 bg-blue-950">
-                <Link
-                    to="/admin/login"
+                <button
+                    onClick={handleLogout}
                     className="flex items-center space-x-2  text-white"
                 >
                     <HiLogout className="w-5 h-5" />
                     <span>Logout</span>
-                </Link>
+                </button>
             </div>
         </div>
     );

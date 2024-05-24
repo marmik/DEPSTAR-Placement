@@ -1,8 +1,8 @@
-import React, { useState  } from 'react';
+import React, { useState,useEffect  } from 'react';
 import { GiHamburgerMenu } from "react-icons/gi";
 import Dashboard from '../pages/faculty/Dashboard';
 import FacultySidebar from './FacultySidebar';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import ManageFeedback from '../pages/faculty/ManageFeedback';
 import SystemFeedback from '../pages/faculty/SystemFeedback';
 import ViewQuiz from '../pages/faculty/ViewQuiz';
@@ -10,18 +10,50 @@ import ManageQuiz from '../pages/faculty/ManageQuiz';
 import AddQuiz from '../pages/faculty/AddQuiz';
 import ViewData from '../pages/faculty/ViewData';
 import Error404 from '../pages/Error404';
+import { parseJwt } from '../model/JwtDecode';
 
 
 
 function FacultyDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [UserName, setUserName] = useState();
+  const navigate = useNavigate();
+
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  const handleAuthUser = async()=>{
+    
+    if(localStorage.getItem("token")){
+      const token = localStorage.getItem("token");
+      const parse = parseJwt(token);
+      setUserName(parse.username);
+    
+      if(parse.role=="Student"){
+        navigate("/student");
+      }      
+      else if(parse.role=="Faculty"){
+        navigate("/faculty");
+      }
+      else{
+        navigate("/");
+      }
+    }
+    else{
+      navigate("/");
+    }
+  } 
+
+  useEffect(() => {
+    handleAuthUser();
+  },[navigate])
+
+
+
   return (
     <>
-      <div className='grid grid-cols-5'>
+      <div  className='grid grid-cols-5'>
 
         <div className={`sm:col-span-1 col-span-3 ${sidebarOpen ? 'block' : 'hidden'}`}>
           <FacultySidebar />
@@ -41,12 +73,11 @@ function FacultyDashboard() {
                   <Route path='/view-data' element={'View Quiz'}></Route>
                   <Route path='/manage-feedbacks' element={'Manage Feedbacks'}></Route>
                   <Route path='/system-feedbacks' element={'System Feedbacks'}></Route>
-                 
                 </Routes>
               </h2>
             </div>
             <div className='flex justify-center items-center gap-4'>
-              <p className='font-medium text-xl'>Raj Markana</p>
+              <p className='font-medium text-xl'>{UserName}</p>
               <img src="../vite.svg" alt="Image" className='rounded-full' />
             </div>
           </div>
@@ -61,7 +92,6 @@ function FacultyDashboard() {
               <Route path='/view-data' element={<ViewData />}></Route>
               <Route path='/system-feedbacks' element={<SystemFeedback />}></Route>
               <Route path='*' element={<Error404 />}></Route>
-              
             </Routes>
           </div>
 

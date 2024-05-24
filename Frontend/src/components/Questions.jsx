@@ -4,11 +4,12 @@ const Questions = ({i,updateQuestion}) => {
   
   const [Questionobj, setQuestionobj] = useState({
     "qString": '',
+    "type": "Multiple Choice",
     "OptionA": '',
     "OptionB": '',
     "OptionC": '',
     "OptionD": '',
-    "marks": '0',
+    "marks": '1',
     "correctOption": 'A'
   });
 
