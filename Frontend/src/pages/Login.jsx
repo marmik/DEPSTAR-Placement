@@ -4,13 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { CiUser } from 'react-icons/ci';
 import { RiLockPasswordLine } from 'react-icons/ri';
 import { parseJwt } from '../model/JwtDecode';
-
+import { toast } from 'react-toastify';
 
 function Login() {
   const [isStudent, setIsStudent] = useState(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+
   const navigate = useNavigate();
 
   const handleLoggedInUser= async () => {
@@ -43,21 +43,25 @@ function Login() {
       });
       // console.log(response);
       if (response.status === 200) {
-        const { token, dashboard } = response.data;
+        const { token, role } = response.data;
+        console.log(response);
         localStorage.setItem('token', token);
-        if (dashboard === 'Student') {
+        if (role === 'Student') {
+        
+          toast.success("Login Successfully !")
           navigate('/student');
-        } else if (dashboard === 'Faculty') {
+        } else if (role === 'Faculty') {
+          toast.success("Login Successfully !")
           navigate('/faculty');
         } else {
-          setError('Invalid user role');
+          toast.error("Invalid User")
         }
       } else {
-        setError('Invalid credentials');
+        toast.error("Login Failed !")
       }
     } catch (error) {
-      console.error('Login error:', error);
-      setError('An error occurred during login');
+      
+      toast.error("Invalid User")
     }
   };
 
@@ -133,7 +137,7 @@ function Login() {
                   required
                 />
               </div>
-              {error && <p className="text-red-500 mt-2">{error}</p>}
+              
               <button type="submit" className="self-center w-3/12 my-6 bg-primary text-light font-medium text-lg px-4 py-3 rounded-md lg:self-end shadow-xl">
                 Login
               </button>

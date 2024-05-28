@@ -11,7 +11,8 @@ import FacultyDashboard from './components/FacultyDashboard.jsx';
 import StudentDashboard from './components/StudentDashboard.jsx';
 import AdminDashboard from './components/AdminDashboard.jsx';
 import Error404 from './pages/Error404.jsx';
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const router = createBrowserRouter([
   {
@@ -44,5 +45,17 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <RouterProvider router={router} />
+    <ToastContainer 
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition:Bounce />
   </React.StrictMode>,
 )
