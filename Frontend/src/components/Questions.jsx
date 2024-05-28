@@ -4,11 +4,12 @@ const Questions = ({i,updateQuestion}) => {
   
   const [Questionobj, setQuestionobj] = useState({
     "qString": '',
+    "type": "Multiple Choice",
     "OptionA": '',
     "OptionB": '',
     "OptionC": '',
     "OptionD": '',
-    "marks": '0',
+    "marks": '1',
     "correctOption": 'A'
   });
 
@@ -36,6 +37,7 @@ const Questions = ({i,updateQuestion}) => {
             placeholder={'Question ' + (i + 1)}
             value={Questionobj.qString}
             onChange={handleChange}
+            required
             className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none"
           />
         </label>
@@ -53,6 +55,7 @@ const Questions = ({i,updateQuestion}) => {
                   placeholder={"OptionA"}
                   value={Questionobj.OptionA}
                   onChange={handleChange}
+                  required
                   className="p-4 ml-4 w-full m-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none"
                 />
               </article>
@@ -68,6 +71,7 @@ const Questions = ({i,updateQuestion}) => {
                   placeholder={"OptionB"}
                   value={Questionobj.OptionB}
                   onChange={handleChange}
+                  required
                   className="p-4 ml-4 w-full m-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none"
                 />
               </article>
@@ -87,6 +91,7 @@ const Questions = ({i,updateQuestion}) => {
                   placeholder={"OptionC"}
                   value={Questionobj.OptionC}
                   onChange={handleChange}
+                  required
                   className="p-4 ml-4 w-full m-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none"
                 />
               </article>
@@ -102,6 +107,7 @@ const Questions = ({i,updateQuestion}) => {
                   placeholder={"OptionD"}
                   value={Questionobj.OptionD}
                   onChange={handleChange}
+                  required
                   className="p-4 ml-4 w-full m-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none"
                 />
               </article>
@@ -115,6 +121,9 @@ const Questions = ({i,updateQuestion}) => {
             <article className="pt-2 w-2/3 text-wrap">
               <select
                 name="correctOption"
+                value={Questionobj.correctOption}
+                  onChange={handleChange}
+                  required
                 className="p-4 w-full border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none"
               >
                 <option value="A">A</option>
@@ -133,6 +142,7 @@ const Questions = ({i,updateQuestion}) => {
                   name="marks"
                   value={Questionobj.marks}
                   onChange={handleChange}
+                  required
                   className="p-4 w-full border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none"
                 />
               </article>

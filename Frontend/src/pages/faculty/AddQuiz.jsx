@@ -1,122 +1,252 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import Questions from '../../components/Questions';
+import axios from 'axios';
+import { IoIosWarning } from "react-icons/io";
+import { Navigate, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const AddQuiz = () => {
-  const [QuestionsNo,setQuestionsNo]=useState(0);
+  const navigate = useNavigate();
+  const [QuestionsNo, setQuestionsNo] = useState(0);
   const [QuestionList, setQuestionList] = useState([]);
+  const [formData, setFormData] = useState({
+    subject: '',
+    title: '',
+    description: '',
+    totalMarks: '',
+    totalQuestions: '',
+    status: '',
+    sem: '',
+    className: '',
+    batch: '',
+    date: '',
+    startTime: '',
+    endTime: ''
+  });
+
 
   useEffect(() => {
     setQuestionList(
-      Array.from({ length: QuestionsNo  }, () => ({
-        "qString": '',
-        "OptionA": '',
-        "OptionB": '',
-        "OptionC": '',
-        "OptionD": '',
-        "marks": '4',
-        "correctOption": 'A'
+      Array.from({ length: QuestionsNo }, () => ({
+        qString: '',
+        type: 'Multiple Choice',
+        OptionA: '',
+        OptionB: '',
+        OptionC: '',
+        OptionD: '',
+        marks: '1',
+        correctOption: ''
       }))
     );
-  }, [QuestionsNo ]);
+  }, [QuestionsNo]);
 
   const updateQuestion = (index, newQobj) => {
     setQuestionList((prevList) =>
       prevList.map((q, i) => (i === index ? newQobj : q))
     );
   };
-  
-  const getQuestionJson = () => {
-    console.log(QuestionList);
+
+  const handleInputChange = (e) => {
+
+    const { name, value } = e.target;
+    if (name == 'totalQuestions') {
+      setQuestionsNo(parseInt(e.target.value));
+    }
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
   };
 
-  function handlechanges(e){
-    setQuestionsNo(parseInt(e.target.value));
-  }
-  const [QetionList,setQetionList]=useState();
-    useEffect(() => {
-      setQetionList([...Array(QuestionsNo|0)].map((e, i) => (
-        <Questions key={i} i={i} updateQuestion={updateQuestion} />
-      )));
-    }, [QuestionsNo|0]);
-    
+
+  const handleSave = async () => {
+
+    const {
+      subject,
+      title,
+      description,
+      totalMarks,
+      totalQuestions,
+      status,
+      sem,
+      className,
+      batch,
+      date,
+      startTime,
+      endTime
+    } = formData;
+
+    if (
+      !subject ||
+      !title ||
+      !description ||
+      !totalMarks ||
+      !totalQuestions ||
+      !status ||
+      !sem ||
+      !className ||
+      !batch ||
+      !date ||
+      !startTime ||
+      !endTime
+    ) {
+      toast.error('Please fill all the fields to create Quiz.');
+      return;
+    }
+
+
+    const quizData = {
+      ...formData,
+      QuestionList
+    };
+    console.log(quizData);
+
+
+    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+    try {
+      const response = await axios.post('http://localhost:3000/api/faculty/createNewQuiz', quizData, {
+        headers: {
+          Authorization: `Bearer ${token}` // Add the token to the Authorization header
+        }
+      });
+
+      toast.success(response.data.message);
+      navigate("/faculty");
+
+    } catch (error) {
+
+      toast.error("Error to Create Quiz");
+      navigate("/faculty");
+    }
+  };
+
+  const [Questionlist, setQuestionlist] = useState([]);
+  useEffect(() => {
+    setQuestionlist([...Array(QuestionsNo | 0)].map((e, i) => (
+      <Questions key={i} i={i} updateQuestion={updateQuestion} />
+    )));
+  }, [QuestionsNo | 0]);
+
   return (
     <>
-    <div className="flex flex-col">
+      <div className="flex flex-col">
         <div className="flex sm:flex-row flex-col gap-2">
-            <div className=" sm:w-1/5 flex-row ">
-            <label className="flex flex-col ">Select Subject
-            <select name="" autoComplete="name" className="p-4 mt-2 border-2 border-slate-300 rounded-md  focus:border-primary focus:outline-none">
-              <option>Daa</option>
-              <option>Se</option>
-              <option>Dbms</option>
-              {/* <option></option> */}
-            </select>
+          <div className="sm:w-1/5 flex-row">
+            <label className="flex flex-col">Select Subject
+              <select name="subject" autoComplete="name" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" onChange={handleInputChange} required>
+                <option disabled selected value>Select Subject</option>
+                <option value="Daa">Daa</option>
+                <option value="Se">Se</option>
+                <option value="Dbms">Dbms</option>
+              </select>
             </label>
-            </div>
+          </div>
 
-            <div className="sm:w-2/5">
-            <label className="flex flex-col ">Quiz Title
-              <input type="text" name="" id="" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md  focus:border-primary focus:outline-none" />
+          <div className="sm:w-2/5">
+            <label className="flex flex-col">Quiz Title
+              <input type="text" name="title" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" required onChange={handleInputChange} />
             </label>
-            </div>
-            <div className="w-full sm:w-3/5">
-            <label className="flex flex-col ">Quiz Description
-              <input type="text" name="" id="" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md  focus:border-primary focus:outline-none" />
+          </div>
+
+          <div className="w-full sm:w-3/5">
+            <label className="flex flex-col">Quiz Description
+              <input type="text" name="description" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" required onChange={handleInputChange} />
             </label>
-            </div>
-        </div>
-        <div className="flex w-full sm:flex-row  gap-2 flex-col">
-            <div className=" sm:w-1/5">
-            <label className="flex flex-col ">Total Marks
-              <input type="number" name="" id="" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md  focus:border-primary focus:outline-none" />
+          </div>
+
+          <div className="sm:w-1/5">
+            <label className="flex flex-col">Total Marks
+              <input type="number" name="totalMarks" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" required onChange={handleInputChange} />
             </label>
-            </div>
-            <div className=" sm:w-1/5">
-            <label className="flex flex-col ">Total Questions
-              <input type="number" name="" id="" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md  focus:border-primary focus:outline-none" onChange={handlechanges}/>
-            </label>
-            </div>
-            <div className=" sm:w-1/5">
-            <label className="flex flex-col ">Status
-            <select name="" autoComplete="name" className="p-4 mt-2 border-2 border-slate-300 rounded-md  focus:border-primary focus:outline-none">
-            <option>Not Started</option>
-              <option>Started</option>
-              <option>Completed</option>``````
-            </select>
-            </label>
-            </div>
-            <div className=" sm:w-2/5">
-            <label className="flex flex-col ">Date
-              <input type="date" name="" id="" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md  focus:border-primary focus:outline-none" />
-            </label>
-            </div>
-        </div>
-        <div className="flex  gap-2 sm:flex-row flex-col border-b-2 border-gray-600 pb-10">
-            <div className=" sm:w-1/4">
-            <label className="flex flex-col ">Start Time
-              <input type="time" name="" id="" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md  focus:border-primary focus:outline-none" />
-            </label>
-            </div>
-            <div className=" sm:w-1/4">
-            <label className="flex flex-col ">End Time
-              <input type="time" name="" id="" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md  focus:border-primary focus:outline-none" />
-            </label>
-            </div>
-            <div className="w-full sm:w-1/4  items-center justify-center">
-            <button className="mt-8 w-full p-4 self-center bg-primary text-white rounded-md shadow hover:shadow-lg" type="button" >Create</button>
-            </div>
-            <div className="w-full sm:w-1/4  items-center justify-center">
-            <button className="mt-8 w-full p-4 self-center bg-green-600 text-white rounded-md shadow hover:shadow-lg" type="button" onClick={getQuestionJson}>Save</button>
-            </div>
+          </div>
         </div>
 
-      <div className="flex flex-col m-2">
-        {QetionList}
+        <div className="flex w-full sm:flex-row gap-2 my-3 flex-col">
+          <div className="sm:w-1/5">
+            <label className="flex flex-col">Total Questions
+              <input type="number" name="totalQuestions" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" required onChange={handleInputChange} />
+            </label>
+          </div>
+
+          <div className="sm:w-1/5">
+            <label className="flex flex-col">Status
+              <select name="status" autoComplete="name" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" onChange={handleInputChange}>
+                <option disabled selected value>Select Status</option>
+                <option value="Not Started">Not Started</option>
+                <option value="Started">Started</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </label>
+          </div>
+
+          <div className="sm:w-1/5 flex-row">
+            <label className="flex flex-col">Sem
+              <select name="sem" required autoComplete="name" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" onChange={handleInputChange}>
+                <option disabled selected value>Select Semester</option>
+                <option value="SEM 4">SEM 4</option>
+                <option value="SEM 5">SEM 5</option>
+              </select>
+            </label>
+          </div>
+
+          <div className="sm:w-1/5 flex-row">
+            <label className="flex flex-col">Class
+              <select name="className" required autoComplete="name" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" onChange={handleInputChange}>
+                <option disabled selected value>Select Class</option>
+                <option value="4CE1">4CE1</option>
+                <option value="4CE2">4CE2</option>
+                <option value="All">All</option>
+              </select>
+            </label>
+          </div>
+
+          <div className="sm:w-1/5 flex-row">
+            <label className="flex flex-col">Batch
+              <select name="batch" required autoComplete="name" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" onChange={handleInputChange}>
+                <option disabled selected value>Select Batch</option>
+                <option value="All">All</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div className="flex gap-2 sm:flex-row my-3 flex-col ">
+          <div className="sm:w-1/4">
+            <label className="flex flex-col">Date
+              <input type="date" required name="date" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" onChange={handleInputChange} />
+            </label>
+          </div>
+
+          <div className="sm:w-1/4">
+            <label className="flex flex-col">Start Time
+              <input type="time" required name="startTime" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" onChange={handleInputChange} />
+            </label>
+          </div>
+
+          <div className="sm:w-1/4">
+            <label className="flex flex-col">End Time
+              <input type="time" required name="endTime" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" onChange={handleInputChange} />
+            </label>
+          </div>
+
+          <div className=" sm:w-1/4 items-center justify-center">
+            <button className={`mt-8 w-full p-4 self-center bg-primary  text-white rounded-md`} type="button" onClick={handleSave}>Save</button>
+          </div>
+        </div>
+
+        <br />
+        <hr />
+        <div className="flex flex-col m-2">
+          {Questionlist}
+        </div>
       </div>
-    </div>
     </>
-  )
-}
+  );
+};
 
-
-export default AddQuiz
+export default AddQuiz;

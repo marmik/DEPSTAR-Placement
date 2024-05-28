@@ -1,23 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { GiHamburgerMenu } from "react-icons/gi";
 import StudentSidebar from './StudentSidebar'
 import Dashboard from '../pages/student/Dashboard';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import ViewQuiz from '../pages/student/ViewQuiz';
 import GivenFeedback from '../pages/student/GivenFeedback';
 import SystemFeedback from '../pages/student/SystemFeedback';
 import ViewGivenQuiz from '../pages/student/ViewGivenQuiz';
 import StartQuiz from '../pages/student/StartQuiz';
 import Error404 from '../pages/Error404';
+import { parseJwt } from '../model/JwtDecode';
+
 
 
 
 function StudentDashboard() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [UserName, setUserName] = useState();
+    const navigate = useNavigate();
 
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);
     };
+    const handleAuthUser = async()=>{
+        
+        if(localStorage.getItem("token")){
+          const token = localStorage.getItem("token");
+          const parse = parseJwt(token);
+          setUserName(parse.username)
+          if(parse.role=="Student"){
+            navigate("/student");
+          }      
+          else if(parse.role=="Faculty"){
+            navigate("/faculty");
+          }
+          else{
+            navigate("/");
+          }
+        }
+        else{
+          navigate("/");
+        }
+      } 
+    
+      useEffect(() => {
+        handleAuthUser();
+      },[navigate])
 
     return (
         <>
@@ -45,7 +73,7 @@ function StudentDashboard() {
                             </h2>
                         </div>
                         <div className='flex justify-center items-center gap-4'>
-                            <p className='font-medium text-xl'>Harsh</p>
+                            <p className='font-medium text-xl'>{UserName}</p>
                             <img src="../vite.svg" alt="Image" className='rounded-full' />
                         </div>
                     </div>
