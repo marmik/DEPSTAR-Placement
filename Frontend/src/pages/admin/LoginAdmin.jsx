@@ -38,7 +38,7 @@ function LoginAdmin() {
       });
       // console.log(response);
       if (response.status === 200) {
-        const role = response.data.dashboard;
+        const role = response.data.role;
         if (role == 'Admin') {
           localStorage.setItem("token",response.data.token)
           toast.success("Login Successfully !");
