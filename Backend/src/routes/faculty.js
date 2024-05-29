@@ -223,19 +223,18 @@ router.post('/feedback/:submissionId', verifyToken, checkRole('Faculty'), (req, 
     });
 });  // not required
 
-// GET all quizzes
-router.get('/allQuizzes/:userid', verifyToken, checkRole('Faculty'), (req, res) => {
-  const userid = req.params.userid;
-  const query = `SELECT * FROM exams WHERE CreatorID = ? ORDER BY ExamDate DESC`;
-
-  connection.query(query, [userid], (err, results) => {
-    if (err) {
-      console.error('Error fetching all quizzes:', err);
-      return res.status(500).json({ error: 'Could not fetch quizzes' });
-    }
-    res.json(results);
-  });
-}); //tested
+router.get('/allQuizzes', verifyToken, checkRole('Faculty'), (req, res) => {
+    const userid = req.user.userID;
+    const query = 'SELECT * FROM exams WHERE CreatorID = ? ORDER BY ExamDate DESC';
+  
+    connection.query(query, [userid], (err, results) => {
+      if (err) {
+        console.error('Error fetching all quizzes:', err);
+        return res.status(500).json({ error: 'Could not fetch quizzes' });
+      }
+      res.json(results);
+    });
+  }); //tested
 
 
 // GET Total Quizzes
