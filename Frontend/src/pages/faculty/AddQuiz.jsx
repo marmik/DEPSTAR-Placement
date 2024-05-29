@@ -235,7 +235,7 @@ const AddQuiz = () => {
           </div>
 
           <div className=" sm:w-1/4 items-center justify-center">
-            <button className={`mt-8 w-full p-4 self-center bg-primary  text-white rounded-md`} type="button" onClick={handleSave}>Save</button>
+            <button className={`mt-8 w-full p-4 self-center bg-primary  text-white rounded-md`} type="button" onClick={handleSave}>Create</button>
           </div>
         </div>
 
