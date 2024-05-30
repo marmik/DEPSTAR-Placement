@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { CiUser } from 'react-icons/ci';
 import { RiLockPasswordLine } from 'react-icons/ri';
 import { parseJwt } from '../../model/JwtDecode';
-
+import { toast } from 'react-toastify';
 
 function LoginAdmin() {
   const [username, setUsername] = useState('');
@@ -38,20 +38,20 @@ function LoginAdmin() {
       });
       // console.log(response);
       if (response.status === 200) {
-        const role = response.data.dashboard;
+        const role = response.data.role;
         if (role == 'Admin') {
           localStorage.setItem("token",response.data.token)
-      
+          toast.success("Login Successfully !");
           navigate('/admin/dashboard');
         }
         else {
-          setError('Invalid User');
+          toast.error('Invalid User');
         }
       } else {
-        setError('Invalid credentials');
+        toast.error('Invalid credentials');
       }
     } catch (error) {
-      setError(error.response);
+      toast.error(error.response);
     }
   };
 
@@ -92,7 +92,7 @@ function LoginAdmin() {
 
             </div>
             <br />
-            {error && <p className="text-red-500 mt-2">{error}</p>}
+            
             <button className="self-center w-3/12 my-6 bg-primary  text-light font-medium text-lg px-4 py-3 rounded-md shadow-xl" >Login</button>
           </form>
 

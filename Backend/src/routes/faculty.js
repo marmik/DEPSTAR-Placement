@@ -5,6 +5,8 @@ const router = express.Router();
 const mysql = require('mysql');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const moment = require('moment');
+const vverifyToken = require('./../middlewares/middleware.js');
 
 // Secret key for JWT (stored securely in environment variables)
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -12,7 +14,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-const { vToken, checkRole } = require('./../middlewares/middleware.js');
+const { verifyToken, checkRole } = vverifyToken;
 
 // Database connection
 const connection = mysql.createConnection({
@@ -30,37 +32,25 @@ connection.connect((err) => {
     console.log('Connected to MySQL as id', connection.threadId);
 });
 
-// Middleware to verify token and extract user
-const verifyToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (!token) {
-        return res.status(403).json({ error: 'No token provided' });
-    }
-    jwt.verify(token, JWT_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(500).json({ error: 'Failed to authenticate token' });
-        }
-        req.user = decoded;
-        next();
-    });
-};
 
-// Create a new quiz
+
 router.post('/createNewQuiz', verifyToken, checkRole('Faculty'), (req, res) => {
-    const { title, description, questions, subject, number_of_questions, exam_date, start_time, end_time, total_marks, sem, className, batch } = req.body;
+    const { title, description, QuestionList, subject, totalQuestions, status, date, startTime, endTime, totalMarks, sem, className, batch } = req.body;
     const userID = req.user ? req.user.userID : null;
+    const questions = QuestionList;
 
     const quizInsertQuery = 'INSERT INTO Exams (Title, Description, Subject, CreatorID, Number_of_Questions, ExamDate, StartTime, EndTime, Exam_Total_Marks, Status, sem, className, batch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    connection.query(quizInsertQuery, [title, description, subject, userID, number_of_questions, exam_date, start_time, end_time, total_marks, 'Not Started', sem, className, batch], (err, result) => {
+    connection.query(quizInsertQuery, [title, description, subject, userID, totalQuestions, date, startTime, endTime, totalMarks, status, sem, className, batch], (err, result) => {
         if (err) {
             console.error('Error creating quiz:', err);
             return res.status(500).json({ error: 'Could not create quiz' });
         }
-
+        console.log(questions);
         const examID = result.insertId;
-        const questionInsertQuery = 'INSERT INTO Questions (ExamID, QuestionText, QuestionType, Correct_Option, Mark) VALUES ?';
-        const values = questions.map(question => [examID, question.text, question.type, question.Correct_Option, question.mark]);
+        console.log(examID);
+        const questionInsertQuery = 'INSERT INTO questions (ExamID, QuestionText, QuestionType, Correct_Option, Mark) VALUES ?';
+        const values = questions.map(question => [examID, question.qString, question.type, question.correctOption, question.marks]);
+        console.log(values);
 
         connection.query(questionInsertQuery, [values], (err, result) => {
             if (err) {
@@ -69,30 +59,49 @@ router.post('/createNewQuiz', verifyToken, checkRole('Faculty'), (req, res) => {
             }
 
             const questionIDs = Array.from({ length: questions.length }, (_, i) => result.insertId + i);
+            console.log(questionIDs);
             const optionsInsertQueries = [];
+            
             questions.forEach((question, index) => {
-                if (question.type === 'Multiple Choice' && question.options) {
-                    question.options.forEach(option => {
-                        optionsInsertQueries.push([questionIDs[index], option]);
+                if (question.type === 'Multiple Choice') {
+                    const options = [question.OptionA, question.OptionB, question.OptionC, question.OptionD];
+                    console.log("option : ", options);
+                    options.forEach(option => {
+                        optionsInsertQueries.push([questionIDs[index], option]); // Push each option individually
                     });
                 }
             });
 
+            console.log(optionsInsertQueries);
+
             if (optionsInsertQueries.length > 0) {
-                const optionsInsertQuery = 'INSERT INTO QuestionOptions (QuestionID, OptionText) VALUES ?';
+                const optionsInsertQuery = 'INSERT INTO QuestionOptions(QuestionID, OptionText) VALUES ?';
                 connection.query(optionsInsertQuery, [optionsInsertQueries], (err, result) => {
                     if (err) {
                         console.error('Error inserting options:', err);
                         return res.status(500).json({ error: 'Could not create quiz' });
                     }
                     res.status(201).json({ message: 'Quiz created successfully' });
+                    console.log("done");
                 });
             } else {
-                res.status(201).json({ message: 'Quiz created successfully' });
+                res.status(201).json({ message: 'Quiz not created successfully' });
             }
+            console.log("done2");
         });
     });
-});
+}); //tested
+
+
+
+
+
+
+
+
+
+
+  // tested
 
 // Update quiz information
 router.put('/updateQuiz/:id', verifyToken, checkRole('Faculty'), (req, res) => {
@@ -107,7 +116,7 @@ router.put('/updateQuiz/:id', verifyToken, checkRole('Faculty'), (req, res) => {
         }
         res.json({ message: 'Quiz updated successfully' });
     });
-});
+});  // tested
 
 // Delete a quiz
 router.delete('/deleteQuiz/:id', verifyToken, checkRole('Faculty'), (req, res) => {
@@ -121,7 +130,7 @@ router.delete('/deleteQuiz/:id', verifyToken, checkRole('Faculty'), (req, res) =
         }
         res.json({ message: 'Quiz deleted successfully' });
     });
-});
+}); // tested
 
 // Create a new class
 router.post('/createClass', verifyToken, checkRole('Faculty'), (req, res) => {
@@ -137,7 +146,7 @@ router.post('/createClass', verifyToken, checkRole('Faculty'), (req, res) => {
         }
         res.status(201).json({ message: 'Class created successfully' });
     });
-});
+});  // not tested
 
 // Assign a student to a class
 router.post('/addClassStudent/:classId', verifyToken, checkRole('Faculty'), (req, res) => {
@@ -152,8 +161,8 @@ router.post('/addClassStudent/:classId', verifyToken, checkRole('Faculty'), (req
         }
         res.status(201).json({ message: 'Student assigned to class successfully' });
     });
-});
-
+}); // not tested
+ 
 // Assign an exam to a class
 router.post('/assignExamToClass/:classId', verifyToken, checkRole('Faculty'), (req, res) => {
     const classId = req.params.classId;
@@ -167,7 +176,7 @@ router.post('/assignExamToClass/:classId', verifyToken, checkRole('Faculty'), (r
         }
         res.status(201).json({ message: 'Exam assigned to class successfully' });
     });
-});
+}); // not tested
 
 // Assign a quiz to students or classes
 router.post('/assignments', verifyToken, checkRole('Faculty'), (req, res) => {
@@ -181,7 +190,7 @@ router.post('/assignments', verifyToken, checkRole('Faculty'), (req, res) => {
         }
         res.status(201).json({ message: 'Quiz assigned successfully' });
     });
-});
+}); // not tested
 
 // Get assignments for a specific quiz
 router.get('/assignments/:id', verifyToken, checkRole('Faculty'), (req, res) => {
@@ -195,7 +204,7 @@ router.get('/assignments/:id', verifyToken, checkRole('Faculty'), (req, res) => 
         }
         res.json(results);
     });
-});
+}); // not tested
 
 // Provide feedback on a quiz submission
 router.post('/feedback/:submissionId', verifyToken, checkRole('Faculty'), (req, res) => {
@@ -210,48 +219,53 @@ router.post('/feedback/:submissionId', verifyToken, checkRole('Faculty'), (req, 
         }
         res.json({ message: 'Feedback provided successfully' });
     });
-});
+});  // not required
 
-// GET all quizzes
 router.get('/allQuizzes', verifyToken, checkRole('Faculty'), (req, res) => {
-    const query = `SELECT * FROM Exams ORDER BY ExamDate DESC`;
-    
-    connection.query(query, (err, results) => {
-        if (err) {
-            console.error('Error fetching all quizzes:', err);
-            return res.status(500).json({ error: 'Could not fetch quizzes' });
-        }
-        res.json(results);
+    const userid = req.user.userID;
+    const query = 'SELECT * FROM exams WHERE CreatorID = ? ORDER BY ExamDate DESC';
+  
+    connection.query(query, [userid], (err, results) => {
+      if (err) {
+        console.error('Error fetching all quizzes:', err);
+        return res.status(500).json({ error: 'Could not fetch quizzes' });
+      }
+      res.json(results);
     });
-});
+  }); //tested
+
 
 // GET Total Quizzes
-router.get('/totalQuizzes', verifyToken, checkRole('Faculty'), (req, res) => {
-    const query = `SELECT COUNT(*) as totalQuizzes FROM Exams`;
-    
-    connection.query(query, (err, results) => {
-        if (err) {
-            console.error('Error fetching total quizzes:', err);
-            return res.status(500).json({ error: 'Could not fetch total quizzes' });
-        }
-        res.json(results[0]);
-    });
-});
+router.get('/totalQuizzes/:userid', verifyToken, checkRole('Faculty'), (req, res) => {
+  const userid = req.params.userid;
+  const query = `SELECT COUNT(*) as totalQuizzes FROM Exams WHERE creatorID = ?`;
+
+  connection.query(query, [userid], (err, results) => {
+    if (err) {
+      console.error('Error fetching total quizzes:', err);
+      return res.status(500).json({ error: 'Could not fetch total quizzes' });
+    }
+    res.json(results[0]);
+  });
+}); // tested
+
 
 // GET Display Scheduled Quizzes API 
-router.get('/scheduledQuizzes', verifyToken, checkRole('Faculty'), (req, res) => {
-    const query = `SELECT * FROM Exams WHERE ExamDate >= CURDATE() ORDER BY ExamDate ASC`;
-    
-    connection.query(query, (err, results) => {
-        if (err) {
-            console.error('Error fetching scheduled quizzes:', err);
-            return res.status(500).json({ error: 'Could not fetch scheduled quizzes' });
-        }
-        res.json(results);
-    });
-});
+router.get('/scheduledQuizzes/:userid', verifyToken, checkRole('Faculty'), (req, res) => {
+  const userid = req.params.userid;
+  const query = `SELECT * FROM Exams WHERE ExamDate >= CURDATE() AND creatorID = ? ORDER BY ExamDate ASC`;
 
-// GET Display Quizzes API
+  connection.query(query, [userid], (err, results) => {
+    if (err) {
+      console.error('Error fetching scheduled quizzes:', err);
+      return res.status(500).json({ error: 'Could not fetch scheduled quizzes' });
+    }
+    res.json(results);
+  });
+});  //tested
+
+
+// GET details of  Quizzes API
 router.get('/quizDetails/:id', verifyToken, checkRole('Faculty'), (req, res) => {
     const quizId = req.params.id;
     const query = `SELECT * FROM Exams WHERE ExamID = ?`;
@@ -263,12 +277,13 @@ router.get('/quizDetails/:id', verifyToken, checkRole('Faculty'), (req, res) => 
         }
         res.json(results[0]);
     });
-});
+}); // tested
+
 
 // POST Save Quiz Questions
 router.post('/saveQuizQuestion/:quizId', verifyToken, checkRole('Faculty'), (req, res) => {
     const quizId = req.params.quizId;
-    const { questionText, questionType, correctOption, mark, options } = req.body;
+    const { questionText, questionType, correctOption, mark, optionA, optionB, optionC, optionD } = req.body;
 
     const questionInsertQuery = 'INSERT INTO Questions (ExamID, QuestionText, QuestionType, Correct_Option, Mark) VALUES (?, ?, ?, ?, ?)';
     connection.query(questionInsertQuery, [quizId, questionText, questionType, correctOption, mark], (err, result) => {
@@ -279,9 +294,9 @@ router.post('/saveQuizQuestion/:quizId', verifyToken, checkRole('Faculty'), (req
 
         const questionId = result.insertId;
 
-        if (questionType === 'Multiple Choice' && options.length > 0) {
+        if (questionType === 'Multiple Choice') {
             const optionsInsertQuery = 'INSERT INTO QuestionOptions (QuestionID, OptionText) VALUES ?';
-            const optionsValues = options.map(option => [questionId, option]);
+            const optionsValues = [[questionId, optionA], [questionId, optionB], [questionId, optionC], [questionId, optionD]];
             connection.query(optionsInsertQuery, [optionsValues], (err, result) => {
                 if (err) {
                     console.error('Error saving quiz question options:', err);
@@ -293,7 +308,8 @@ router.post('/saveQuizQuestion/:quizId', verifyToken, checkRole('Faculty'), (req
             res.status(201).json({ message: 'Quiz question saved successfully' });
         }
     });
-});
+});   // tested
+
 
 // GET Faculty Analytics
 router.get('/facultyAnalytics', verifyToken, checkRole('Faculty'), (req, res) => {
@@ -315,6 +331,35 @@ router.get('/facultyAnalytics', verifyToken, checkRole('Faculty'), (req, res) =>
         }
         res.json(results);
     });
-});
+}); // error
+
+
+// Function to check and update exam status
+const checkAndUpdateExamStatus = () => {
+    const currentTime = moment().format('YYYY-MM-DD HH:mm:ss');
+    const query = `UPDATE Exams SET Status = 'started' WHERE StartTime = ? AND Status = 'Not Started'`;
+
+    connection.query(query, [currentTime], (err, results) => {
+        if (err) {
+            console.error('Error updating exam status:', err);
+        } else {
+            // console.log(`Updated ${results.affectedRows} rows to 'started'`);
+        }
+    });
+};
+const checkAndUpdateExamStatusToCompleted = () => {
+    const currentTime = moment().format('YYYY-MM-DD HH:mm:ss');
+    const query = `UPDATE Exams SET Status = 'Completed' WHERE EndTime = ? AND Status = 'started'`;
+
+    connection.query(query, [currentTime], (err, results) => {
+        if (err) {
+            console.error('Error updating exam status to completed:', err);
+        } else {
+            // console.log(`Updated ${results.affectedRows} rows to 'Completed'`);
+        }
+    });
+};
+setInterval(checkAndUpdateExamStatus, 1000);
+setInterval(checkAndUpdateExamStatusToCompleted, 1000);
 
 module.exports = router;
