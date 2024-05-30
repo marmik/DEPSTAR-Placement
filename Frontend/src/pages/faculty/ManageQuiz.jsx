@@ -1,10 +1,33 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import { FiEdit } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 
 const ManageQuiz = () => {
+  const [ManageQuizzes, setManageQuiz] = React.useState([]);
+  // const [conductedExams, setConductedExams] = useState([]);
+
+
+  useEffect(() => {
+    const fetchExams = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:3000/api/faculty/allQuizzes', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        // console.log(response.data);
+        setManageQuiz(response.data);
+      } catch (error) {
+        console.error('Error fetching exams:', error);
+      }
+    };
+
+    fetchExams();
+  }, []);
   return (
     <div>
     <div className="flex flex-wrap">
@@ -47,57 +70,32 @@ const ManageQuiz = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className='divide-x divide-light'>
-                    <td className="text-left py-3 px-4 text-sm">1</td>
-                    <td className="text-left py-3 px-4 text-sm"><Link to={`../view-quiz`}>SE Practical</Link></td>
-                    <td className="text-left py-3 px-4 text-sm">chapter1-4</td>
-                    <td className="text-left py-3 px-4 text-sm">SE</td>
-                    <td className="text-left py-3 px-4 text-sm">25</td>
-                    <td className="text-left py-3 px-4 text-sm">25</td>
-                    <td className="text-left py-3 px-4 text-sm">12/05/2024</td>
-                    <td className="text-left py-3 px-4 text-sm">
-                      <button className="text-green-600 text-lg font-bold py-1 px-3 rounded-lg mr-2">
-                      <FiEdit />
-                      </button>
-                      <button className="text-red-600 text-lg font-bold py-1 px-3 mr-2">
-                      <MdDelete />
-                      </button>
-                    </td>
-                  </tr>
-                  <tr className='divide-x divide-light'>
-                    <td className="text-left py-3 px-4 text-sm">1</td>
-                    <td className="text-left py-3 px-4 text-sm">SE Practical</td>
-                    <td className="text-left py-3 px-4 text-sm">chapter1-4</td>
-                    <td className="text-left py-3 px-4 text-sm">SE</td>
-                    <td className="text-left py-3 px-4 text-sm">25</td>
-                    <td className="text-left py-3 px-4 text-sm">25</td>
-                    <td className="text-left py-3 px-4 text-sm">12/05/2024</td>
-                    <td className="text-left py-3 px-4 text-sm">
-                      <button className="text-green-600 text-lg font-bold py-1 px-3 rounded-lg mr-2">
+                {ManageQuizzes.map((exam, index) => (
+        <tr key={index} className="divide-x hover:bg-slate-100 divide-light">
+          <td className="py-3 px-4">{index + 1}</td>
+          <Link to={`/view-quiz/${exam.ExamID}`}>
+            <td className="py-3 px-4">{exam.Title}</td>
+          </Link>
+          <td className="py-3 px-4">{exam.Description}</td>
+          <td className="py-3 px-4">{exam.Subject}</td>
+          <td className="py-3 px-4">{exam.Number_of_Questions}</td>
+          <td className="py-3 px-4">{exam.Exam_Total_Marks}</td>
+          <td className="py-3 px-4">{exam.ExamDate}</td>
+          <td className="py-3 px-4">
+            <Link
+              to={`/manage-quiz/${exam.ExamID}`}
+              className="text-green-600 text-lg font-bold py-1 px-3 rounded-lg mr-2"
+            >
+               <button className="text-green-600 text-lg font-bold py-1 px-3 rounded-lg mr-2">
                       <FiEdit />
                       </button>
                       <button className="text-red-600 text-lg font-bold py-1 px-3 rounded-lg mr-2">
                       <MdDelete />
                       </button>
-                    </td>
-                  </tr>
-                  <tr className='divide-x divide-light'>
-                    <td className="text-left py-3 px-4 text-sm">2</td>
-                    <td className="text-left py-3 px-4 text-sm">DBMS Practical</td>
-                    <td className="text-left py-3 px-4 text-sm">DBMS Chapter1-4</td>
-                    <td className="text-left py-3 px-4 text-sm">DBMS</td>
-                    <td className="text-left py-3 px-4 text-sm">50</td>
-                    <td className="text-left py-3 px-4 text-sm">50</td>
-                    <td className="text-left py-3 px-4 text-sm">18/03/2024</td>
-                    <td className="text-left py-3 px-4 text-sm">
-                      <button className="text-green-600  text-lg font-bold py-1 px-3 rounded-lg mr-2">
-                      <FiEdit />
-                      </button>
-                      <button className="text-red-600 text-lg font-bold py-1 px-3 rounded-lg mr-2">
-                      <MdDelete />
-                      </button>
-                    </td>
-                  </tr>
+            </Link>
+          </td>
+        </tr>
+      ))}
                 </tbody>
               </table>
             </div>
