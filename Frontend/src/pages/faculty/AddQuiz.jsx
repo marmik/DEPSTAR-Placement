@@ -222,7 +222,7 @@ const AddQuiz = () => {
     const token = localStorage.getItem('token'); // Retrieve the token from localStorage
 
     try {
-      const response = await axios.post('http://localhost:3000/api/faculty/createNewQuiz', quizData, {
+      const response = await axios.post('http://localhost:3000/api/faculty/createNewQuiz', quizData, { 
         headers: {
           Authorization: `Bearer ${token}` // Add the token to the Authorization header
         }

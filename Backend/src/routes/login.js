@@ -9,10 +9,8 @@ require('dotenv').config();
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT,
-    socketPath: process.env.DB_SOCKET_PATH // Ensure the correct path variable
+    password: '',
+    database: process.env.DB_NAME
 });
 
 // Create express app
@@ -26,14 +24,14 @@ router.use(express.json());
 
 router.post('/login', (req, res) => {
     const { username, password } = req.body;
-
+    console.log(req.body)
     // Check if username and password are provided
     if (!username || !password) {
         return res.status(400).json({ message: 'Username and password are required' });
     }
-
     // Query database to find user
     pool.query('SELECT * FROM users WHERE Username = ?', [username], (error, results) => {
+        console.log(results)
         if (error) {
             console.error(error);
             return res.status(500).json({ message: 'Internal server error' });
@@ -52,6 +50,8 @@ router.post('/login', (req, res) => {
 
         const userId = user.UserID;
         const role = user.Role;
+
+        console.log("hello",user);
 
         let dashboard;
         if (role === "Admin") {
