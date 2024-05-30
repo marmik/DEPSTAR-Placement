@@ -2,22 +2,33 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
+
 const Dashboard = () => {
   const [scheduledExams, setScheduledExams] = useState([]);
   // const [conductedExams, setConductedExams] = useState([]);
+  const formateDate =(examdate)=>{
+    const isoString = examdate;
+    const date = new Date(isoString);
 
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+      
+    const formattedDate = `${day}-${month}-${year}`; 
+    return formattedDate
+  }
   useEffect(() => {
     const fetchExams = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:3000/api/faculty/allQuizzes', {
+        const response = await axios.get('http://localhost:3000/api/faculty/scheduledQuizzes', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        // console.log(response.data);
+        
         setScheduledExams(response.data);
-     
+
       } catch (error) {
         console.error('Error fetching exams:', error);
       }
@@ -56,6 +67,8 @@ const Dashboard = () => {
                 <th className="text-left py-3 px-4 uppercase font-semibold text-sm">SEM</th>
                 <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Class</th>
                 <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Date</th>
+                <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Start Time</th>
+                <th className="text-left py-3 px-4 uppercase font-semibold text-sm">End Time</th>
                 <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
               </tr>
             </thead>
@@ -63,15 +76,17 @@ const Dashboard = () => {
               {scheduledExams.map((exam, index) => (
                 <tr key={exam.id} className='divide-x hover:bg-slate-100 divide-light'>
                   <td className="py-3 px-4">{index + 1}</td>
-                  <Link to={`./view-quiz/${exam.ExamID}`}><td className="py-3 px-4">{exam.Title}</td></Link>
+                  <Link to={`./view-quiz/${window.btoa(exam.ExamID)}`}><td className="py-3 text-primary px-4">{exam.Title}</td></Link>
                   <td className="py-3 px-4">{exam.Subject}</td>
                   <td className="py-3 px-4">{exam.Exam_Total_Marks}</td>
                   <td className="py-3 px-4">{exam.Number_of_Questions}</td>
                   <td className="py-3 px-4">{exam.sem}</td>
                   <td className="py-3 px-4">{exam.className}</td>
-                  <td className="py-3 px-4">{exam.ExamDate}</td>
+                  <td className="py-3 px-4">{formateDate(exam.ExamDate)}</td>
+                  <td className="py-3 px-4">{exam.StartTime}</td>
+                  <td className="py-3 px-4">{exam.EndTime}</td>
                   <td className="py-3 px-4">
-                    <Link to={`./view-quiz/${exam.ExamID}`} className="text-light bg-primary text-lg font-bold py-1 px-3 rounded-lg mr-2">View</Link>
+                    <Link to={`./view-quiz/${window.btoa(exam.ExamID)}`} className="text-light bg-primary text-lg font-bold py-1 px-3 rounded-lg mr-2">View</Link>
                   </td>
                 </tr>
               ))}
