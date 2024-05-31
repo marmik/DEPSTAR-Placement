@@ -37,11 +37,12 @@ function Login() {
     e.preventDefault();
     handleLoggedInUser();
     try {
+      console.log(username,password);
       const response = await axios.post('http://localhost:3000/api/login', {
         username,
         password,
       });
-      // console.log(response);
+      console.log(response);
       if (response.status === 200) {
         const { token, role } = response.data;
         console.log(response);

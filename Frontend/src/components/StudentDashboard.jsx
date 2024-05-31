@@ -23,7 +23,7 @@ function StudentDashboard() {
         setSidebarOpen(!sidebarOpen);
     };
     const handleAuthUser = async()=>{
-        
+        ``
         if(localStorage.getItem("token")){
           const token = localStorage.getItem("token");
           const parse = parseJwt(token);
