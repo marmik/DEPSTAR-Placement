@@ -1,48 +1,108 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { Link } from 'react-router-dom';
 
-function Dashboard() {
+const Dashboard = () => {
+  const [upcomingExams, setUpcomingExams] = useState([]);
+  const [selectedExam, setSelectedExam] = useState(null);
+  // const [conductedExams, setConductedExams] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
+  const handleStartQuiz = (exam) => {
+    setSelectedExam(exam);
+    setShowPopup(true);
+  };
 
   const handleToggle = () => {
     setShowPopup(!showPopup);
   };
+  const formateDate =(examdate)=>{
+    const isoString = examdate;
+    const date = new Date(isoString);
+
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+      
+    const formattedDate = `${day}-${month}-${year}`; 
+    return formattedDate
+  }
+  useEffect(() => {
+    const fetchExams = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:3000/api/student/upcomingExams', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        
+        setUpcomingExams(response.data);
+
+      } catch (error) {
+        console.error('Error fetching exams:', error);
+      }
+    };
+
+    fetchExams();
+  }, []);
 
   return (
     <div className='p-4 text-secondary'>
 
       {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-        <div className="bg-white p-6 rounded-lg shadow-lg  m-2">
-        <div className="sm:p-6 p-2 flex flex-col rounded-lg gap-4 w-full justify-center">
-        <h2 className="text-xl font-bold mb-4">Quiz info</h2>
-                 <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
-                   <h2 className="sm:w-1/3 w-full text-lg font-bold">Subject :<span className=' text-lg font-light'>DBMS</span></h2>
-                   <h2 className="sm:w-1/3 w-full text-lg font-bold">Title : <span className=' text-lg font-light'>DBMS Practical</span></h2>
-                   <h2 className="sm:w-1/3 w-full text-lg font-bold">Time :<span className=' text-lg font-light'>12:00PM TO 12:30PM</span></h2>
-                 </div>
-                 <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
-                   <h2 className="sm:w-1/3 w-full text-lg font-bold">Description : <span className=' text-lg font-light'>DBMS Practical Exam Chapter 1 to 4</span></h2>
-                   <h2 className="sm:w-1/3 w-full text-lg font-bold">Total Questions : <span className=' text-lg font-light'>30</span></h2>
-                   <h2 className="sm:w-1/3 w-full text-lg font-bold">Total Marks : <span className=' text-lg font-light'>30</span> </h2>
-                 </div>
-                 <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
-                   <h2 className="sm:w-1/3 w-full text-lg font-bold">Date : <span className=' text-lg font-light'>12/05/2024</span></h2>
-                   <h2 className="sm:w-1/3 w-full text-lg font-bold">Status : <span className=' text-lg font-light'>Not Started</span></h2>
-                   <h2 className="sm:w-1/3 w-full text-lg font-bold"><span className=' text-lg font-light'></span></h2>
-                 </div>
-                     
-               </div>
+        <div className="bg-white p-6 rounded-lg shadow-lg m-2">
+          <div className="sm:p-6 p-2 flex flex-col rounded-lg gap-4 w-full justify-center">
+            <h2 className="text-xl font-bold mb-4">Quiz info</h2>
+            <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
+              <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                Subject :<span className=" text-lg font-light">{selectedExam.Subject}</span>
+              </h2>
+              <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                Title : <span className=" text-lg font-light">{selectedExam.Title}</span>
+              </h2>
+              <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                Time :<span className=" text-lg font-light">{selectedExam.StartTime} TO {selectedExam.EndTime}</span>
+              </h2>
+            </div>
+            <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
+              <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                Description : <span className=" text-lg font-light">{selectedExam.Description}</span>
+              </h2>
+              <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                Total Questions : <span className=" text-lg font-light">{selectedExam.Number_of_Questions}</span>
+              </h2>
+              <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                Total Marks : <span className=" text-lg font-light">{selectedExam.Exam_Total_Marks}</span>
+              </h2>
+            </div>
+            <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
+              <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                Date : <span className=" text-lg font-light">{formateDate(selectedExam.ExamDate)}</span>
+              </h2>
+              <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                Status : <span className=" text-lg font-light">Not Started</span>
+              </h2>
+              <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                <span className=" text-lg font-light"></span>
+              </h2>
+            </div>
+          </div>
           <div className="mt-4 flex justify-end gap-2">
-          <Link to="/student/start-quiz" className='flex items-center justify-center'>
-            <button 
+            <Link
+              to="/student/start-quiz/"
               className="bg-blue-500 text-white font-semibold py-2 px-4 rounded"
-              onClick={handleToggle}
             >
               Start Quiz
+            </Link>
+    
+            <button
+              className="bg-gray-200 text-secondary font-semibold py-2 px-4 rounded"
+              onClick={handleToggle}
+            >
+              Cancel
             </button>
-          </Link>
           </div>
         </div>
       </div>
@@ -115,20 +175,22 @@ function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              <tr className='divide-x divide-light'>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">1</td>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">SE Practical</td>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">30</td>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">30</td>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">21/05/2024</td>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">12:00 PM</td>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">12:30 PM</td>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
-                  <button className="text-light bg-primary text-lg  font-bold py-1 px-3 rounded-lg mr-2" onClick={handleToggle}>
-                    Start
-                  </button>
+              {upcomingExams.map((exam, index) => (
+                <tr key={exam.id} className='divide-x hover:bg-slate-100 divide-light'>
+                  <td className="py-3 px-4">{index + 1}</td>
+                  <Link to={`./view-quiz/${window.btoa(exam.ExamID)}`}><td className="py-3 text-primary px-4">{exam.Title}</td></Link>
+                  <td className="py-3 px-4">{exam.Number_of_Questions}</td>
+                  <td className="py-3 px-4">{exam.Exam_Total_Marks}</td>
+                  <td className="py-3 px-4">{formateDate(exam.ExamDate)}</td>
+                  <td className="py-3 px-4">{exam.StartTime}</td>
+                  <td className="py-3 px-4">{exam.EndTime}</td>
+                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
+                  <button
+  className="text-light bg-primary text-lg font-bold py-1 px-3 rounded-lg mr-2"
+  onClick={() => handleStartQuiz(exam)}>Start</button>
                 </td>
-              </tr>
+                </tr>
+              ))}
             </tbody>
           </table>
 
