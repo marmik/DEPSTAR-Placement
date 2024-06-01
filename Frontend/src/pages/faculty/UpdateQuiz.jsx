@@ -36,7 +36,7 @@ const UpdateQuiz = () => {
     batch:''
     });
 
-  const [QuestionsNo , setquestionListNo ] = useState();
+  const [questionsNo , setquestionNo ] = useState();
  
 
   useEffect(() => {
@@ -50,7 +50,7 @@ const UpdateQuiz = () => {
         });
         if (response.status === 200) {
           setFormData(response.data.exam);
-          setquestionListNo(response.data.exam.Number_of_Questions);
+          setquestionNo(response.data.exam.Number_of_Questions);
           // console.log(response.data.questions);
           setquestionList(response.data.questions);
         } else {
@@ -66,7 +66,7 @@ const UpdateQuiz = () => {
 
 //   useEffect(() => {
 //     setquestionList(
-//       Array.from({ length: QuestionsNo }, () => (
+//       Array.from({ length: questionsNo }, () => (
 //     {
 //       "QuestionID": 5,
 //       "ExamID": 4,
@@ -109,7 +109,7 @@ const UpdateQuiz = () => {
 //   }
 // ))
 //     );
-//   }, [QuestionsNo]);
+//   }, [questionsNo]);
 
 const updateQuestion = (index, newQuestion) => {
   setquestionList(prevQuestions => {
@@ -118,19 +118,69 @@ const updateQuestion = (index, newQuestion) => {
     return updatedQuestions;
   });
 };
+const handleInputChange = (e) => {
+  const { name, value } = e.target;
+  if (name === 'Number_of_Questions') {
+    const newQuestionsNo = parseInt(value);
+    setquestionNo(newQuestionsNo);
+    const currentQuestionCount = questionList.length;
+    const diff = newQuestionsNo - currentQuestionCount;
 
-  const handleInputChange = (e) => {
-
-    const { name, value } = e.target;
-    if (name == 'Number_of_Questions') {
-      setquestionListNo(parseInt(e.target.value));
+    if (diff > 0) {
+      // Add new question inputs
+      const newQuestions = Array.from({ length: diff }, (_, i) => ({
+              "QuestionID": 5,
+              "ExamID": 4,
+              "QuestionText": "Final Question 1",
+              "Mark": 1,
+              "QuestionType": "Multiple Choice",
+              "Correct_Option": "B",
+              "created_at": "2024-05-30T10:49:18.000Z",
+              "updated_at": "2024-05-30T10:49:18.000Z",
+              "options": [
+                  {
+                      "OptionID": 17,
+                      "QuestionID": 5,
+                      "OptionText": "Final 1",
+                      "created_at": "2024-05-30T10:49:19.000Z",
+                      "updated_at": "2024-05-30T10:49:19.000Z"
+                  },
+                  {
+                      "OptionID": 18,
+                      "QuestionID": 5,
+                      "OptionText": "Final 2",
+                      "created_at": "2024-05-30T10:49:19.000Z",
+                      "updated_at": "2024-05-30T10:49:19.000Z"
+                  },
+                  {
+                      "OptionID": 19,
+                      "QuestionID": 5,
+                      "OptionText": "Final 3",
+                      "created_at": "2024-05-30T10:49:19.000Z",
+                      "updated_at": "2024-05-30T10:49:19.000Z"
+                  },
+                  {
+                      "OptionID": 20,
+                      "QuestionID": 5,
+                      "OptionText": "Final 4",
+                      "created_at": "2024-05-30T10:49:19.000Z",
+                      "updated_at": "2024-05-30T10:49:19.000Z"
+                  }
+              ]
+          }));
+      setquestionList((prevList) => [...prevList, ...newQuestions]);
+    } else if (diff < 0) {
+      // Remove excess question inputs
+      setquestionList((prevList) => prevList.slice(0, newQuestionsNo));
     }
+    
+  }
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value,
     }));
-    // console.log(FormData);
-  };
+};
+
 
 
   const convertKeysToLowercase = (obj) => {
@@ -203,11 +253,11 @@ const updateQuestion = (index, newQuestion) => {
   }
 
   // useEffect(() => {
-  //   setquestionList([...Array(QuestionsNo | 0)].map((_, i) => ({
+  //   setquestionList([...Array(questionsNo | 0)].map((_, i) => ({
   //     index: i,
   //     updateQuestion: updateQuestion 
   //   })));
-  // }, [QuestionsNo]); 
+  // }, [questionsNo]); 
   return (
     <>
      <div className="flex flex-col">

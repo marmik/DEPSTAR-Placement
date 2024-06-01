@@ -28,7 +28,7 @@ const UpdateQuetions = ({ updateQuestion, i,initialQuestion}) => {
 
       <div className="w-full">
         <label className="flex flex-col">
-          <span className="mb-2">Question :</span>
+          <span className="mb-2">Question : {i+1}</span>
           <input
             type="text"
             name="QuestionText"
