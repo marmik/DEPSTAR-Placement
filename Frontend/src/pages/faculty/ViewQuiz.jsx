@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -69,7 +69,7 @@ const ViewQuiz = () => {
     }
     setShowDeletePopup(false);
   };
-
+  
   return (
     <div className="flex-wrap">
       <div className="bg-slate-100 text-lg p-8 rounded-lg">
@@ -153,9 +153,11 @@ const ViewQuiz = () => {
         </div>
 
         <div className="w-full flex gap-2 flex-wrap rounded-md mt-16 items-center justify-center">
-          <button className="bg-green-500 text-white font-semibold py-2 px-4 rounded mr-2">
-            Update
-          </button>
+          <Link to={`/faculty/update-quiz/${window.btoa(QuizID)}`}>
+            <button className="bg-green-500 text-white font-semibold py-2 px-4 rounded mr-2">
+              Update
+            </button>
+          </Link>
           <button 
             className="bg-red-500 text-white font-semibold py-2 px-4 rounded mr-2"
             onClick={() => setShowDeletePopup(true)}

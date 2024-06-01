@@ -11,6 +11,7 @@ import AddQuiz from '../pages/faculty/AddQuiz';
 import ViewData from '../pages/faculty/ViewData';
 import Error404 from '../pages/Error404';
 import { parseJwt } from '../model/JwtDecode';
+import UpdateQuiz from '../pages/faculty/UpdateQuiz';
 
 
 
@@ -73,6 +74,7 @@ function FacultyDashboard() {
                   <Route path='/view-data' element={'View Quiz'}></Route>
                   <Route path='/manage-feedbacks' element={'Manage Feedbacks'}></Route>
                   <Route path='/system-feedbacks' element={'System Feedbacks'}></Route>
+                  <Route path='/update-quiz/*' element={'Update Quiz'}></Route>
                 </Routes>
               </h2>
             </div>
@@ -91,6 +93,7 @@ function FacultyDashboard() {
               <Route path='/manage-feedbacks' element={<ManageFeedback />}></Route>
               <Route path='/view-data' element={<ViewData />}></Route>
               <Route path='/system-feedbacks' element={<SystemFeedback />}></Route>
+              <Route path='/update-quiz/:id' element={<UpdateQuiz />}></Route>
               <Route path='*' element={<Error404 />}></Route>
             </Routes>
           </div>
