@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from 'react';
 
-const UpdateQuetions = ({ updateQuestion, i,initialQuestion}) => {
+const UpdateQuetions = ({ updateQuestion, i, initialQuestion }) => {
+
   const [Questionobj, setQuestionobj] = useState(initialQuestion);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name.startsWith('options[')) {
-      const index = parseInt(name.match(/\d+/)[0], 10);
+    if (name[0] == 'O') {
       setQuestionobj(prevQuestionobj => {
-        const newOptions = [...prevQuestionobj.options];
-        newOptions[index].OptionText = value;
-        const newQuestionobj = { ...prevQuestionobj, options: newOptions };
+        const newOptions = [...prevQuestionobj.options]; // Create a copy of the options array
+        newOptions[0] = { ...newOptions[0], [name]: value }; // Update the specific option
+        const newQuestionobj = {
+          ...prevQuestionobj,
+          options: newOptions
+        };
         updateQuestion(i, newQuestionobj);
         return newQuestionobj;
       });
     } else {
+      // Otherwise, update the question itself
       setQuestionobj(prevQuestionobj => {
         const newQuestionobj = { ...prevQuestionobj, [name]: value };
         updateQuestion(i, newQuestionobj);
@@ -23,12 +28,13 @@ const UpdateQuetions = ({ updateQuestion, i,initialQuestion}) => {
     }
   };
 
+
   return (
     <div className='pt-10 flex flex-col'>
 
       <div className="w-full">
         <label className="flex flex-col">
-          <span className="mb-2">Question : {i+1}</span>
+          <span className="mb-2">Question : {i + 1}</span>
           <input
             type="text"
             name="QuestionText"
@@ -43,17 +49,17 @@ const UpdateQuetions = ({ updateQuestion, i,initialQuestion}) => {
 
       <div className="ml-4 flex sm:flex-row flex-col mt-0">
         <div className="grid grid-rows-2 sm:grid-flow-col gap-4 w-full">
-          {Questionobj.options.slice(0, 4).map((option, index) => (
+          {['OptionA', 'OptionB', 'OptionC', 'OptionD'].map((option, index) => (
             <div key={index} className="ml-4 w-full">
               <label className="flex flex-row items-center justify-left w-full">
                 {String.fromCharCode(65 + index)}
                 <article className="text-wrap w-1/2">
                   <input
                     type="text"
-                    name={`options[${index}]`}
+                    name={option}
                     placeholder={`Option ${String.fromCharCode(65 + index)}`}
-                    value={option.OptionText}
-                    onChange={handleChange}
+                    value={Questionobj.options[0][option] || ''}
+                    onChange={(e) => handleChange(e, option)}
                     required
                     className="p-4 ml-4 w-full m-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none"
                   />
@@ -99,7 +105,7 @@ const UpdateQuetions = ({ updateQuestion, i,initialQuestion}) => {
           </div>
         </div>
       </div>
-      </div>
+    </div>
   );
 };
 

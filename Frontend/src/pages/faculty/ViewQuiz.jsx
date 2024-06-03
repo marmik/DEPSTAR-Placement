@@ -34,10 +34,8 @@ const ViewQuiz = () => {
           },
         });
         if (response.status === 200) {
-          setQuizDetails(response.data.exam)
-          setQuizQuestions(response.data.questions)
-          console.log(QuizQuestions);
-          console.log(response.data);
+          setQuizDetails(response.data.exam);
+          setQuizQuestions(response.data.questions);
         } else {
           toast.warn("Internal Server Error !");
         }
@@ -182,10 +180,10 @@ const ViewQuiz = () => {
               </p>
             </div>
             <div className=" "><span className="p-2 font-semibold">Options:</span>
-              <div className="p-2">A: {question.options[0].OptionText}</div>
-              <div className="p-2">B: {question.options[1].OptionText}</div>
-              <div className="p-2">C: {question.options[2].OptionText}</div>
-              <div className="p-2">D: {question.options[3].OptionText}</div>
+              <div className="p-2">A: {question.options[0].OptionA}</div>
+              <div className="p-2">B: {question.options[0].OptionB}</div>
+              <div className="p-2">C: {question.options[0].OptionC}</div>
+              <div className="p-2">D: {question.options[0].OptionD}</div>
             </div>
             <p className="mt-2 font-semibold">Correct Option : {question.Correct_Option}</p>
             <br />
