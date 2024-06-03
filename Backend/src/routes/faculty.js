@@ -20,13 +20,9 @@ const { verifyToken, checkRole } = vverifyToken;
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
-    password: '',
+    password: process.env.DB_PASS,
     database: process.env.DB_NAME
-<<<<<<< HEAD
 });
-=======
-}); 
->>>>>>> 4224bf2ffd4c25740dc225606853c463ee6d1135
 
 connection.connect((err) => {
     if (err) {
