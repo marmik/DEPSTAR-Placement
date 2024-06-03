@@ -68,7 +68,7 @@ const StudentSidebar = () => {
                         </Link>
                    
                     </li>
-                    <li className={`p-4 rounded-lg ${path == "/student/start-quiz" ? "bg-white shadow-2xl text-secondary":"" }  `}>
+                    {/* <li className={`p-4 rounded-lg ${path == "/student/start-quiz" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
                             to="./start-quiz"
                             
@@ -79,7 +79,7 @@ const StudentSidebar = () => {
                             </div>
                         </Link>
                    
-                    </li>
+                    </li> */}
                   
                 </ul>
             </nav>

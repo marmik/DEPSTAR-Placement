@@ -1,108 +1,246 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { IoCloseCircleOutline } from "react-icons/io5";
+import { Link } from 'react-router-dom';
 
-function Dashboard() {
+const Dashboard = () => {
+  const [upcomingExams, setUpcomingExams] = useState([]);
+  const [selectedExam, setSelectedExam] = useState(null);
+  // const [conductedExams, setConductedExams] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const handleStartQuiz = (exam) => {
+    setSelectedExam(exam);
+    setShowPopup(true);
+  };
+
+  const handleToggle = () => {
+    setShowPopup(!showPopup);
+  };
+  const formateDate =(examdate)=>{
+    const isoString = examdate;
+    const date = new Date(isoString);
+
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+      
+    const formattedDate = `${day}-${month}-${year}`; 
+    return formattedDate
+  }
+  useEffect(() => {
+    const fetchExams = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:3000/api/student/upcomingExams', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        
+        setUpcomingExams(response.data);
+
+      } catch (error) {
+        console.error('Error fetching exams:', error);
+      }
+    };
+
+    fetchExams();
+  }, []);
+
   return (
-
     <div className='p-4 text-secondary'>
-      <div className='grid justify-between gap-10  grid-cols-4'>
-        <button className='sm:col-span-1 col-span-4 group hover:shadow-2xl bg-light hover:bg-primary transition-all rounded-xl p-6'>
-          <p className=' text-xl group-hover:text-light'>Total Quiz Cleared</p>
-          <h3 className=' mt-3 text-6xl text-primary group-hover:text-light font-bold'>10</h3>
-        </button>
-        <button className='sm:col-span-1 col-span-4 group hover:shadow-2xl bg-light hover:bg-primary transition-all rounded-xl p-6'>
-          <p className=' text-xl group-hover:text-light'>Total Feedbacks Given</p>
-          <h3 className=' mt-3 text-6xl text-primary group-hover:text-light font-bold'>10</h3>
-        </button>
-        <div className='sm:col-span-2 col-span-4 items-center justify-center flex'>
-          <img src="../images/graph.png" alt="" />
+
+      {showPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="bg-white p-6 rounded-lg shadow-lg m-2">
+          <div className="sm:p-6 p-2 flex flex-col rounded-lg gap-4 w-full justify-center">
+            <h2 className="text-xl font-bold mb-4">Quiz info</h2>
+            <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
+              <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                Subject :<span className=" text-lg font-light">{selectedExam.Subject}</span>
+              </h2>
+              <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                Title : <span className=" text-lg font-light">{selectedExam.Title}</span>
+              </h2>
+              <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                Time :<span className=" text-lg font-light">{selectedExam.StartTime} TO {selectedExam.EndTime}</span>
+              </h2>
+            </div>
+            <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
+              <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                Description : <span className=" text-lg font-light">{selectedExam.Description}</span>
+              </h2>
+              <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                Total Questions : <span className=" text-lg font-light">{selectedExam.Number_of_Questions}</span>
+              </h2>
+              <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                Total Marks : <span className=" text-lg font-light">{selectedExam.Exam_Total_Marks}</span>
+              </h2>
+            </div>
+            <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
+              <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                Date : <span className=" text-lg font-light">{formateDate(selectedExam.ExamDate)}</span>
+              </h2>
+              <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                Status : <span className=" text-lg font-light">Not Started</span>
+              </h2>
+              <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                <span className=" text-lg font-light"></span>
+              </h2>
+            </div>
+          </div>
+          <div className="mt-4 flex justify-end gap-2">
+            <Link
+              to={`/student/start-quiz/${window.btoa(selectedExam.ExamID)}`}
+              className="bg-blue-500 text-white font-semibold py-2 px-4 rounded"
+            >
+              Start Quiz
+            </Link>
+    
+            <button
+              className="bg-gray-200 text-secondary font-semibold py-2 px-4 rounded"
+              onClick={handleToggle}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
 
-      <br/><br/>
+        // <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
+        //   <div className="bg-white border w-1/2 border-gray-800 p-6 rounded-lg relative">
+        //     <button className="absolute top-2 right-2 text-light bg-primary text-lg font-bold p-2 m-2 rounded scale-110" onClick={handleToggle}>
+        //       <IoCloseCircleOutline className='size-6' />
+        //     </button>
 
-      <h3 className="text-2xl font-semibold mb-4">Upcoming Quiz Exams</h3>
-      <div className="overflow-x-auto">
-        <table  className="min-w-full   border rounded-lg overflow-hidden">
-          <thead className="bg-primary text-light border">
-            <tr>
-              <th className="text-left py-3 px-4 uppercase font-semibold text-sm">No</th>
-              <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Title</th>
-              <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Total Questions</th>
-              <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Total Marks</th>
-              <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Date</th>
-              <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Start Time</th>
-              <th className="text-left py-3 px-4 uppercase font-semibold text-sm">End Time</th>
-              <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className='divide-x divide-light'>
-              <td className="text-left py-3 px-4 uppercase font-semibold text-sm">1</td>
-              <td className="text-left py-3 px-4 uppercase font-semibold text-sm">SE Practical</td>
-              <td className="text-left py-3 px-4 uppercase font-semibold text-sm">30</td>
-              <td className="text-left py-3 px-4 uppercase font-semibold text-sm">30</td>
-              <td className="text-left py-3 px-4 uppercase font-semibold text-sm">21/05/2024</td>
-              <td className="text-left py-3 px-4 uppercase font-semibold text-sm">12:00 PM</td>
-              <td className="text-left py-3 px-4 uppercase font-semibold text-sm">12:30 PM</td>
-              <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
-                <button className="text-light bg-primary text-lg  font-bold py-1 px-3 rounded-lg mr-2">
-                  Start
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        //     <div className="sm:p-6 p-2 flex flex-col rounded-lg gap-4 w-full justify-center">
+        //       <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
+        //         <h2 className="sm:w-1/3 w-full text-lg font-bold">Subject :<span className=' text-lg font-light'>DBMS</span></h2>
+        //         <h2 className="sm:w-1/3 w-full text-lg font-bold">Title : <span className=' text-lg font-light'>DBMS Practical</span></h2>
+        //         <h2 className="sm:w-1/3 w-full text-lg font-bold">Time :<span className=' text-lg font-light'>12:00PM TO 12:30PM</span></h2>
+        //       </div>
+        //       <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
+        //         <h2 className="sm:w-1/3 w-full text-lg font-bold">Description : <span className=' text-lg font-light'>DBMS Practical Exam Chapter 1 to 4</span></h2>
+        //         <h2 className="sm:w-1/3 w-full text-lg font-bold">Total Questions : <span className=' text-lg font-light'>30</span></h2>
+        //         <h2 className="sm:w-1/3 w-full text-lg font-bold">Total Marks : <span className=' text-lg font-light'>30</span> </h2>
+        //       </div>
+        //       <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
+        //         <h2 className="sm:w-1/2 w-full text-lg font-bold">Date : <span className=' text-lg font-light'>12/05/2024</span></h2>
+        //         <h2 className="sm:w-1/2 w-full text-lg font-bold">Status : <span className=' text-lg font-light'>Not Started</span></h2>
+        //       </div>
+        //           <Link
+        //             to="/student/start-quiz" className='flex items-center justify-center pt-8'
+        //           >
+        //           <button className="text-light bg-primary text-lg  font-bold py-1 px-3 rounded-lg mr-2">
+        //               <div className="flex items-center space-x-2">
+        //                 <span>Start Quiz</span>
+        //               </div>
+        //           </button>
+        //         </Link>
+        //     </div>
+        //   </div>
+        // </div>
+      )}
 
-        <br/><br/>
+      <div>
+        <div className='grid justify-between gap-10  grid-cols-4 '>
+          <button className='sm:col-span-1 col-span-4 group hover:shadow-2xl bg-light hover:bg-primary transition-all rounded-xl p-6'>
+            <p className=' text-xl group-hover:text-light'>Total Quiz Cleared</p>
+            <h3 className=' mt-3 text-6xl text-primary group-hover:text-light font-bold'>10</h3>
+          </button>
+          <button className='sm:col-span-1 col-span-4 group hover:shadow-2xl bg-light hover:bg-primary transition-all rounded-xl p-6'>
+            <p className=' text-xl group-hover:text-light'>Total Feedbacks Given</p>
+            <h3 className=' mt-3 text-6xl text-primary group-hover:text-light font-bold'>10</h3>
+          </button>
+          <div className='sm:col-span-2 col-span-4 items-center justify-center flex'>
+            <img src="../images/graph.png" alt="" />
+          </div>
+        </div>
 
-        <h3 className="text-2xl font-semibold mb-4">Recently Attempted Quiz</h3>
-        <div className="overflow-x-auto flex flex-wrap">
+        <br /><br />
 
-          <table  className="min-w-full border rounded-lg overflow-hidden">
+        <h3 className="text-2xl font-semibold mb-4">Upcoming Quiz Exams</h3>
+        <div className="overflow-x-auto">
+          <table className="min-w-full   border rounded-lg overflow-hidden">
             <thead className="bg-primary text-light border">
               <tr>
                 <th className="text-left py-3 px-4 uppercase font-semibold text-sm">No</th>
-                <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Quiz</th>
+                <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Title</th>
                 <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Total Questions</th>
                 <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Total Marks</th>
-                <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Obtained Marks</th>
+                <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Date</th>
+                <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Start Time</th>
+                <th className="text-left py-3 px-4 uppercase font-semibold text-sm">End Time</th>
                 <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr className='divide-x divide-light'>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">1</td>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">SE Practical</td>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">30</td>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">30</td>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">25</td>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
-                  <button className="text-light bg-primary text-lg  font-bold py-1 px-3 rounded-lg mr-2">
-                    View
-                  </button>
+              {upcomingExams.map((exam, index) => (
+                <tr key={exam.id} className='divide-x hover:bg-slate-100 divide-light'>
+                  <td className="py-3 px-4">{index + 1}</td>
+                  <td className="py-3 px-4">{exam.Title}</td>
+                  <td className="py-3 px-4">{exam.Number_of_Questions}</td>
+                  <td className="py-3 px-4">{exam.Exam_Total_Marks}</td>
+                  <td className="py-3 px-4">{formateDate(exam.ExamDate)}</td>
+                  <td className="py-3 px-4">{exam.StartTime}</td>
+                  <td className="py-3 px-4">{exam.EndTime}</td>
+                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
+                  <button
+  className="text-light bg-primary text-lg font-bold py-1 px-3 rounded-lg mr-2"
+  onClick={() => handleStartQuiz(exam)}>Start</button>
                 </td>
-              </tr>
-              <tr className='divide-x divide-light'>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">2</td>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">DBMS</td>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">30</td>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">30</td>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">25</td>
-                <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
-                  <button className="text-light bg-primary text-lg  font-bold py-1 px-3 rounded-lg mr-2">
-                    View
-                  </button>
-                </td>
-              </tr>
+                </tr>
+              ))}
             </tbody>
           </table>
+
+          <br /><br />
+
+          <h3 className="text-2xl font-semibold mb-4">Recently Attempted Quiz</h3>
+          <div className="overflow-x-auto flex flex-wrap">
+
+            <table className="min-w-full border rounded-lg overflow-hidden">
+              <thead className="bg-primary text-light border">
+                <tr>
+                  <th className="text-left py-3 px-4 uppercase font-semibold text-sm">No</th>
+                  <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Quiz</th>
+                  <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Total Questions</th>
+                  <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Total Marks</th>
+                  <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Obtained Marks</th>
+                  <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className='divide-x divide-light'>
+                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">1</td>
+                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">SE Practical</td>
+                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">30</td>
+                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">30</td>
+                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">25</td>
+                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
+                    <button className="text-light bg-primary text-lg  font-bold py-1 px-3 rounded-lg mr-2">
+                      View
+                    </button>
+                  </td>
+                </tr>
+                <tr className='divide-x divide-light'>
+                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">2</td>
+                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">DBMS</td>
+                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">30</td>
+                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">30</td>
+                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">25</td>
+                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
+                    <button className="text-light bg-primary text-lg  font-bold py-1 px-3 rounded-lg mr-2">
+                      View
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
-
-
-
-
   );
 }
 

@@ -23,7 +23,7 @@ function StudentDashboard() {
         setSidebarOpen(!sidebarOpen);
     };
     const handleAuthUser = async()=>{
-        
+        ``
         if(localStorage.getItem("token")){
           const token = localStorage.getItem("token");
           const parse = parseJwt(token);
@@ -67,7 +67,7 @@ function StudentDashboard() {
                                     <Route path='/view-given-quiz' element={'View Quiz'}></Route>
                                     <Route path='/given-feedback' element={'Given Feedback'}></Route>
                                     <Route path='/system-feedback' element={'System Feedback'}></Route>
-                                    <Route path='/start-quiz' element={'Start Quiz'}></Route>
+                                    <Route path='/start-quiz/:id' element={'Start Quiz'}></Route>
                                 </Routes>
 
                             </h2>
@@ -87,7 +87,7 @@ function StudentDashboard() {
                             <Route path='/view-given-quiz' element={<ViewGivenQuiz />}></Route>
                             <Route path='/given-feedback' element={<GivenFeedback />}></Route>
                             <Route path='/system-feedback' element={<SystemFeedback />}></Route>
-                            <Route path='/start-quiz' element={<StartQuiz />}></Route>
+                            <Route path='/start-quiz/:id' element={<StartQuiz />}></Route>
                             <Route path='*' element={<Error404 />}></Route>
                         </Routes>
 

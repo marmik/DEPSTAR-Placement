@@ -7,6 +7,7 @@ const FacultySidebar = () => {
     const location = useLocation();
     const path = location.pathname;
     const navigate = useNavigate();
+    
 
     const handleLogout = async()=>{
         localStorage.removeItem("token");
@@ -42,7 +43,7 @@ const FacultySidebar = () => {
                             </div>
                         </Link>
                     </li>
-                    <li className={`p-4 rounded-lg ${path == "/faculty/manage-quiz" || path=="/faculty/view-quiz" || path=="/faculty/view-data" ? "bg-white shadow-2xl text-secondary":"" }  `}>
+                    <li className={`p-4 rounded-lg ${path == "/faculty/manage-quiz" || path=="/faculty/view-quiz" ||path=="/faculty/view-quiz/:id"|| path=="/faculty/view-data" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
                             to="./manage-quiz"
                             

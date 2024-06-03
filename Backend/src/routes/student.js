@@ -18,12 +18,18 @@ router.use(cookieParser());
 
 const connection = mysql.createConnection({
   host: process.env.DB_HOST,
+<<<<<<< HEAD
   // port: process.env.DB_PORT,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   timezone: "Z",
   // socketPath: process.env.DB_SOCKET_PATH,
+=======
+  user: process.env.DB_USER,
+  password: '',
+  database: process.env.DB_NAME
+>>>>>>> 4224bf2ffd4c25740dc225606853c463ee6d1135
 });
 
 connection.connect((err) => {

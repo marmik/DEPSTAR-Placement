@@ -22,7 +22,11 @@ const connection = mysql.createConnection({
     user: process.env.DB_USER,
     password: '',
     database: process.env.DB_NAME
+<<<<<<< HEAD
 });
+=======
+}); 
+>>>>>>> 4224bf2ffd4c25740dc225606853c463ee6d1135
 
 connection.connect((err) => {
     if (err) {
