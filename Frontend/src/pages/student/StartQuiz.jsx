@@ -8,8 +8,8 @@ const StartQuiz = () => {
   const QuizID = window.atob(id);
   const navigate = useNavigate();
 
-  const [QuestionList, setQuestionList] = useState([]);
-  const [ExamDetails, setExamDetails] = useState({});
+  const [QuestionList, setQuestionList] = useState();
+  const [ExamDetails, setExamDetails] = useState();
   const [selectedOptions, setSelectedOptions] = useState({});
   const [showEndFeedbackQuiz, setShowEndFeedbackQuiz] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -21,9 +21,12 @@ const StartQuiz = () => {
         const { data: { examDetails, questions } } = await axios.get(`http://localhost:3000/api/student/examQuestions/${QuizID}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
+  
         setExamDetails(examDetails);
         setQuestionList(questions);
-        calculateRemainingTime(examDetails.examEndTime);
+        console.log(QuestionList);
+        console.log(ExamDetails);
+        // calculateRemainingTime(examDetails.examEndTime);
       } catch (error) {
         console.error('Error fetching exams:', error);
       }
@@ -134,6 +137,7 @@ const StartQuiz = () => {
                       />
                       <label htmlFor={`option-${question.questionId}-${optionIndex}`}>{option.optionText}</label>
                     </div>
+                    
                   </div>
                 ))}
               </div>
