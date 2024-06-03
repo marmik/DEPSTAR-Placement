@@ -91,7 +91,7 @@ const Dashboard = () => {
           </div>
           <div className="mt-4 flex justify-end gap-2">
             <Link
-              to="/student/start-quiz/"
+              to={`/student/start-quiz/${window.btoa(selectedExam.ExamID)}`}
               className="bg-blue-500 text-white font-semibold py-2 px-4 rounded"
             >
               Start Quiz
@@ -178,7 +178,7 @@ const Dashboard = () => {
               {upcomingExams.map((exam, index) => (
                 <tr key={exam.id} className='divide-x hover:bg-slate-100 divide-light'>
                   <td className="py-3 px-4">{index + 1}</td>
-                  <Link to={`./view-quiz/${window.btoa(exam.ExamID)}`}><td className="py-3 text-primary px-4">{exam.Title}</td></Link>
+                  <td className="py-3 px-4">{exam.Title}</td>
                   <td className="py-3 px-4">{exam.Number_of_Questions}</td>
                   <td className="py-3 px-4">{exam.Exam_Total_Marks}</td>
                   <td className="py-3 px-4">{formateDate(exam.ExamDate)}</td>

@@ -1,112 +1,152 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const StartQuiz = () => {
-  const [timeDifference, setTimeDifference] = useState(null);
+  const { id } = useParams();
+  const QuizID = window.atob(id);
+  const navigate = useNavigate();
+
+  const [QuestionList, setQuestionList] = useState([]);
+  const [ExamDetails, setExamDetails] = useState({});
   const [selectedOptions, setSelectedOptions] = useState({});
+  const [showEndFeedbackQuiz, setShowEndFeedbackQuiz] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [ExamFeedback, setExamFeedback] = useState("");
 
   useEffect(() => {
-    const hardCodedTime = new Date('2024-05-30T16:00:00'); // Hard-coded time
-    const initialDifferenceInSeconds = Math.floor(((new Date()) - hardCodedTime) / 1000);
-    setTimeDifference(initialDifferenceInSeconds);
-    const intervalId = setInterval(() => {
-      const differenceInSeconds = Math.floor(((new Date()) - hardCodedTime) / 1000);
-      setTimeDifference(differenceInSeconds);}, 1000);
-    return () => clearInterval(intervalId);
-  }, []);
+    const fetchQuiz = async () => {
+      try {
+        const { data: { examDetails, questions } } = await axios.get(`http://localhost:3000/api/student/examQuestions/${QuizID}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+        setExamDetails(examDetails);
+        setQuestionList(questions);
+        calculateRemainingTime(examDetails.examEndTime);
+      } catch (error) {
+        console.error('Error fetching exams:', error);
+      }
+    };
 
-  const formatTime = (seconds) => {
-    return `${-Math.floor(seconds / 3600)}:${-Math.floor((seconds % 3600) / 60)}:${-(seconds % 60)} `;
-  };
-
-  const questions = [
-    {
-      id: 1,
-      text: 'What is the primary key in DBMS?',
-      options: ['A: Unique identifier', 'B: Foreign key', 'C: Composite key', 'D: None of the above'],
-      marks: 1
-    },
-    {
-      id: 2,
-      text: 'What does SQL stand for?',
-      options: ['A: Structured Query Language', 'B: Simple Query Language', 'C: Standard Query Language', 'D: None of the above'],
-      marks: 1
-    },
-    {
-      id: 3,
-      text: 'What is the primary key in DBMS?',
-      options: ['A: Unique identifier', 'B: Foreign key', 'C: Composite key', 'D: None of the above'],
-      marks: 1
-    },
-    {
-      id: 4,
-      text: 'What does SQL stand for?',
-      options: ['A: Structured Query Language', 'B: Simple Query Language', 'C: Standard Query Language', 'D: None of the above'],
-      marks: 1
-    }
-  ];
+    fetchQuiz();
+  }, [QuizID]);
 
   const handleOptionChange = (questionId, optionIndex) => {
-    setSelectedOptions(prevOptions => ({
-      ...prevOptions,
-      [questionId]: optionIndex,
-    }));
+    setSelectedOptions(prevOptions => ({ ...prevOptions, [questionId]: optionIndex }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = () => {
+    if (!submitted) {
+      submitQuiz({ answers: convertSelectedOptions(selectedOptions) });
+      toast.success("Quiz Submitted Successfully");
+      setShowEndFeedbackQuiz(true);
+      setSubmitted(true);
+      
+    }
+  };
+
+  const handleConfirmSubmit = (event) => {
     event.preventDefault();
-    setSubmitted(true);
-    const convertedOptions = convertSelectedOptions(selectedOptions);
-    console.log("Converted options:", convertedOptions);
+    console.log(ExamFeedback);
+    setShowEndFeedbackQuiz(false);
   };
 
   const convertSelectedOptions = (selectedOptions) => {
-    const convertedOptions = {};
-    for (const [questionId, optionIndex] of Object.entries(selectedOptions)) {
-      const optionLetter = String.fromCharCode(65 + optionIndex);
-      convertedOptions[questionId] = optionLetter;
+    return Object.entries(selectedOptions).map(([questionId, optionIndex]) => ({
+      questionId,
+      selectedOption: String.fromCharCode(65 + optionIndex)
+    }));
+  };
+
+  const submitQuiz = async (data) => {
+    try {
+      const { status, data: responseData } = await axios.post(`http://localhost:3000/api/student/quizzes/${QuizID}/submit`, data, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      if (status === 200) {
+        console.log("Quiz submitted successfully:", responseData);
+      } else {
+        console.warn("Error submitting quiz");
+      }
+    } catch (error) {
+      console.error('Error submitting quiz:', error);
     }
-    return convertedOptions;
   };
 
   return (
     <div className="p-2 flex-wrap">
+      {showEndFeedbackQuiz && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-xl font-bold">Quiz Feedback</h2>
+            <input
+              type="text"
+              value={ExamFeedback}
+              onChange={(e) => setExamFeedback(e.target.value)}
+              placeholder='Feedback'
+              className='p-4 outline-none border-slate-400 rounded-lg w-full border'
+            />
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                className="bg-primary text-white font-semibold py-2 px-4 rounded"
+                onClick={handleConfirmSubmit}
+              >
+                Send
+              </button>
+              <button
+                className="bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded"
+                onClick={() => navigate("/")}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex flex-col flex-auto gap-8">
         <div className="sm:p-6 p-2 flex flex-col rounded-lg gap-4 shadow-2xl w-full justify-between">
-        <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
-          <h2 className="sm:w-1/3 w-full text-lg font-bold">Remaining Time: <span className=' text-lg font-light'>{timeDifference !== null && (<p>{formatTime(timeDifference+3600)}</p>)}
-      </span></h2>
-        </div>
+          <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
+            <h2 className="sm:w-1/3 w-full text-lg font-bold">Remaining Time:
+              <span className='text-lg font-light'>SET TIME HERE </span>
+            </h2>
+          </div>
         </div>
         <div className="flex flex-col gap-2">
-          {questions.map((question, index) => (
-            <div key={question.id} className="flex flex-wrap  flex-col gap-4 p-4">
-              <h3 className="text-lg font-bold">Question: {index + 1}</h3>
-              <div className="flex flex-wrap w-10/12 flex-row gap-4">
-                <h3 className="text-lg text-blue-600 font-bold">{question.text}</h3>
-                <p className="font-bold text-lg">({question.marks} Mark{question.marks > 1 ? 's' : ''})</p>
+          {QuestionList && QuestionList.map && QuestionList.map((question, index) => (
+            <div key={index} className="gap-4 p-4">
+              <h3 className="text-lg font-semibold">Question: {index + 1}</h3>
+              <div className="flex flex-wrap w-10/12 gap-4">
+                <h3 className="text-lg text-blue-600 font-bold">{question.questionText}</h3>
+                <p className="font-bold text-lg">({question.questionMark} Mark{question.questionMark > 1 ? 's' : ''})</p>
               </div>
-              <div className=" flex-wrap grid grid-cols-1 sm:grid-cols-2 gap-2 w-2/3 ">
-                 {question.options.map((option, optionIndex) => (
-                    <div className="flex" key={optionIndex}>
-                      <div className="flex items-center mt-2">
-                        <input
-                          type="radio"
-                          name={`question${question.id}`}
-                          id={`option-${question.id}-${optionIndex}`}
-                          className="mr-2"
-                          checked={selectedOptions[question.id] === optionIndex}
-                          onChange={() => handleOptionChange(question.id, optionIndex)}
-                        />
-                        <label htmlFor={`option-${question.id}-${optionIndex}`}>{option}</label>
-                      </div>
+              <div className="flex-wrap grid grid-cols-1 sm:grid-cols-2 gap-2 w-2/3">
+                {question.options && question.options.map && question.options.map((option, optionIndex) => (
+                  <div className="flex" key={optionIndex}>
+                    <div className="flex items-center mt-2">
+                      <input
+                        type="radio"
+                        name={`question${question.questionId}`}
+                        id={`option-${question.questionId}-${optionIndex}`}
+                        className="mr-2"
+                        checked={selectedOptions[question.questionId] === optionIndex}
+                        onChange={() => handleOptionChange(question.questionId, optionIndex)}
+                      />
+                      <label htmlFor={`option-${question.questionId}-${optionIndex}`}>{option.optionText}</label>
                     </div>
-                  ))}
+                  </div>
+                ))}
               </div>
             </div>
           ))}
-          <button type="submit" className="min-w-32 w-1/4 self-centerm-4 bg-primary text-light font-medium text-lg px-2 py-2 rounded-md  shadow-xl"
-          onClick={handleSubmit}>Submit</button>
+          <button
+            type="submit"
+            id='submitQuiz'
+            className="min-w-32 w-1/4 self-center m-4 bg-primary text-light font-medium text-lg px-2 py-2 rounded-md shadow-xl"
+            onClick={handleSubmit}
+          >
+            Submit
+          </button>
         </div>
       </div>
     </div>
@@ -114,4 +154,3 @@ const StartQuiz = () => {
 };
 
 export default StartQuiz;
-

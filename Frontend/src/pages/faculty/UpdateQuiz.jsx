@@ -131,38 +131,38 @@ const handleInputChange = (e) => {
       const newQuestions = Array.from({ length: diff }, (_, i) => ({
               "QuestionID": 5,
               "ExamID": 4,
-              "QuestionText": "Final Question 1",
+              "QuestionText": "",
               "Mark": 1,
               "QuestionType": "Multiple Choice",
-              "Correct_Option": "B",
+              "Correct_Option": "A",
               "created_at": "2024-05-30T10:49:18.000Z",
               "updated_at": "2024-05-30T10:49:18.000Z",
               "options": [
                   {
                       "OptionID": 17,
                       "QuestionID": 5,
-                      "OptionText": "Final 1",
+                      "OptionText": "",
                       "created_at": "2024-05-30T10:49:19.000Z",
                       "updated_at": "2024-05-30T10:49:19.000Z"
                   },
                   {
                       "OptionID": 18,
                       "QuestionID": 5,
-                      "OptionText": "Final 2",
+                      "OptionText": "",
                       "created_at": "2024-05-30T10:49:19.000Z",
                       "updated_at": "2024-05-30T10:49:19.000Z"
                   },
                   {
                       "OptionID": 19,
                       "QuestionID": 5,
-                      "OptionText": "Final 3",
+                      "OptionText": "",
                       "created_at": "2024-05-30T10:49:19.000Z",
                       "updated_at": "2024-05-30T10:49:19.000Z"
                   },
                   {
                       "OptionID": 20,
                       "QuestionID": 5,
-                      "OptionText": "Final 4",
+                      "OptionText": "",
                       "created_at": "2024-05-30T10:49:19.000Z",
                       "updated_at": "2024-05-30T10:49:19.000Z"
                   }
