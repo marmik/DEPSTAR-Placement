@@ -18,12 +18,12 @@ router.use(cookieParser());
 
 const connection = mysql.createConnection({
   host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
+  // port: process.env.DB_PORT,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   timezone: "Z",
-  socketPath: process.env.DB_SOCKET_PATH,
+  // socketPath: process.env.DB_SOCKET_PATH,
 });
 
 connection.connect((err) => {
@@ -190,10 +190,27 @@ router.post(
                     .status(500)
                     .json({ error: "Internal server error" });
                 } else if (results.length > 0) {
-                  // User has already submitted the quiz
-                  return res
-                    .status(400)
-                    .json({ error: "You have already submitted this quiz" });
+                  // User has already submitted the quiz, update the status
+                  const submissionId = results[0].SubmissionID;
+                  connection.query(
+                    "UPDATE QuizSubmissions SET Status = 'Attempted' WHERE SubmissionID = ?",
+                    [submissionId],
+                    (updateError) => {
+                      if (updateError) {
+                        console.error(updateError);
+                        return res.status(500).json({ error: "Internal server error" });
+                      }
+
+                      // Log the attempt
+                      logExamAttempt(examId, userId, "Attempted", (logError) => {
+                        if (logError) {
+                          return res.status(500).json({ error: logError.message });
+                        }
+
+                        insertAnswers(submissionId, answers, res);
+                      });
+                    }
+                  );
                 } else {
                   // Log the attempt
                   logExamAttempt(examId, userId, "Attempted", (logError) => {
@@ -205,12 +222,10 @@ router.post(
                     connection.query(
                       "INSERT INTO QuizSubmissions (ExamID, UserID, Status) VALUES (?, ?, 'Attempted')",
                       [examId, userId],
-                      (error, insertResults) => {
-                        if (error) {
-                          console.error(error);
-                          return res
-                            .status(500)
-                            .json({ error: "Internal server error" });
+                      (insertError, insertResults) => {
+                        if (insertError) {
+                          console.error(insertError);
+                          return res.status(500).json({ error: "Internal server error" });
                         }
 
                         const submissionId = insertResults.insertId;
@@ -226,7 +241,8 @@ router.post(
       }
     );
   }
-); // tested
+);
+
 
 const insertAnswers = (submissionId, answers, res) => {
   const values = answers.map((answer) => [
@@ -566,13 +582,13 @@ router.get("/upcomingExams", verifyToken, checkRole("Student"), (req, res) => {
   const studentId = req.user.userID;
   const studentClass = req.user.classs; // Assume class is a property of req.user
   const studentSemester = req.user.sem; // Assume semester is a property of req.user
-  const studentbatch = req.user.batch; // Assume semester is a property of req.user
+  const studentBatch = req.user.batch; // Assume batch is a property of req.user
 
   const query = `
-    SELECT e.ExamID, e.Title, e.ExamDate, e.StartTime, e.EndTime 
+    SELECT e.ExamID, e.Title, e.ExamDate, e.StartTime, e.EndTime, e.Number_of_Questions, e.Exam_Total_Marks, e.subject, e.description , e.Status
     FROM Exams e
-    JOIN Users u ON e.className = u.class AND e.sem = u.sem AND e.batch = u.batch
-    WHERE u.UserID = ? AND (e.ExamDate > CURDATE() OR (e.ExamDate = CURDATE() AND e.StartTime >= CURTIME()))
+    JOIN Users u ON e.className = u.class AND e.sem = u.sem
+    WHERE u.UserID = ? AND (e.ExamDate > CURDATE() OR (e.ExamDate = CURDATE() AND e.EndTime >= CURTIME()))
     ORDER BY e.ExamDate ASC, e.StartTime ASC
   `;
 
@@ -587,12 +603,14 @@ router.get("/upcomingExams", verifyToken, checkRole("Student"), (req, res) => {
       ...exam,
       ExamDate: moment(exam.ExamDate).format("YYYY-MM-DD"),
       StartTime: moment(exam.StartTime, "HH:mm:ss").format("HH:mm:ss"),
-      EndTime: moment(exam.EndTime).format("HH:mm:ss"),
+      EndTime: moment(exam.EndTime, "HH:mm:ss").format("HH:mm:ss")
     }));
 
     res.json(formattedResults);
   });
-}); // tested
+});  //tested
+
+
 
 //. GET /api/student/recentExams - View recent exams
 router.get("/recentExams", verifyToken, checkRole("Student"), (req, res) => {

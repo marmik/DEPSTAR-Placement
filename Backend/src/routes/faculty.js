@@ -19,13 +19,11 @@ const { verifyToken, checkRole } = vverifyToken;
 // Database connection
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
     user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
+    password: '',
     database: process.env.DB_NAME,
-    timezone: "Z",
-    socketPath: process.env.DB_SOCKET_PATH,
-  });
+    timezone: "Z"
+});
 
 connection.connect((err) => {
     if (err) {
