@@ -1,14 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { IoCloseCircleOutline } from "react-icons/io5";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [upcomingExams, setUpcomingExams] = useState([]);
   const [selectedExam, setSelectedExam] = useState(null);
   // const [conductedExams, setConductedExams] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
-  const handleStartQuiz = (exam) => {
+
+  const handleStartQuiz = async (QuizID) => {
+    console.log(QuizID);
+
+    try {
+      const token = localStorage.getItem('token');
+      console.log(token);
+      const response = await axios.get(`http://localhost:3000/api/student/quizzes/${QuizID}/start`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if(response.status === 200){
+
+        toast.success("Quiz Started. ALL THE BEST");
+
+        navigate(`./start-quiz/${window.btoa(QuizID)}`);
+      }
+
+
+    } catch (error) {
+      console.error('Error fetching exams:', error);
+    }
+
+  }
+
+  const handleStartQuizPopUp = (exam) => {
     setSelectedExam(exam);
     setShowPopup(true);
   };
@@ -31,12 +61,14 @@ const Dashboard = () => {
     const fetchExams = async () => {
       try {
         const token = localStorage.getItem('token');
+
         const response = await axios.get('http://localhost:3000/api/student/upcomingExams', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         
+        console.log(response.data);
         setUpcomingExams(response.data);
 
       } catch (error) {
@@ -57,7 +89,7 @@ const Dashboard = () => {
             <h2 className="text-xl font-bold mb-4">Quiz info</h2>
             <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
               <h2 className="sm:w-1/3 w-full text-lg font-bold">
-                Subject :<span className=" text-lg font-light">{selectedExam.Subject}</span>
+                Subject :<span className=" text-lg font-light">{selectedExam.subject}</span>
               </h2>
               <h2 className="sm:w-1/3 w-full text-lg font-bold">
                 Title : <span className=" text-lg font-light">{selectedExam.Title}</span>
@@ -68,7 +100,7 @@ const Dashboard = () => {
             </div>
             <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
               <h2 className="sm:w-1/3 w-full text-lg font-bold">
-                Description : <span className=" text-lg font-light">{selectedExam.Description}</span>
+                Description : <span className=" text-lg font-light">{selectedExam.description}</span>
               </h2>
               <h2 className="sm:w-1/3 w-full text-lg font-bold">
                 Total Questions : <span className=" text-lg font-light">{selectedExam.Number_of_Questions}</span>
@@ -82,7 +114,7 @@ const Dashboard = () => {
                 Date : <span className=" text-lg font-light">{formateDate(selectedExam.ExamDate)}</span>
               </h2>
               <h2 className="sm:w-1/3 w-full text-lg font-bold">
-                Status : <span className=" text-lg font-light">Not Started</span>
+                Status : <span className=" text-lg font-light">{selectedExam.Status}</span>
               </h2>
               <h2 className="sm:w-1/3 w-full text-lg font-bold">
                 <span className=" text-lg font-light"></span>
@@ -90,12 +122,12 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="mt-4 flex justify-end gap-2">
-            <Link
-              to={`/student/start-quiz/${window.btoa(selectedExam.ExamID)}`}
+            <button
+              onClick={() => {handleStartQuiz(selectedExam.ExamID)}}
               className="bg-blue-500 text-white font-semibold py-2 px-4 rounded"
             >
               Start Quiz
-            </Link>
+            </button>
     
             <button
               className="bg-gray-200 text-secondary font-semibold py-2 px-4 rounded"
@@ -107,39 +139,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-        // <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
-        //   <div className="bg-white border w-1/2 border-gray-800 p-6 rounded-lg relative">
-        //     <button className="absolute top-2 right-2 text-light bg-primary text-lg font-bold p-2 m-2 rounded scale-110" onClick={handleToggle}>
-        //       <IoCloseCircleOutline className='size-6' />
-        //     </button>
-
-        //     <div className="sm:p-6 p-2 flex flex-col rounded-lg gap-4 w-full justify-center">
-        //       <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
-        //         <h2 className="sm:w-1/3 w-full text-lg font-bold">Subject :<span className=' text-lg font-light'>DBMS</span></h2>
-        //         <h2 className="sm:w-1/3 w-full text-lg font-bold">Title : <span className=' text-lg font-light'>DBMS Practical</span></h2>
-        //         <h2 className="sm:w-1/3 w-full text-lg font-bold">Time :<span className=' text-lg font-light'>12:00PM TO 12:30PM</span></h2>
-        //       </div>
-        //       <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
-        //         <h2 className="sm:w-1/3 w-full text-lg font-bold">Description : <span className=' text-lg font-light'>DBMS Practical Exam Chapter 1 to 4</span></h2>
-        //         <h2 className="sm:w-1/3 w-full text-lg font-bold">Total Questions : <span className=' text-lg font-light'>30</span></h2>
-        //         <h2 className="sm:w-1/3 w-full text-lg font-bold">Total Marks : <span className=' text-lg font-light'>30</span> </h2>
-        //       </div>
-        //       <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
-        //         <h2 className="sm:w-1/2 w-full text-lg font-bold">Date : <span className=' text-lg font-light'>12/05/2024</span></h2>
-        //         <h2 className="sm:w-1/2 w-full text-lg font-bold">Status : <span className=' text-lg font-light'>Not Started</span></h2>
-        //       </div>
-        //           <Link
-        //             to="/student/start-quiz" className='flex items-center justify-center pt-8'
-        //           >
-        //           <button className="text-light bg-primary text-lg  font-bold py-1 px-3 rounded-lg mr-2">
-        //               <div className="flex items-center space-x-2">
-        //                 <span>Start Quiz</span>
-        //               </div>
-        //           </button>
-        //         </Link>
-        //     </div>
-        //   </div>
-        // </div>
       )}
 
       <div>
@@ -187,7 +186,7 @@ const Dashboard = () => {
                   <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
                   <button
   className="text-light bg-primary text-lg font-bold py-1 px-3 rounded-lg mr-2"
-  onClick={() => handleStartQuiz(exam)}>Start</button>
+  onClick={() => handleStartQuizPopUp(exam)}>Start</button>
                 </td>
                 </tr>
               ))}
