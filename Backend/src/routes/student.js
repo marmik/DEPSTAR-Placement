@@ -18,12 +18,12 @@ router.use(cookieParser());
 
 const connection = mysql.createConnection({
   host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
+  // port: process.env.DB_PORT,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   timezone: "Z",
-  socketPath: process.env.DB_SOCKET_PATH,
+  // socketPath: process.env.DB_SOCKET_PATH,
 });
 
 connection.connect((err) => {
@@ -99,36 +99,49 @@ router.post(
     const examId = req.params.examid;
     const userId = req.user.userID;
 
-    // Check if the exam status is "started" in the exams table
-    const checkQuery = "SELECT status FROM exams WHERE ExamID = ?";
-    connection.query(checkQuery, [examId], (error, results) => {
-      if (error) {
-        console.error("Error checking exam status:", error);
+    // Check if the student has already attempted the exam
+    const checkSubmissionQuery = "SELECT status FROM quizsubmissions WHERE ExamID = ? AND UserID = ?";
+    connection.query(checkSubmissionQuery, [examId, userId], (checkError, checkResults) => {
+      if (checkError) {
+        console.error("Error checking quiz submission status:", checkError);
         return res.status(500).json({ error: "Internal server error" });
       }
 
-      // If the exam status is "started", insert a new record into QuizSubmissions table
-      if (results.length > 0 && results[0].status === "Started") {
-        const insertQuery =
-          "INSERT INTO QuizSubmissions (ExamID, UserID, status) VALUES (?, ?, ?)";
-        const values = [examId, userId, "Attempting"];
-
-        connection.query(insertQuery, values, (insertError, insertResults) => {
-          if (insertError) {
-            console.error("Error inserting into QuizSubmissions:", insertError);
-            return res.status(500).json({ error: "Internal server error" });
-          }
-
-          // If insertion is successful, send a success response
-          return res.status(200).json({ message: "Quiz started successfully" });
-        });
-      } else {
-        // If the exam status is not "started", send an error response
-        return res.status(400).json({ error: "Exam not started yet" });
+      if (checkResults.length > 0 && checkResults[0].status === "Attempted") {
+        return res.status(400).json({ message: "You have already attempted this exam" });
       }
+
+      // Check if the exam status is "started" in the exams table
+      const checkExamStatusQuery = "SELECT status FROM exams WHERE ExamID = ?";
+      connection.query(checkExamStatusQuery, [examId], (examError, examResults) => {
+        if (examError) {
+          console.error("Error checking exam status:", examError);
+          return res.status(500).json({ error: "Internal server error" });
+        }
+
+        // If the exam status is "started", insert a new record into QuizSubmissions table
+        if (examResults.length > 0 && examResults[0].status === "Started") {
+          const insertQuery = "INSERT INTO quizsubmissions (ExamID, UserID, status) VALUES (?, ?, ?)";
+          const values = [examId, userId, "Attempting"];
+
+          connection.query(insertQuery, values, (insertError, insertResults) => {
+            if (insertError) {
+              console.error("Error inserting into QuizSubmissions:", insertError);
+              return res.status(500).json({ error: "Internal server error" });
+            }
+
+            // If insertion is successful, send a success response
+            return res.status(200).json({ message: "Quiz started successfully" });
+          });
+        } else {
+          // If the exam status is not "started", send an error response
+          return res.status(400).json({ error: "Exam not started yet" });
+        }
+      });
     });
   }
-); // tested
+);
+ // tested
 
 router.post(
   "/quizzes/:id/submit",
@@ -190,10 +203,27 @@ router.post(
                     .status(500)
                     .json({ error: "Internal server error" });
                 } else if (results.length > 0) {
-                  // User has already submitted the quiz
-                  return res
-                    .status(400)
-                    .json({ error: "You have already submitted this quiz" });
+                  // User has already submitted the quiz, update the status
+                  const submissionId = results[0].SubmissionID;
+                  connection.query(
+                    "UPDATE QuizSubmissions SET Status = 'Attempted' WHERE SubmissionID = ?",
+                    [submissionId],
+                    (updateError) => {
+                      if (updateError) {
+                        console.error(updateError);
+                        return res.status(500).json({ error: "Internal server error" });
+                      }
+
+                      // Log the attempt
+                      logExamAttempt(examId, userId, "Attempted", (logError) => {
+                        if (logError) {
+                          return res.status(500).json({ error: logError.message });
+                        }
+
+                        insertAnswers(submissionId, answers, res);
+                      });
+                    }
+                  );
                 } else {
                   // Log the attempt
                   logExamAttempt(examId, userId, "Attempted", (logError) => {
@@ -205,12 +235,10 @@ router.post(
                     connection.query(
                       "INSERT INTO QuizSubmissions (ExamID, UserID, Status) VALUES (?, ?, 'Attempted')",
                       [examId, userId],
-                      (error, insertResults) => {
-                        if (error) {
-                          console.error(error);
-                          return res
-                            .status(500)
-                            .json({ error: "Internal server error" });
+                      (insertError, insertResults) => {
+                        if (insertError) {
+                          console.error(insertError);
+                          return res.status(500).json({ error: "Internal server error" });
                         }
 
                         const submissionId = insertResults.insertId;
@@ -226,7 +254,8 @@ router.post(
       }
     );
   }
-); // tested
+);
+
 
 const insertAnswers = (submissionId, answers, res) => {
   const values = answers.map((answer) => [
@@ -561,22 +590,24 @@ router.get(
   }
 ); //tested
 
-// GET /api/student/upcomingExams - View upcoming exams for a particular student
 router.get("/upcomingExams", verifyToken, checkRole("Student"), (req, res) => {
   const studentId = req.user.userID;
-  const studentClass = req.user.classs; // Assume class is a property of req.user
+  const studentClass = req.user.class; // Assume class is a property of req.user
   const studentSemester = req.user.sem; // Assume semester is a property of req.user
-  const studentbatch = req.user.batch; // Assume semester is a property of req.user
+  const studentBatch = req.user.batch; // Assume batch is a property of req.user
 
   const query = `
-    SELECT e.ExamID, e.Title, e.ExamDate, e.StartTime, e.EndTime 
+    SELECT e.ExamID, e.Title, e.ExamDate, e.StartTime, e.EndTime, e.Number_of_Questions, e.Exam_Total_Marks, e.Subject, e.Description, e.Status
     FROM Exams e
-    JOIN Users u ON e.className = u.class AND e.sem = u.sem AND e.batch = u.batch
-    WHERE u.UserID = ? AND (e.ExamDate > CURDATE() OR (e.ExamDate = CURDATE() AND e.StartTime >= CURTIME()))
+    JOIN Users u ON e.className = u.class AND e.sem = u.sem
+    LEFT JOIN quizsubmissions qs ON e.ExamID = qs.ExamID AND qs.UserID = ?
+    WHERE u.UserID = ? 
+      AND (e.ExamDate > CURDATE() OR (e.ExamDate = CURDATE() AND e.EndTime >= CURTIME()))
+      AND (qs.Status IS NULL OR qs.Status != 'Attempted')
     ORDER BY e.ExamDate ASC, e.StartTime ASC
   `;
 
-  connection.query(query, [studentId], (err, results) => {
+  connection.query(query, [studentId, studentId], (err, results) => {
     if (err) {
       console.error("Error fetching upcoming exams:", err);
       return res.status(500).json({ error: "Could not fetch upcoming exams" });
@@ -587,12 +618,15 @@ router.get("/upcomingExams", verifyToken, checkRole("Student"), (req, res) => {
       ...exam,
       ExamDate: moment(exam.ExamDate).format("YYYY-MM-DD"),
       StartTime: moment(exam.StartTime, "HH:mm:ss").format("HH:mm:ss"),
-      EndTime: moment(exam.EndTime).format("HH:mm:ss"),
+      EndTime: moment(exam.EndTime, "HH:mm:ss").format("HH:mm:ss")
     }));
 
     res.json(formattedResults);
   });
-}); // tested
+});//tested
+
+
+
 
 //. GET /api/student/recentExams - View recent exams
 router.get("/recentExams", verifyToken, checkRole("Student"), (req, res) => {
