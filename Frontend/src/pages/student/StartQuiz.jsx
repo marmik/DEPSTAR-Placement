@@ -89,6 +89,7 @@ const StartQuiz = () => {
     if (!submitted) {
       submitQuiz({ answers: convertSelectedOptions(selectedOptions) });
       toast.success("Quiz Submitted Successfully");
+      setShowEndFeedbackQuiz(true);
       setSubmitted(true);
     }
   };
