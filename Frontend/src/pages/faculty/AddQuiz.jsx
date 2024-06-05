@@ -184,8 +184,14 @@ const AddQuiz = () => {
             <label className="flex flex-col">Sem
               <select name="sem" required autoComplete="name" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" onChange={handleInputChange}>
                 <option disabled selected value>Select Semester</option>
-                <option value="SEM 4">SEM 4</option>
-                <option value="SEM 5">SEM 5</option>
+                <option value="sem1">SEM 1</option>
+                <option value="sem2">SEM 2</option>
+                <option value="sem3">SEM 3</option>
+                <option value="sem4">SEM 4</option>
+                <option value="sem5">SEM 5</option>
+                <option value="sem6">SEM 6</option>
+                <option value="sem7">SEM 7</option>
+                <option value="sem8">SEM 8</option>
               </select>
             </label>
           </div>
@@ -193,10 +199,31 @@ const AddQuiz = () => {
           <div className="sm:w-1/5 flex-row">
             <label className="flex flex-col">Class
               <select name="className" required autoComplete="name" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" onChange={handleInputChange}>
-                <option disabled selected value>Select Class</option>
-                <option value="4CE1">4CE1</option>
-                <option value="4CE2">4CE2</option>
-                <option value="All">All</option>
+                <option disabled selected value="">Select Class</option>
+                <option value="4CE1">1CE</option>
+                <option value="4CE2">2CE</option>
+                <option value="4CE1">3CE</option>
+                <option value="4CE2">4CE</option>
+                <option value="4CE1">5CE</option>
+                <option value="4CE2">6CE</option>
+                <option value="4CE1">7CE</option>
+                <option value="4CE2">8CE</option>
+                <option value="4CE1">1CSE</option>
+                <option value="4CE2">2CSE</option>
+                <option value="4CE1">3CSE</option>
+                <option value="4CE2">4CSE</option>
+                <option value="4CE1">5CSE</option>
+                <option value="4CE2">6CSE</option>
+                <option value="4CE1">7CSE</option>
+                <option value="4CE2">8CSE</option>
+                <option value="4CE1">1IT</option>
+                <option value="4CE2">2IT</option>
+                <option value="4CE1">3IT</option>
+                <option value="4CE2">4IT</option>
+                <option value="4CE1">5IT</option>
+                <option value="4CE2">6IT</option>
+                <option value="4CE1">7IT</option>
+                <option value="4CE2">8IT</option>
               </select>
             </label>
           </div>

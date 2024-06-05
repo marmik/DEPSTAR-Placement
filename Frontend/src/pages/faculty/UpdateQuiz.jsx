@@ -186,7 +186,7 @@ const UpdateQuiz = () => {
           <div className="sm:w-1/5 flex-row">
             <label className="flex flex-col">Select Subject
               <select name="Subject" autoComplete="name" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" value={FormData.Subject} onChange={handleInputChange} required>
-                <option disabled value="">Select Subject</option>
+                <option disabled selected value="">Select Subject</option>
                 <option value="Daa">Daa</option>
                 <option value="Se">Se</option>
                 <option value="Dbms">Dbms</option>
@@ -223,7 +223,7 @@ const UpdateQuiz = () => {
           <div className="sm:w-1/5">
             <label className="flex flex-col">Status
               <select name="Status" autoComplete="name" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" value={FormData.Status} onChange={handleInputChange}>
-                <option disabled value="">Select Status</option>
+                <option disabled selected value="">Select Status</option>
                 <option value="Not Started">Not Started</option>
                 <option value="Started">Started</option>
                 <option value="Completed">Completed</option>
@@ -234,8 +234,7 @@ const UpdateQuiz = () => {
           <div className="sm:w-1/5 flex-row">
             <label className="flex flex-col">Sem
               <select name="sem" required autoComplete="name" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" value={FormData.sem} onChange={handleInputChange}>
-                <option disabled value="">Select Semester</option>
-                <option value="all">All</option>
+                <option disabled selected value="">Select Semester</option>
                 <option value="sem1">SEM 1</option>
                 <option value="sem2">SEM 2</option>
                 <option value="sem3">SEM 3</option>
@@ -251,10 +250,31 @@ const UpdateQuiz = () => {
           <div className="sm:w-1/5 flex-row">
             <label className="flex flex-col">Class
               <select name="className" required autoComplete="name" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" value={FormData.className} onChange={handleInputChange}>
-                <option disabled value="">Select Class</option>
-                <option value="4CE1">4CE1</option>
-                <option value="4CE2">4CE2</option>
-                <option value="All">All</option>
+                <option disabled selected value="">Select Class</option>
+                <option value="4CE1">1CE</option>
+                <option value="4CE2">2CE</option>
+                <option value="4CE1">3CE</option>
+                <option value="4CE2">4CE</option>
+                <option value="4CE1">5CE</option>
+                <option value="4CE2">6CE</option>
+                <option value="4CE1">7CE</option>
+                <option value="4CE2">8CE</option>
+                <option value="4CE1">1CSE</option>
+                <option value="4CE2">2CSE</option>
+                <option value="4CE1">3CSE</option>
+                <option value="4CE2">4CSE</option>
+                <option value="4CE1">5CSE</option>
+                <option value="4CE2">6CSE</option>
+                <option value="4CE1">7CSE</option>
+                <option value="4CE2">8CSE</option>
+                <option value="4CE1">1IT</option>
+                <option value="4CE2">2IT</option>
+                <option value="4CE1">3IT</option>
+                <option value="4CE2">4IT</option>
+                <option value="4CE1">5IT</option>
+                <option value="4CE2">6IT</option>
+                <option value="4CE1">7IT</option>
+                <option value="4CE2">8IT</option>
               </select>
             </label>
           </div>
@@ -262,7 +282,7 @@ const UpdateQuiz = () => {
           <div className="sm:w-1/5 flex-row">
             <label className="flex flex-col">Batch
               <select name="batch" required autoComplete="name" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" value={FormData.batch} onChange={handleInputChange}>
-                <option disabled value="">Select Batch</option>
+                <option disabled selected value="">Select Batch</option>
                 <option value="All">All</option>
                 <option value="batchA">A</option>
                 <option value="batchB">B</option>

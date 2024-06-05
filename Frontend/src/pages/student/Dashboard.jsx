@@ -18,7 +18,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem('token');
       console.log(token);
-      const response = await axios.get(`http://localhost:3000/api/student/quizzes/${QuizID}/start`, {
+      const response = await axios.post(`http://localhost:3000/api/student/quizzes/${QuizID}/start`,null,{
         headers: {
           Authorization: `Bearer ${token}`,
         },
