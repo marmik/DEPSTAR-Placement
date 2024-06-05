@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 03, 2024 at 11:47 AM
+-- Generation Time: Jun 05, 2024 at 04:41 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -142,7 +142,16 @@ INSERT INTO `exams` (`ExamID`, `Title`, `Description`, `Subject`, `Number_of_Que
 (38, 'Your Quiz Title', 'Description of your quiz', 'Subject of the quiz', 5, 50, 'Not Started', '2024-05-28', '21:51:00', '21:55:00', NULL, 2, '2024-06-02 09:58:49', '2024-06-02 09:58:49', '', 'Class name', 'batchA'),
 (39, 'Your Quiz Title', 'Description of your quiz', 'Subject of the quiz', 5, 50, 'Not Started', '2024-06-28', '21:51:00', '21:55:00', NULL, 2, '2024-06-02 09:59:10', '2024-06-02 09:59:10', '', 'Class name', 'batchA'),
 (40, 'Your Quiz Title', 'Description of your quiz', 'Subject of the quiz', 5, 50, 'Started', '2024-06-02', '14:51:00', '21:55:00', NULL, 2, '2024-06-02 10:00:10', '2024-06-03 09:21:00', '', 'Class name', 'batchA'),
-(41, 'Your Quiz Title', 'Description of your quiz', 'Subject of the quiz', 5, 50, 'Not Started', '2024-06-02', '16:51:00', '21:55:00', NULL, 2, '2024-06-02 10:00:24', '2024-06-02 10:00:24', '', 'Class name', 'batchA');
+(41, 'Your Quiz Title', 'Description of your quiz', 'Subject of the quiz', 5, 50, 'Started', '2024-06-02', '16:51:00', '21:55:00', NULL, 2, '2024-06-02 10:00:24', '2024-06-03 11:21:00', '', 'Class name', 'batchA'),
+(42, 'Your Quiz Title', 'Description of your quiz', 'Subject of the quiz', 5, 50, 'Started', '2024-06-04', '16:51:00', '21:55:00', NULL, 2, '2024-06-03 10:41:23', '2024-06-03 11:21:00', '', 'Class name', 'batchA'),
+(43, 'Your Quiz Title', 'Description of your quiz', 'Subject of the quiz', 5, 50, 'Started', '2024-06-04', '16:51:00', '21:55:00', NULL, 2, '2024-06-03 11:12:26', '2024-06-03 11:21:00', '', 'Class name', 'batchA'),
+(44, 'Your Quiz Title', 'Description of your quiz', 'Subject of the quiz', 5, 50, 'Not Started', '2024-06-03', '19:30:00', '21:55:00', NULL, 2, '2024-06-03 14:12:26', '2024-06-03 14:12:26', '', 'Class name', 'batchA'),
+(45, 'Your Quiz Title', 'Description of your quiz', 'Subject of the quiz', 5, 50, 'Started', '2024-06-03', '19:48:00', '21:55:00', NULL, 2, '2024-06-03 14:17:19', '2024-06-03 14:18:00', '', 'Class name', 'batchA'),
+(46, 'Your Quiz Title', 'Description of your quiz', 'Subject of the quiz', 5, 50, 'Started', '2024-06-04', '09:30:00', '10:00:00', NULL, 2, '2024-06-04 03:59:42', '2024-06-04 04:00:00', '', 'Class name', 'batchA'),
+(47, 'Your Quiz Title', 'Description of your quiz', 'Subject of the quiz', 5, 50, 'Started', '2024-06-04', '12:16:00', '13:00:00', NULL, 2, '2024-06-04 06:45:39', '2024-06-04 06:46:00', '', 'Class name', 'batchA'),
+(48, 'Your Quiz Title', 'Description of your quiz', 'Subject of the quiz', 5, 50, 'Completed', '2024-06-04', '14:05:00', '15:00:00', NULL, 2, '2024-06-05 08:34:29', '2024-06-05 09:30:00', '', 'Class name', 'batchA'),
+(49, 'Your Quiz Title', 'Description of your quiz', 'Subject of the quiz', 5, 50, 'Completed', '2024-06-05', '16:09:30', '17:00:00', NULL, 2, '2024-06-05 10:39:15', '2024-06-05 11:30:00', '', 'Class name', 'batchA'),
+(50, 'Your Quiz Title', 'Description of your quiz', 'Subject of the quiz', 2, 50, 'Completed', '2024-06-05', '16:50:00', '18:00:00', NULL, 2, '2024-06-05 11:18:30', '2024-06-05 12:30:00', 'all', 'all', 'all');
 
 -- --------------------------------------------------------
 
@@ -170,7 +179,9 @@ INSERT INTO `exam_logs` (`LogID`, `ExamID`, `UserID`, `Status`, `created_at`, `u
 (4, 26, 3, 'Not Attempted', '2024-05-28 12:43:50', '2024-05-28 12:43:50'),
 (5, 26, 3, 'Not Attempted', '2024-05-28 12:43:55', '2024-05-28 12:43:55'),
 (6, 27, 3, 'Attempted', '2024-05-28 16:22:13', '2024-05-28 16:22:13'),
-(7, 27, 3, 'Not Attempted', '2024-05-28 16:23:55', '2024-05-28 16:23:55');
+(7, 27, 3, 'Not Attempted', '2024-05-28 16:23:55', '2024-05-28 16:23:55'),
+(8, 46, 3, 'Attempted', '2024-06-04 04:02:58', '2024-06-04 04:02:58'),
+(9, 47, 3, 'Attempted', '2024-06-04 06:48:03', '2024-06-04 06:48:03');
 
 -- --------------------------------------------------------
 
@@ -272,7 +283,18 @@ INSERT INTO `questionanswers` (`AnswerID`, `SubmissionID`, `QuestionID`, `Answer
 (54, 7, 3, 'Blue', '2024-05-28 12:38:04', '2024-05-28 12:38:04'),
 (55, 8, 1, 'Paris', '2024-05-28 16:22:13', '2024-05-28 16:22:13'),
 (56, 8, 2, '42', '2024-05-28 16:22:13', '2024-05-28 16:22:13'),
-(57, 8, 3, 'Blue', '2024-05-28 16:22:13', '2024-05-28 16:22:13');
+(57, 8, 3, 'Blue', '2024-05-28 16:22:13', '2024-05-28 16:22:13'),
+(58, 10, 1, 'Paris', '2024-06-04 04:02:58', '2024-06-04 04:02:58'),
+(59, 10, 2, '42', '2024-06-04 04:02:58', '2024-06-04 04:02:58'),
+(60, 10, 3, 'Blue', '2024-06-04 04:02:58', '2024-06-04 04:02:58'),
+(61, 11, 1, 'Paris', '2024-06-04 06:48:03', '2024-06-04 06:48:03'),
+(62, 11, 2, '42', '2024-06-04 06:48:03', '2024-06-04 06:48:03'),
+(63, 11, 3, 'Blue', '2024-06-04 06:48:03', '2024-06-04 06:48:03'),
+(64, 18, 1, 'A', '2024-06-05 11:06:28', '2024-06-05 11:06:28'),
+(65, 18, 2, 'B', '2024-06-05 11:06:28', '2024-06-05 11:06:28'),
+(66, 18, 3, 'C', '2024-06-05 11:06:28', '2024-06-05 11:06:28'),
+(67, 19, 114, 'A', '2024-06-05 11:21:14', '2024-06-05 11:21:14'),
+(68, 19, 115, 'B', '2024-06-05 11:21:14', '2024-06-05 11:21:14');
 
 -- --------------------------------------------------------
 
@@ -309,7 +331,25 @@ INSERT INTO `questionoptions` (`OptionID`, `QuestionID`, `OptionA`, `OptionB`, `
 (17, 94, 'fdjhdfjh', 'fdgpohfjhjgfihj', 'kfjghipjgfhigfiu', 'kgjhgipyjigiuifytiutiyu', '2024-06-02 10:00:10', '2024-06-02 10:00:10'),
 (18, 95, 'Option A', 'Option B', 'Option C', 'Option D', '2024-06-02 10:00:10', '2024-06-02 10:00:10'),
 (19, 96, 'fdjhdfjh', 'fdgpohfjhjgfihj', 'kfjghipjgfhigfiu', 'kgjhgipyjigiuifytiutiyu', '2024-06-02 10:00:24', '2024-06-02 10:00:24'),
-(20, 97, 'Option A', 'Option B', 'Option C', 'Option D', '2024-06-02 10:00:24', '2024-06-02 10:00:24');
+(20, 97, 'Option A', 'Option B', 'Option C', 'Option D', '2024-06-02 10:00:24', '2024-06-02 10:00:24'),
+(21, 98, 'fdjhdfjh', 'fdgpohfjhjgfihj', 'kfjghipjgfhigfiu', 'kgjhgipyjigiuifytiutiyu', '2024-06-03 10:41:23', '2024-06-03 10:41:23'),
+(22, 99, 'Option A', 'Option B', 'Option C', 'Option D', '2024-06-03 10:41:23', '2024-06-03 10:41:23'),
+(23, 100, 'fdjhdfjh', 'fdgpohfjhjgfihj', 'kfjghipjgfhigfiu', 'kgjhgipyjigiuifytiutiyu', '2024-06-03 11:12:26', '2024-06-03 11:12:26'),
+(24, 101, 'Option A', 'Option B', 'Option C', 'Option D', '2024-06-03 11:12:26', '2024-06-03 11:12:26'),
+(25, 102, 'fdjhdfjh', 'fdgpohfjhjgfihj', 'kfjghipjgfhigfiu', 'kgjhgipyjigiuifytiutiyu', '2024-06-03 14:12:26', '2024-06-03 14:12:26'),
+(26, 103, 'Option A', 'Option B', 'Option C', 'Option D', '2024-06-03 14:12:26', '2024-06-03 14:12:26'),
+(27, 104, 'fdjhdfjh', 'fdgpohfjhjgfihj', 'kfjghipjgfhigfiu', 'kgjhgipyjigiuifytiutiyu', '2024-06-03 14:17:19', '2024-06-03 14:17:19'),
+(28, 105, 'Option A', 'Option B', 'Option C', 'Option D', '2024-06-03 14:17:19', '2024-06-03 14:17:19'),
+(29, 106, 'fdjhdfjh', 'fdgpohfjhjgfihj', 'kfjghipjgfhigfiu', 'kgjhgipyjigiuifytiutiyu', '2024-06-04 03:59:42', '2024-06-04 03:59:42'),
+(30, 107, 'Option A', 'Option B', 'Option C', 'Option D', '2024-06-04 03:59:42', '2024-06-04 03:59:42'),
+(31, 108, 'fdjhdfjh', 'fdgpohfjhjgfihj', 'kfjghipjgfhigfiu', 'kgjhgipyjigiuifytiutiyu', '2024-06-04 06:45:39', '2024-06-04 06:45:39'),
+(32, 109, 'Option A', 'Option B', 'Option C', 'Option D', '2024-06-04 06:45:39', '2024-06-04 06:45:39'),
+(33, 110, 'fdjhdfjh', 'fdgpohfjhjgfihj', 'kfjghipjgfhigfiu', 'kgjhgipyjigiuifytiutiyu', '2024-06-05 08:34:29', '2024-06-05 08:34:29'),
+(34, 111, 'Option A', 'Option B', 'Option C', 'Option D', '2024-06-05 08:34:29', '2024-06-05 08:34:29'),
+(35, 112, 'fdjhdfjh', 'fdgpohfjhjgfihj', 'kfjghipjgfhigfiu', 'kgjhgipyjigiuifytiutiyu', '2024-06-05 10:39:15', '2024-06-05 10:39:15'),
+(36, 113, 'Option A', 'Option B', 'Option C', 'Option D', '2024-06-05 10:39:15', '2024-06-05 10:39:15'),
+(37, 114, 'fdjhdfjh', 'fdgpohfjhjgfihj', 'kfjghipjgfhigfiu', 'kgjhgipyjigiuifytiutiyu', '2024-06-05 11:18:30', '2024-06-05 11:18:30'),
+(38, 115, 'Option A', 'Option B', 'Option C', 'Option D', '2024-06-05 11:18:30', '2024-06-05 11:18:30');
 
 -- --------------------------------------------------------
 
@@ -417,7 +457,25 @@ INSERT INTO `questions` (`QuestionID`, `ExamID`, `QuestionText`, `Mark`, `Questi
 (94, 40, 'Question 1', 10, 'Multiple Choice', 'Correct option for Question 1', '2024-06-02 10:00:10', '2024-06-02 10:00:10'),
 (95, 40, 'Question 2', 10, 'Multiple Choice', 'Correct option for Question 2', '2024-06-02 10:00:10', '2024-06-02 10:00:10'),
 (96, 41, 'Question 1', 10, 'Multiple Choice', 'Correct option for Question 1', '2024-06-02 10:00:24', '2024-06-02 10:00:24'),
-(97, 41, 'Question 2', 10, 'Multiple Choice', 'Correct option for Question 2', '2024-06-02 10:00:24', '2024-06-02 10:00:24');
+(97, 41, 'Question 2', 10, 'Multiple Choice', 'Correct option for Question 2', '2024-06-02 10:00:24', '2024-06-02 10:00:24'),
+(98, 42, 'Question 1', 10, 'Multiple Choice', 'Correct option for Question 1', '2024-06-03 10:41:23', '2024-06-03 10:41:23'),
+(99, 42, 'Question 2', 10, 'Multiple Choice', 'Correct option for Question 2', '2024-06-03 10:41:23', '2024-06-03 10:41:23'),
+(100, 43, 'Question 1', 10, 'Multiple Choice', 'Correct option for Question 1', '2024-06-03 11:12:26', '2024-06-03 11:12:26'),
+(101, 43, 'Question 2', 10, 'Multiple Choice', 'Correct option for Question 2', '2024-06-03 11:12:26', '2024-06-03 11:12:26'),
+(102, 44, 'Question 1', 10, 'Multiple Choice', 'Correct option for Question 1', '2024-06-03 14:12:26', '2024-06-03 14:12:26'),
+(103, 44, 'Question 2', 10, 'Multiple Choice', 'Correct option for Question 2', '2024-06-03 14:12:26', '2024-06-03 14:12:26'),
+(104, 45, 'Question 1', 10, 'Multiple Choice', 'Correct option for Question 1', '2024-06-03 14:17:19', '2024-06-03 14:17:19'),
+(105, 45, 'Question 2', 10, 'Multiple Choice', 'Correct option for Question 2', '2024-06-03 14:17:19', '2024-06-03 14:17:19'),
+(106, 46, 'Question 1', 10, 'Multiple Choice', 'Correct option for Question 1', '2024-06-04 03:59:42', '2024-06-04 03:59:42'),
+(107, 46, 'Question 2', 10, 'Multiple Choice', 'Correct option for Question 2', '2024-06-04 03:59:42', '2024-06-04 03:59:42'),
+(108, 47, 'Question 1', 10, 'Multiple Choice', 'Correct option for Question 1', '2024-06-04 06:45:39', '2024-06-04 06:45:39'),
+(109, 47, 'Question 2', 10, 'Multiple Choice', 'Correct option for Question 2', '2024-06-04 06:45:39', '2024-06-04 06:45:39'),
+(110, 48, 'Question 1', 10, 'Multiple Choice', 'Correct option for Question 1', '2024-06-05 08:34:29', '2024-06-05 08:34:29'),
+(111, 48, 'Question 2', 10, 'Multiple Choice', 'Correct option for Question 2', '2024-06-05 08:34:29', '2024-06-05 08:34:29'),
+(112, 49, 'Question 1', 10, 'Multiple Choice', 'Correct option for Question 1', '2024-06-05 10:39:15', '2024-06-05 10:39:15'),
+(113, 49, 'Question 2', 10, 'Multiple Choice', 'Correct option for Question 2', '2024-06-05 10:39:15', '2024-06-05 10:39:15'),
+(114, 50, 'Question 1', 25, 'Multiple Choice', 'A', '2024-06-05 11:18:30', '2024-06-05 11:18:30'),
+(115, 50, 'Question 2', 25, 'Multiple Choice', 'B', '2024-06-05 11:18:30', '2024-06-05 11:18:30');
 
 -- --------------------------------------------------------
 
@@ -447,7 +505,15 @@ INSERT INTO `quizsubmissions` (`SubmissionID`, `ExamID`, `UserID`, `SubmissionDa
 (5, 24, 3, '2024-05-28 10:57:40', '2024-05-28 10:57:40', '2024-05-28 10:57:40', 'Attempted'),
 (6, 25, 3, '2024-05-28 11:59:30', '2024-05-28 11:59:30', '2024-05-28 11:59:30', 'Attempted'),
 (7, 26, 3, '2024-05-28 12:38:04', '2024-05-28 12:38:04', '2024-05-28 12:38:04', 'Attempted'),
-(8, 27, 3, '2024-05-28 16:22:13', '2024-05-28 16:22:13', '2024-05-28 16:22:13', 'Attempted');
+(8, 27, 3, '2024-05-28 16:22:13', '2024-05-28 16:22:13', '2024-05-28 16:22:13', 'Attempted'),
+(9, 45, 3, '2024-06-03 14:19:16', '2024-06-03 14:19:16', '2024-06-03 14:19:16', 'Attempting'),
+(10, 46, 3, '2024-06-04 04:02:20', '2024-06-04 04:02:20', '2024-06-04 04:02:58', 'Attempted'),
+(11, 47, 3, '2024-06-04 06:46:50', '2024-06-04 06:46:50', '2024-06-04 06:48:03', 'Attempted'),
+(15, 47, 3, '2024-06-04 06:48:11', '2024-06-04 06:48:11', '2024-06-04 06:48:11', 'Attempting'),
+(16, 47, 3, '2024-06-04 06:48:38', '2024-06-04 06:48:38', '2024-06-04 06:48:38', 'Attempting'),
+(17, 48, 3, '2024-06-05 08:37:31', '2024-06-05 08:37:31', '2024-06-05 08:37:31', 'Attempting'),
+(18, 49, 3, '2024-06-05 10:39:58', '2024-06-05 10:39:58', '2024-06-05 10:39:58', 'Attempting'),
+(19, 50, 3, '2024-06-05 11:20:02', '2024-06-05 11:20:02', '2024-06-05 11:20:02', 'Attempting');
 
 -- --------------------------------------------------------
 
@@ -471,7 +537,8 @@ CREATE TABLE `quiz_feedback` (
 
 INSERT INTO `quiz_feedback` (`id`, `quiz_id`, `student_id`, `feedback`, `created_at`, `updated_at`, `studentname`) VALUES
 (1, 3, 3, 'The quiz was well-structured and challenging. I particularly liked the variety of question types.', '2024-05-25 09:46:57', '2024-05-25 09:46:57', NULL),
-(2, 3, 3, 'The quiz was well-structured and challenging. I particularly liked the variety of question types.', '2024-05-28 16:52:54', '2024-05-28 16:52:54', NULL);
+(2, 3, 3, 'The quiz was well-structured and challenging. I particularly liked the variety of question types.', '2024-05-28 16:52:54', '2024-05-28 16:52:54', NULL),
+(6, 48, 3, 'The quiz was well-structured and challenging. I particularly liked the variety of question types.', '2024-06-05 09:24:55', '2024-06-05 09:24:55', NULL);
 
 -- --------------------------------------------------------
 
@@ -499,7 +566,11 @@ INSERT INTO `student_quiz_details` (`id`, `student_id`, `student_name`, `exam_id
 (1, 3, 'newUsername', 27, 1, 0, NULL, '2024-05-28 16:46:56', '2024-05-28 16:46:56'),
 (2, 3, 'newUsername', 27, 3, 0, NULL, '2024-05-28 16:47:31', '2024-05-28 16:47:31'),
 (3, 3, 'newUsername', 27, 3, 0, NULL, '2024-05-28 16:50:22', '2024-05-28 16:50:22'),
-(4, 3, 'newUsername', 27, 3, 10, NULL, '2024-05-28 16:51:19', '2024-05-28 16:51:19');
+(4, 3, 'newUsername', 27, 3, 10, NULL, '2024-05-28 16:51:19', '2024-05-28 16:51:19'),
+(5, 3, 'newUsername', 49, 3, 0, NULL, '2024-06-05 11:13:34', '2024-06-05 11:13:34'),
+(6, 3, 'newUsername', 49, 3, 0, NULL, '2024-06-05 11:21:31', '2024-06-05 11:21:31'),
+(7, 3, 'newUsername', 50, 2, 50, NULL, '2024-06-05 11:21:38', '2024-06-05 11:21:38'),
+(8, 3, 'newUsername', 50, 2, 50, NULL, '2024-06-05 13:57:17', '2024-06-05 13:57:17');
 
 -- --------------------------------------------------------
 
@@ -698,13 +769,13 @@ ALTER TABLE `examassignments`
 -- AUTO_INCREMENT for table `exams`
 --
 ALTER TABLE `exams`
-  MODIFY `ExamID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `ExamID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT for table `exam_logs`
 --
 ALTER TABLE `exam_logs`
-  MODIFY `LogID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `LogID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `feedback`
@@ -716,37 +787,37 @@ ALTER TABLE `feedback`
 -- AUTO_INCREMENT for table `questionanswers`
 --
 ALTER TABLE `questionanswers`
-  MODIFY `AnswerID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `AnswerID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- AUTO_INCREMENT for table `questionoptions`
 --
 ALTER TABLE `questionoptions`
-  MODIFY `OptionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `OptionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `questions`
 --
 ALTER TABLE `questions`
-  MODIFY `QuestionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
+  MODIFY `QuestionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=116;
 
 --
 -- AUTO_INCREMENT for table `quizsubmissions`
 --
 ALTER TABLE `quizsubmissions`
-  MODIFY `SubmissionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `SubmissionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `quiz_feedback`
 --
 ALTER TABLE `quiz_feedback`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `student_quiz_details`
 --
 ALTER TABLE `student_quiz_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `systemlogs`

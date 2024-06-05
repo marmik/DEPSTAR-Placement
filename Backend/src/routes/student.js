@@ -18,12 +18,12 @@ router.use(cookieParser());
 
 const connection = mysql.createConnection({
   host: process.env.DB_HOST,
-  // port: process.env.DB_PORT,
+  port: process.env.DB_PORT,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   timezone: "Z",
-  // socketPath: process.env.DB_SOCKET_PATH,
+  socketPath: process.env.DB_SOCKET_PATH
 });
 
 connection.connect((err) => {
@@ -90,7 +90,7 @@ router.get(
   }
 ); // not tested
 
-// 18. POST /api/student/quizzes/:id/start - Start a quiz
+
 router.post(
   "/quizzes/:examid/start",
   verifyToken,
@@ -100,186 +100,190 @@ router.post(
     const userId = req.user.userID;
 
     // Check if the student has already attempted the exam
-    const checkSubmissionQuery = "SELECT status FROM quizsubmissions WHERE ExamID = ? AND UserID = ?";
-    connection.query(checkSubmissionQuery, [examId, userId], (checkError, checkResults) => {
-      if (checkError) {
-        console.error("Error checking quiz submission status:", checkError);
-        return res.status(500).json({ error: "Internal server error" });
-      }
-
-      if (checkResults.length > 0 && checkResults[0].status === "Attempted") {
-        return res.status(400).json({ message: "You have already attempted this exam" });
-      }
-
-      // Check if the exam status is "started" in the exams table
-      const checkExamStatusQuery = "SELECT status FROM exams WHERE ExamID = ?";
-      connection.query(checkExamStatusQuery, [examId], (examError, examResults) => {
-        if (examError) {
-          console.error("Error checking exam status:", examError);
+    const checkSubmissionQuery =
+      "SELECT status FROM quizsubmissions WHERE ExamID = ? AND UserID = ?";
+    connection.query(
+      checkSubmissionQuery,
+      [examId, userId],
+      (checkError, checkResults) => {
+        if (checkError) {
+          console.error("Error checking quiz submission status:", checkError);
           return res.status(500).json({ error: "Internal server error" });
         }
 
-        // If the exam status is "started", insert a new record into QuizSubmissions table
-        if (examResults.length > 0 && examResults[0].status === "Started") {
-          const insertQuery = "INSERT INTO quizsubmissions (ExamID, UserID, status) VALUES (?, ?, ?)";
-          const values = [examId, userId, "Attempting"];
-
-          connection.query(insertQuery, values, (insertError, insertResults) => {
-            if (insertError) {
-              console.error("Error inserting into QuizSubmissions:", insertError);
-              return res.status(500).json({ error: "Internal server error" });
-            }
-
-            // If insertion is successful, send a success response
-            return res.status(200).json({ message: "Quiz started successfully" });
-          });
+        if (checkResults.length > 0 && checkResults[0].status === "Attempted") {
+          return res
+            .status(400)
+            .json({ message: "You have already attempted this exam" });
         } else {
-          // If the exam status is not "started", send an error response
-          return res.status(400).json({ error: "Exam not started yet" });
+          // Check if the exam status is "started" in the exams table
+          const checkExamStatusQuery =
+            "SELECT Status FROM exams WHERE ExamID = ?";
+          connection.query(
+            checkExamStatusQuery,
+            [examId],
+            (examError, examResults) => {
+              if (examError) {
+                console.error("Error checking exam status:", examError);
+                return res.status(500).json({ error: "Internal server error" });
+              }
+
+              // If the exam status is "started"
+              if (
+                examResults.length > 0 &&
+                examResults[0].Status === "Started"
+              ) {
+                // Check if the status is not "Attempting"
+                if (
+                  checkResults.length === 0 || 
+                  checkResults[0].status !== "Attempting"
+                ) {
+                  const insertQuery =
+                    "INSERT INTO quizsubmissions (ExamID, UserID, status) VALUES (?, ?, ?)";
+                  const values = [examId, userId, "Attempting"];
+
+                  connection.query(
+                    insertQuery,
+                    values,
+                    (insertError, insertResults) => {
+                      if (insertError) {
+                        console.error(
+                          "Error inserting into quizsubmissions:",
+                          insertError
+                        );
+                        return res
+                          .status(500)
+                          .json({ error: "Internal server error" });
+                      }
+
+                      // If insertion is successful, send a success response
+                      return res
+                        .status(200)
+                        .json({ message: "Quiz started successfully" });
+                    }
+                  );
+                } else {
+                  // If the status is "Attempting", send an error response
+                  return res
+                    .status(200)
+                    .json({ message: "You are already attempting this exam" });
+                }
+              } else {
+                // If the exam status is not "started", send an error response
+                return res.status(400).json({ error: "Exam not started yet" });
+              }
+            }
+          );
         }
-      });
-    });
+      }
+    );
   }
 );
- // tested
 
- const moment = require("moment");
 
- router.post(
-   "/quizzes/:id/submit",
-   verifyToken,
-   checkRole("Student"),
-   (req, res) => {
-     const examId = req.params.id;
-     const userId = req.user.userID;
-     const answers = req.body.answers;
- 
-     // Validate that answers is defined and is an array
-     if (!answers || !Array.isArray(answers)) {
-       return res.status(400).json({ error: "Invalid or missing answers" });
-     }
- 
-     // Check if the exam is over by comparing the end time
-     connection.query(
-       "SELECT ExamDate, EndTime FROM Exams WHERE ExamID = ?",
-       [examId],
-       (error, results) => {
-         if (error) {
-           console.error(error);
-           return res.status(500).json({ error: "Internal server error" });
-         } else if (results.length === 0) {
-           return res.status(400).json({ error: "Exam not found" });
-         } else {
-           const examDate = moment(results[0].ExamDate).format("YYYY-MM-DD");
-           const endTime = results[0].EndTime;
-           const endDateTime = moment(
-             `${examDate} ${endTime}`,
-             "YYYY-MM-DD HH:mm:ss"
-           );
-           const currentTime = moment();
- 
-           console.log("End Date:", examDate);
-           console.log("End Time:", endTime);
-           console.log(
-             "End Date Time:",
-             endDateTime.format("YYYY-MM-DD HH:mm:ss")
-           );
-           console.log(
-             "Current Time:",
-             currentTime.format("YYYY-MM-DD HH:mm:ss")
-           );
- 
-           const oneMinuteAfterEndTime = endDateTime.clone().add(1, 'minutes');
-           if (currentTime.isAfter(oneMinuteAfterEndTime)) {
-             return res
-               .status(400)
-               .json({ error: "Submission is only allowed within 1 minute after the end time" });
-           } else {
-             // Continue with submission logic
-             // Check if the user has already submitted this exam
-             connection.query(
-               "SELECT SubmissionID FROM QuizSubmissions WHERE ExamID = ? AND UserID = ?",
-               [examId, userId],
-               (error, results) => {
-                 if (error) {
-                   console.error(error);
-                   return res
-                     .status(500)
-                     .json({ error: "Internal server error" });
-                 } else if (results.length > 0) {
-                   // User has already submitted the quiz, update the status
-                   const submissionId = results[0].SubmissionID;
-                   // Update submission status
-                   updateSubmission(submissionId, answers, res);
-                 } else {
-                   // Create a new submission record
-                   createSubmission(examId, userId, answers, res);
-                 }
-               }
-             );
-           }
-         }
-       }
-     );
-   }
- );
- 
- // Function to create a new submission record
- const createSubmission = (examId, userId, answers, res) => {
-   connection.query(
-     "INSERT INTO QuizSubmissions (ExamID, UserID, Status) VALUES (?, ?, 'Attempted')",
-     [examId, userId],
-     (insertError, insertResults) => {
-       if (insertError) {
-         console.error(insertError);
-         return res.status(500).json({ error: "Internal server error" });
-       }
- 
-       const submissionId = insertResults.insertId;
-       insertAnswers(submissionId, answers, res);
-     }
-   );
- };
- 
- // Function to update an existing submission
- const updateSubmission = (submissionId, answers, res) => {
-   // Update the submission status if needed
-   connection.query(
-     "UPDATE QuizSubmissions SET Status = 'Attempted' WHERE SubmissionID = ?",
-     [submissionId],
-     (updateError) => {
-       if (updateError) {
-         console.error(updateError);
-         return res.status(500).json({ error: "Internal server error" });
-       }
- 
-       // Update answers
-       insertAnswers(submissionId, answers, res);
-     }
-   );
- };
- 
- const insertAnswers = (submissionId, answers, res) => {
-   const values = answers.map((answer) => [
-     submissionId,
-     answer.questionId,
-     answer.answer,
-   ]);
- 
-   // Insert answers into the database
-   connection.query(
-     "INSERT INTO QuestionAnswers (SubmissionID, QuestionID, AnswerText) VALUES ?",
-     [values],
-     (error, results) => {
-       if (error) {
-         console.error(error);
-         return res.status(500).json({ error: "Internal server error" });
-       }
-       res.status(200).json({ message: "Answers submitted successfully" });
-     }
-   );
- }; // function tested
- 
+router.post(
+  "/quizzes/:id/submit",
+  verifyToken,
+  checkRole("Student"),
+  (req, res) => {
+    const examId = req.params.id;
+    const userId = req.user.userID;
+    const answers = req.body.answers;
+
+    // Validate that answers is defined and is an array
+    if (!answers || !Array.isArray(answers)) {
+      return res.status(400).json({ error: "Invalid or missing answers" });
+    }
+
+    // Check if the exam is over by comparing the end time
+    connection.query(
+      "SELECT ExamDate, EndTime FROM Exams WHERE ExamID = ?",
+      [examId],
+      (error, results) => {
+        if (error) {
+          console.error(error);
+          return res.status(500).json({ error: "Internal server error" });
+        } else if (results.length === 0) {
+          return res.status(400).json({ error: "Exam not found" });
+        } else {
+          const examDate = moment(results[0].ExamDate).format("YYYY-MM-DD");
+          const endTime = results[0].EndTime;
+          const endDateTime = moment(`${examDate} ${endTime}`, "YYYY-MM-DD HH:mm:ss");
+          const currentTime = moment();
+
+          console.log("End Date:", examDate);
+          console.log("End Time:", endTime);
+          console.log("End Date Time:", endDateTime.format("YYYY-MM-DD HH:mm:ss"));
+          console.log("Current Time:", currentTime.format("YYYY-MM-DD HH:mm:ss"));
+
+          const oneMinuteAfterEndTime = endDateTime.clone().add(1, 'minutes');
+          if (currentTime.isAfter(oneMinuteAfterEndTime)) {
+            return res
+              .status(400)
+              .json({ error: "Submission is only allowed within 1 minute after the end time" });
+          } else {
+            // Continue with submission logic
+            // Check if the user has already submitted this exam
+            connection.query(
+              "SELECT SubmissionID FROM QuizSubmissions WHERE ExamID = ? AND UserID = ?",
+              [examId, userId],
+              (error, results) => {
+                if (error) {
+                  console.error(error);
+                  return res.status(500).json({ error: "Internal server error" });
+                } else {
+                  if (results.length > 0) {
+                    // Assuming the SubmissionID is the first result's property
+                    const submissionID = results[0].SubmissionID;
+                    // Create a new submission record
+                    insertAnswers(submissionID, answers, res);
+                  } else {
+                    // Handle case where there is no submission found
+                    return res.status(404).json({ error: "Submission not found" });
+                  }
+                }
+              }
+            );            
+          }
+        }
+      }
+    );
+  }
+);
+
+
+const insertAnswers = (submissionId, answers, res) => {
+  const values = answers.map((answer) => [
+    submissionId,
+    answer.questionId,
+    answer.answer,
+  ]);
+
+  // Insert answers into the database
+  connection.query(
+    "INSERT INTO QuestionAnswers (SubmissionID, QuestionID, AnswerText) VALUES ?",
+    [values],
+    (error, results) => {
+      if (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal server error" });
+      }
+      res.status(200).json({ message: "Answers submitted successfully" });
+    }
+  );
+}; // function tested
+
+// Function to log exam attempts
+const logExamAttempt = (examID, userID, status, callback) => {
+  connection.query(
+    "INSERT INTO exam_logs (ExamID, UserID, Status) VALUES (?, ?, ?)",
+    [examID, userID, status],
+    (error) => {
+      if (error) return callback(error);
+      callback(null);
+    }
+  );
+}; // function tested
 
 // API endpoint for logging "Not Attempted"
 router.post(
@@ -315,7 +319,7 @@ router.post(
 ); //tested
 
 // 20. GET /api/student/quizzes/:id/results - Get quiz results
-router.get(
+router.post(
   "/quizzes/:id/results",
   verifyToken,
   checkRole("Student"),
@@ -323,100 +327,148 @@ router.get(
     const examId = req.params.id;
     const userId = req.user.userID;
 
-    connection.query(
-      `SELECT s.SubmissionID, s.SubmissionDate, q.QuestionID, q.QuestionText, q.Correct_Option, q.Mark, a.AnswerText 
-     FROM quizsubmissions s 
-     JOIN questionanswers a ON s.SubmissionID = a.SubmissionID 
-     JOIN questions q ON a.QuestionID = q.QuestionID 
-     WHERE s.ExamID = ? AND s.UserID = ? 
-     ORDER BY s.SubmissionDate DESC`,
-      [examId, userId],
-      (error, results) => {
-        if (error) {
-          console.error(error);
+    // Query to fetch submission details
+    const submissionQuery = `
+      SELECT s.SubmissionID, s.SubmissionDate, q.QuestionID, q.QuestionText, q.Correct_Option, q.Mark, a.AnswerText 
+      FROM quizsubmissions s 
+      JOIN questionanswers a ON s.SubmissionID = a.SubmissionID 
+      JOIN questions q ON a.QuestionID = q.QuestionID 
+      WHERE s.ExamID = ? AND s.UserID = ? 
+      ORDER BY s.SubmissionDate DESC`;
+
+    connection.query(submissionQuery, [examId, userId], (error, results) => {
+      if (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal server error" });
+      }
+
+      if (results.length === 0) {
+        return res.status(404).json({ error: "No submissions found for this exam" });
+      }
+
+      // Calculate total marks
+      let totalQuestions = results.length;
+      let total_marks = 0;
+
+      results.forEach((result) => {
+        if (result.AnswerText === result.Correct_Option) {
+          total_marks += result.Mark; // Add the mark for the correct answer
+        }
+      });
+
+      // Query to get student name
+      const studentQuery = "SELECT Username FROM users WHERE UserID = ?";
+
+      connection.query(studentQuery, [userId], (studentError, studentResults) => {
+        if (studentError) {
+          console.error(studentError);
           return res.status(500).json({ error: "Internal server error" });
         }
 
-        if (results.length === 0) {
-          return res
-            .status(404)
-            .json({ error: "No submissions found for this exam" });
-        }
+        const studentName = studentResults[0]?.Username;
 
-        // Calculate total marks
-        let totalQuestions = results.length;
-        let totalMarks = 0;
+        // Check if data already exists in student_quiz_details
+        const checkQuery = "SELECT * FROM student_quiz_details WHERE student_id = ? AND exam_id = ?";
 
-        results.forEach((result) => {
-          if (result.AnswerText === result.Correct_Option) {
-            totalMarks += result.Mark; // Add the mark for the correct answer
+        connection.query(checkQuery, [userId, examId], (checkError, checkResults) => {
+          if (checkError) {
+            console.error(checkError);
+            return res.status(500).json({ error: "Internal server error" });
           }
-        });
 
-        // Get student name (assuming student details are stored in the users table)
-        connection.query(
-          "SELECT Username FROM users WHERE UserID = ?",
-          [userId],
-          (studentError, studentResults) => {
-            if (studentError) {
-              console.error(studentError);
+          // Query to fetch exam details
+          const examQuery = `
+            SELECT Status, Subject, Title, Description, Number_of_Questions, Exam_Total_Marks, ExamDate, StartTime, EndTime 
+            FROM exams 
+            WHERE ExamID = ?`;
+
+          connection.query(examQuery, [examId], (examError, examResults) => {
+            if (examError) {
+              console.error(examError);
               return res.status(500).json({ error: "Internal server error" });
             }
 
-            const studentName = studentResults[0]?.Username;
+            const examDetails = examResults[0];
 
-            // Update student_quiz_details table
-            connection.query(
-              `INSERT INTO student_quiz_details 
-              (student_id, student_name, exam_id, total_questions, total_marks) 
-              VALUES (?, ?, ?, ?, ?) 
-              ON DUPLICATE KEY UPDATE 
-                total_questions = VALUES(total_questions), 
-                total_marks = VALUES(total_marks), 
-                updated_at = CURRENT_TIMESTAMP`,
-              [userId, studentName, examId, totalQuestions, totalMarks],
-              (insertError, insertResults) => {
-                if (insertError) {
-                  console.error(insertError);
-                  return res
-                    .status(500)
-                    .json({ error: "Internal server error" });
+            if (checkResults.length > 0) {
+              // Data already exists, no need to insert again
+              res.json({
+                totalQuestions: totalQuestions,
+                total_marks: total_marks,
+                results: results,
+                examDetails: examDetails,
+                message: "Data already exists in student_quiz_details"
+              });
+            } else {
+              // Update student_quiz_details table
+              const insertQuery = `
+                INSERT INTO student_quiz_details 
+                (student_id, student_name, exam_id, total_questions, total_marks) 
+                VALUES (?, ?, ?, ?, ?)`;
+
+              connection.query(
+                insertQuery,
+                [userId, studentName, examId, totalQuestions, total_marks],
+                (insertError, insertResults) => {
+                  if (insertError) {
+                    console.error(insertError);
+                    return res.status(500).json({ error: "Internal server error" });
+                  }
+
+                  res.json({
+                    totalQuestions: totalQuestions,
+                    total_marks: total_marks,
+                    results: results,
+                    examDetails: examDetails,
+                    message: "Data inserted into student_quiz_details"
+                  });
                 }
-
-                res.json({
-                  totalQuestions: totalQuestions,
-                  totalMarks: totalMarks,
-                  results: results,
-                });
-              }
-            );
-          }
-        );
-      }
-    );
+              );
+            }
+          });
+        });
+      });
+    });
   }
 ); //tested
 
-// Save Quiz Feedback API
-router.post("/quizFeedback", verifyToken, checkRole("Student"), (req, res) => {
-  const { quiz_id, feedback } = req.body;
-  const student_id = req.user.userID;
-  const student_name = req.user.username;
 
-  const feedbackInsertQuery =
-    "INSERT INTO quiz_feedback(quiz_id, student_id, studentname, feedback) VALUES (?, ?, ?, ?)";
-  connection.query(
-    feedbackInsertQuery,
-    [quiz_id, student_id, student_name, feedback],
-    (err, result) => {
-      if (err) {
-        console.error("Error saving quiz feedback:", err);
-        return res.status(500).json({ error: "Failed to save quiz feedback" });
-      }
-      res.status(201).json({ message: "Quiz feedback saved successfully" });
+// Save Quiz Feedback API
+router.post("/quizFeedback/:quizId", verifyToken, checkRole("Student"), (req, res) => {
+  const quiz_id = req.params.quizId;
+  const { ExamFeedback } = req.body;
+  const student_id = req.user.userID;
+
+  // Query to fetch student name from users table
+  const fetchStudentNameQuery = "SELECT Username FROM users WHERE UserID = ?";
+  connection.query(fetchStudentNameQuery, [student_id], (err, results) => {
+    if (err) {
+      console.error("Error fetching student name:", err);
+      return res.status(500).json({ error: "Failed to fetch student name" });
     }
-  );
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    const student_name = results[0].username;
+
+    const feedbackInsertQuery =
+      "INSERT INTO quiz_feedback(quiz_id, student_id, studentname, feedback) VALUES (?, ?, ?, ?)";
+    connection.query(
+      feedbackInsertQuery,
+      [quiz_id, student_id, student_name, ExamFeedback],
+      (err, result) => {
+        if (err) {
+          console.error("Error saving quiz feedback:", err);
+          return res.status(500).json({ error: "Failed to save quiz feedback" });
+        }
+        res.status(201).json({ message: "Quiz feedback saved successfully" });
+      }
+    );
+  });
 }); //tested
+
 
 // View Quiz Feedback API
 router.get(
@@ -559,17 +611,26 @@ router.get(
     const userId = req.user.userID;
 
     const query = `
-    SELECT s.SubmissionID, e.Title, s.SubmissionDate, 
-           sqd.total_marks AS total_possible_marks, 
-           (SELECT SUM(CASE WHEN q.Correct_Option = a.AnswerText THEN 1 ELSE 0 END) 
-            FROM questionanswers a 
-            JOIN questions q ON a.QuestionID = q.QuestionID 
-            WHERE a.SubmissionID = s.SubmissionID) AS score 
-    FROM quizsubmissions s 
-    JOIN exams e ON s.UserID = e.ExamID 
-    JOIN student_quiz_details sqd ON s.ExamID = sqd.exam_id AND s.UserID = sqd.student_id
-    WHERE s.UserID = ?
-  `;
+    SELECT 
+      s.SubmissionID, 
+      e.Title, 
+      s.SubmissionDate, 
+      sqd.total_marks AS obtain_Marks, 
+      e.Number_of_Questions AS total_question, 
+      e.Exam_Total_Marks AS total_marks, 
+      (SELECT SUM(CASE WHEN q.Correct_Option = a.AnswerText THEN 1 ELSE 0 END) 
+       FROM questionanswers a 
+       JOIN questions q ON a.QuestionID = q.QuestionID 
+       WHERE a.SubmissionID = s.SubmissionID) AS score 
+    FROM 
+      quizsubmissions s 
+    JOIN 
+      exams e ON s.ExamID = e.ExamID 
+    JOIN 
+      student_quiz_details sqd ON s.ExamID = sqd.exam_id AND s.UserID = sqd.student_id
+    WHERE 
+      s.UserID = ?
+    `;
 
     connection.query(query, [userId], (error, results) => {
       if (error) {
@@ -579,8 +640,10 @@ router.get(
       res.json(results);
     });
   }
-); //tested
+);  //tested
 
+
+// GET /api/student/upcomingExams - View upcoming exams for a particular student
 router.get("/upcomingExams", verifyToken, checkRole("Student"), (req, res) => {
   const studentId = req.user.userID;
   const studentClass = req.user.class; // Assume class is a property of req.user
@@ -614,8 +677,7 @@ router.get("/upcomingExams", verifyToken, checkRole("Student"), (req, res) => {
 
     res.json(formattedResults);
   });
-});//tested
-
+});
 
 
 

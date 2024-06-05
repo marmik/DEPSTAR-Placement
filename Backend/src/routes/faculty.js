@@ -16,14 +16,15 @@ app.use(express.json());
 
 const { verifyToken, checkRole } = vverifyToken;
 
-// Database connection
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
     user: process.env.DB_USER,
-    password: '',
+    password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    timezone: "Z"
-});
+    timezone: "Z",
+    socketPath: process.env.DB_SOCKET_PATH
+  });
 
 connection.connect((err) => {
     if (err) {
@@ -591,5 +592,34 @@ router.post("/feedback", verifyToken, checkRole("Faculty"), (req, res) => {
       );
     });
   });
+
+
+
+
+
+
+// GET Total Students Markes in Quizzes
+router.get("/quizzes/history",verifyToken,checkRole("Faculty"),(req, res) => {
+    const userId = req.user.userID;
+    const query = `SELECT s.SubmissionID,e.Title,s.SubmissionDate,sqd.total_marks AS obtain_Marks, 
+      e.Number_of_Questions AS total_question,e.Exam_Total_Marks AS total_marks,(SELECT SUM(CASE WHEN q.Correct_Option = a.AnswerText THEN 1 ELSE 0 END) 
+       FROM questionanswers a JOIN questions q ON a.QuestionID = q.QuestionID WHERE a.SubmissionID = s.SubmissionID) AS score,
+      (SELECT MAX(sqd.total_marks) FROM student_quiz_details sqd WHERE sqd.exam_id = e.ExamID) AS max_marks,
+      (SELECT MIN(sqd.total_marks) FROM student_quiz_details sqd WHERE sqd.exam_id = e.ExamID) AS min_marks,
+      (SELECT AVG(sqd.total_marks) FROM student_quiz_details sqd WHERE sqd.exam_id = e.ExamID) AS avg_marks
+    FROM quizsubmissions s JOIN exams e ON s.ExamID = e.ExamID JOIN student_quiz_details sqd ON s.ExamID = sqd.exam_id AND s.UserID = sqd.student_id
+    WHERE e.CreatorID = ?`;
+
+    connection.query(query, [userId], (error, results) => {
+      if (error) {
+        console.error("Error fetching quiz history:", error);
+        return res.status(500).json({ error: "Internal server error" });
+      }
+      res.json(results);
+    });
+  }
+);  // tested
+  
+  
 
 module.exports = router;
