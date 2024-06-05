@@ -13,16 +13,17 @@ const Dashboard = () => {
   const [showPopup, setShowPopup] = useState(false);
 
   const handleStartQuiz = async (QuizID) => {
-    console.log(QuizID);
+
 
     try {
       const token = localStorage.getItem('token');
-      console.log(token);
+      
       const response = await axios.post(`http://localhost:3000/api/student/quizzes/${QuizID}/start`,null,{
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      
       
       if(response.status === 200){
 
@@ -33,7 +34,8 @@ const Dashboard = () => {
 
 
     } catch (error) {
-      console.error('Error fetching exams:', error);
+      // console.error('Error fetching exams:', error);
+      toast.error("Something Went Wrong ! Please try again Later ");
     }
 
   }
@@ -68,11 +70,12 @@ const Dashboard = () => {
           },
         });
         
-        console.log(response.data);
+        // console.log(response.data);
         setUpcomingExams(response.data);
 
       } catch (error) {
-        console.error('Error fetching exams:', error);
+        // console.error('Error fetching exams:', error);
+        toast.error("Something Went Wrong ! Please try again Later ");
       }
     };
 
@@ -89,7 +92,7 @@ const Dashboard = () => {
             <h2 className="text-xl font-bold mb-4">Quiz info</h2>
             <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
               <h2 className="sm:w-1/3 w-full text-lg font-bold">
-                Subject :<span className=" text-lg font-light">{selectedExam.subject}</span>
+                Subject :<span className=" text-lg font-light">{selectedExam.Subject}</span>
               </h2>
               <h2 className="sm:w-1/3 w-full text-lg font-bold">
                 Title : <span className=" text-lg font-light">{selectedExam.Title}</span>
@@ -100,7 +103,7 @@ const Dashboard = () => {
             </div>
             <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
               <h2 className="sm:w-1/3 w-full text-lg font-bold">
-                Description : <span className=" text-lg font-light">{selectedExam.description}</span>
+                Description : <span className=" text-lg font-light">{selectedExam.Description}</span>
               </h2>
               <h2 className="sm:w-1/3 w-full text-lg font-bold">
                 Total Questions : <span className=" text-lg font-light">{selectedExam.Number_of_Questions}</span>

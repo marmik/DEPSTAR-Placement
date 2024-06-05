@@ -32,7 +32,8 @@ const StartQuiz = () => {
         // console.log(examDetails);
         calculateRemainingTime(examDetails.endTime);
       } catch (error) {
-        console.error('Error fetching exams:', error);
+        // console.error('Error fetching exams:', error);
+        toast.error("Something Went Wrong ! Please try again Later ");
       }
     };
     // console.log(ExamDetails," ExamDetails");
@@ -46,8 +47,8 @@ const StartQuiz = () => {
             clearInterval(timerId);
             if (!submitted && !submitRef.current) {
               submitRef.current = true;
-              handleSubmit();
               toast.warning("Time's up!");
+              handleSubmit();
             }else{
               setShowEndFeedbackQuiz(true);
             }
@@ -88,17 +89,36 @@ const StartQuiz = () => {
   const handleSubmit = () => {
     if (!submitted) {
       submitQuiz({ answers: convertSelectedOptions(selectedOptions) });
-      toast.success("Quiz Submitted Successfully");
       setShowEndFeedbackQuiz(true);
       setSubmitted(true);
     }
   };
 
-  const handleConfirmSubmit = (event) => {
+  const handleConfirmSubmit = async (event) => {
     event.preventDefault();
-    console.log(ExamFeedback);
-    setShowEndFeedbackQuiz(false);
-    navigate("/");  
+    
+    try {
+      const token = localStorage.getItem('token');
+      // console.log(token);
+      const response = await axios.post(`http://localhost:3000/api/student/quizFeedback/${QuizID}/`,{ExamFeedback},{
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      
+      if(response.status === 201){
+        setShowEndFeedbackQuiz(false);
+        toast.success("Quiz Feedback Submitted !");
+        navigate(`/`);
+      }
+
+
+    } catch (error) {
+      // console.error('Error Feedback exams:', error);
+      toast.error("Something Went Wrong ! Please try again Later ");
+    }
+    
   };
 
   const convertSelectedOptions = (selectedOptions) => {
@@ -114,12 +134,14 @@ const StartQuiz = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       if (status === 200) {
-        console.log("Quiz submitted successfully:", responseData);
+        toast.success("Quiz Submitted Successfully");
       } else {
-        console.warn("Error submitting quiz");
+        toast.error("Error to submitting the quiz !");
       }
     } catch (error) {
-      console.error('Error submitting quiz:', error);
+      // console.error('Error submitting quiz:', error);
+      toast.error("Error to submitting the quiz !");
+
     }
   };
 

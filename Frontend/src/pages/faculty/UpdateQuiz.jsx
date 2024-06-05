@@ -49,10 +49,10 @@ const UpdateQuiz = () => {
           setQuestionList(response.data.questions);
           // console.log(response.data.questions," this is a list of quetions");
         } else {
-          console.warn("Internal Server Error !");
+          toast.warn("Internal Server Error !");
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        toast.error("Something Went Wrong ! Please try again Later ");
       }
     };
 
@@ -156,7 +156,7 @@ const UpdateQuiz = () => {
       toast.success(response.data.message);
     } catch (error) {
 
-      toast.error("Error to Create Quiz");
+      toast.error("Error to Update Quiz !");
     }
   };
 
@@ -235,14 +235,14 @@ const UpdateQuiz = () => {
             <label className="flex flex-col">Sem
               <select name="sem" required autoComplete="name" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" value={FormData.sem} onChange={handleInputChange}>
                 <option disabled selected value="">Select Semester</option>
-                <option value="sem1">SEM 1</option>
-                <option value="sem2">SEM 2</option>
-                <option value="sem3">SEM 3</option>
-                <option value="sem4">SEM 4</option>
-                <option value="sem5">SEM 5</option>
-                <option value="sem6">SEM 6</option>
-                <option value="sem7">SEM 7</option>
-                <option value="sem8">SEM 8</option>
+                <option value="SEM 1">SEM 1</option>
+                <option value="SEM 2">SEM 2</option>
+                <option value="SEM 3">SEM 3</option>
+                <option value="SEM 4">SEM 4</option>
+                <option value="SEM 5">SEM 5</option>
+                <option value="SEM 6">SEM 6</option>
+                <option value="SEM 7">SEM 7</option>
+                <option value="SEM 8">SEM 8</option>
               </select>
             </label>
           </div>
@@ -251,30 +251,30 @@ const UpdateQuiz = () => {
             <label className="flex flex-col">Class
               <select name="className" required autoComplete="name" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" value={FormData.className} onChange={handleInputChange}>
                 <option disabled selected value="">Select Class</option>
-                <option value="4CE1">1CE</option>
-                <option value="4CE2">2CE</option>
-                <option value="4CE1">3CE</option>
-                <option value="4CE2">4CE</option>
-                <option value="4CE1">5CE</option>
-                <option value="4CE2">6CE</option>
-                <option value="4CE1">7CE</option>
-                <option value="4CE2">8CE</option>
-                <option value="4CE1">1CSE</option>
-                <option value="4CE2">2CSE</option>
-                <option value="4CE1">3CSE</option>
-                <option value="4CE2">4CSE</option>
-                <option value="4CE1">5CSE</option>
-                <option value="4CE2">6CSE</option>
-                <option value="4CE1">7CSE</option>
-                <option value="4CE2">8CSE</option>
-                <option value="4CE1">1IT</option>
-                <option value="4CE2">2IT</option>
-                <option value="4CE1">3IT</option>
-                <option value="4CE2">4IT</option>
-                <option value="4CE1">5IT</option>
-                <option value="4CE2">6IT</option>
-                <option value="4CE1">7IT</option>
-                <option value="4CE2">8IT</option>
+                <option value="1CE">1CE</option>
+                <option value="2CE">2CE</option>
+                <option value="3CE">3CE</option>
+                <option value="4CE">4CE</option>
+                <option value="5CE">5CE</option>
+                <option value="6CE">6CE</option>
+                <option value="7CE">7CE</option>
+                <option value="8CE">8CE</option>
+                <option value="1CSE">1CSE</option>
+                <option value="2CSE">2CSE</option>
+                <option value="3CSE">3CSE</option>
+                <option value="4CSE">4CSE</option>
+                <option value="5CSE">5CSE</option>
+                <option value="6CSE">6CSE</option>
+                <option value="7CSE">7CSE</option>
+                <option value="8CSE">8CSE</option>
+                <option value="1IT">1IT</option>
+                <option value="2IT">2IT</option>
+                <option value="3IT">3IT</option>
+                <option value="4IT">4IT</option>
+                <option value="5IT">5IT</option>
+                <option value="6IT">6IT</option>
+                <option value="7IT">7IT</option>
+                <option value="8IT">8IT</option>
               </select>
             </label>
           </div>
@@ -284,10 +284,10 @@ const UpdateQuiz = () => {
               <select name="batch" required autoComplete="name" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" value={FormData.batch} onChange={handleInputChange}>
                 <option disabled selected value="">Select Batch</option>
                 <option value="All">All</option>
-                <option value="batchA">A</option>
-                <option value="batchB">B</option>
-                <option value="batchC">C</option>
-                <option value="batchD">D</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
               </select>
             </label>
           </div>
