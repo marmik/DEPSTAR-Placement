@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import UpdateQuetions from './UpdateQuetions';
 import { toast } from 'react-toastify';
 
 const UpdateQuiz = () => {
+  const navigate = useNavigate();
   const [QuestionList, setQuestionList] = useState([]);
   const { id } = useParams();
   const QuizID = window.atob(id);
@@ -154,6 +155,7 @@ const UpdateQuiz = () => {
       });
 
       toast.success(response.data.message);
+      navigate("/faculty")
     } catch (error) {
 
       toast.error("Error to Update Quiz !");

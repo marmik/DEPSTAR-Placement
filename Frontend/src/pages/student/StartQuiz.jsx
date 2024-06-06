@@ -82,7 +82,7 @@ const StartQuiz = () => {
   const handleOptionChange = (e, questionId, option) => {
     setSelectedOptions((prevSelectedOptions) => ({
       ...prevSelectedOptions,
-      [questionId]: option,
+      [questionId]: String.fromCharCode(65 + option),
     }));
   };
 
@@ -128,12 +128,32 @@ const StartQuiz = () => {
     }));
   };
 
+  const setResult = async () => {
+    try {
+      const token = localStorage.getItem('token');
+
+      const response = await axios.post(`http://localhost:3000/api/student/quizzes/${QuizID}/results`,null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      // console.log(">0>",response.data);
+
+    } catch (error) {
+      console.error('Error fetching Result:', error);
+      toast.error("Something Went Wrong ! Please try again Later ");
+    }
+  };
+
   const submitQuiz = async (data) => {
+
     try {
       const { status, data: responseData } = await axios.post(`http://localhost:3000/api/student/quizzes/${QuizID}/submit`, data, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       if (status === 200) {
+        setResult();
         toast.success("Quiz Submitted Successfully");
       } else {
         toast.error("Error to submitting the quiz !");
@@ -203,8 +223,8 @@ const StartQuiz = () => {
                           id={`option-${question.questionId}${option}`}
                           className="mr-2"
                           value={String.fromCharCode(65 + index) || ''}
-                          onChange={(e) => handleOptionChange(e, question.questionId, index+1)}
-                          checked={selectedOptions[question.questionId] === index+1}
+                          onChange={(e) => handleOptionChange(e, question.questionId, index)}
+                          checked={selectedOptions[question.questionId] === String.fromCharCode(65 + index)}
                         />
                         {/* checked={selectedOptions[question.questionId] === optionIndex}
                         onChange={() => handleOptionChange(question.questionId, optionIndex)} */}

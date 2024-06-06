@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 const Dashboard = () => {
   const navigate = useNavigate();
   const [upcomingExams, setUpcomingExams] = useState([]);
+  const [AttemptedExams, setAttemptedExams] = useState([]);
   const [selectedExam, setSelectedExam] = useState(null);
   // const [conductedExams, setConductedExams] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
@@ -60,7 +61,7 @@ const Dashboard = () => {
     return formattedDate
   }
   useEffect(() => {
-    const fetchExams = async () => {
+    const fetchUpCommingExams = async () => {
       try {
         const token = localStorage.getItem('token');
 
@@ -78,8 +79,27 @@ const Dashboard = () => {
         toast.error("Something Went Wrong ! Please try again Later ");
       }
     };
+    fetchUpCommingExams();
+    const fetchAttemptedExams = async () => {
+      try {
+        const token = localStorage.getItem('token');
 
-    fetchExams();
+        const response = await axios.get('http://localhost:3000/api/student/quizzes/history', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        
+        console.log(response.data);
+        setAttemptedExams(response.data);
+
+      } catch (error) {
+        console.error('Error fetching exams:', error);
+        toast.error("Something Went Wrong ! Please try again Later ");
+      }
+    };
+    fetchAttemptedExams();
+
   }, []);
 
   return (
