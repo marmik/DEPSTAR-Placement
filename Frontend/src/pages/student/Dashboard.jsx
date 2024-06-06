@@ -41,6 +41,11 @@ const Dashboard = () => {
     }
 
   }
+  
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
   const handleStartQuizPopUp = (exam) => {
     setSelectedExam(exam);
@@ -237,6 +242,7 @@ const Dashboard = () => {
                 <tr>
                   <th className="text-left py-3 px-4 uppercase font-semibold text-sm">No</th>
                   <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Quiz</th>
+                  <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Date</th>
                   <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Total Questions</th>
                   <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Total Marks</th>
                   <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Obtained Marks</th>
@@ -244,32 +250,22 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr className='divide-x divide-light'>
-                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">1</td>
-                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">SE Practical</td>
-                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">30</td>
-                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">30</td>
-                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">25</td>
+              {AttemptedExams.map((exam, index) => (
+                <tr key={exam.id} className='divide-x hover:bg-slate-100 divide-light'>
+                  <td className="py-3 px-4">{index + 1}</td>
+                  <td className="py-3 px-4">{exam.Title}</td>
+                  <td className="py-3 px-4">{formateDate(exam.SubmissionDate)}</td>
+                  <td className="py-3 px-4">{exam.total_question}</td>
+                  <td className="py-3 px-4">{exam.total_marks}</td>
+                  <td className="py-3 px-4">{exam.obtain_Marks}</td>
                   <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
-                    <button className="text-light bg-primary text-lg  font-bold py-1 px-3 rounded-lg mr-2">
-                      View
-                    </button>
-                  </td>
+                  <button
+  className="text-light bg-primary text-lg font-bold py-1 px-3 rounded-lg mr-2">View</button>
+                </td>
                 </tr>
-                <tr className='divide-x divide-light'>
-                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">2</td>
-                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">DBMS</td>
-                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">30</td>
-                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">30</td>
-                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">25</td>
-                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
-                    <button className="text-light bg-primary text-lg  font-bold py-1 px-3 rounded-lg mr-2">
-                      View
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+              ))}
+            </tbody>
+          </table>
           </div>
         </div>
       </div>
