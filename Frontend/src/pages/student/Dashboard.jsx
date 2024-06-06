@@ -3,6 +3,7 @@ import axios from 'axios';
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { LineChart } from '@mui/x-charts/LineChart';
 
 
 const Dashboard = () => {
@@ -174,8 +175,18 @@ const Dashboard = () => {
             <p className=' text-xl group-hover:text-light'>Total Feedbacks Given</p>
             <h3 className=' mt-3 text-6xl text-primary group-hover:text-light font-bold'>10</h3>
           </button>
-          <div className='sm:col-span-2 col-span-4 items-center justify-center flex'>
-            <img src="../images/graph.png" alt="" />
+          <div className='sm:col-span-2 col-span-4 items-center w-full h-fill flex justify-center'>
+            {/* <img src="../images/graph.png" alt="" /> */}
+            <LineChart
+              xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
+              series={[
+                {
+                  data: [2, 5.5, 2, 8.5, 1.5, 5],
+                },
+              ]}
+              width={500}
+              height={300}
+            />
           </div>
         </div>
 

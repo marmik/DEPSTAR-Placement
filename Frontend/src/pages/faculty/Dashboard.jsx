@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { PieChart } from '@mui/x-charts/PieChart';
 
 
 const Dashboard = () => {
@@ -49,8 +50,28 @@ const Dashboard = () => {
             <p className='text-xl group-hover:text-light'>Total Exam Feedbacks</p>
             <h3 className='mt-3 text-6xl text-primary group-hover:text-light font-bold'>10</h3>
           </button>
-          <div className='sm:col-span-2 col-span-4 items-center justify-center flex'>
-            <img src="../images/chartFaculty.png" alt="Chart" />
+          <div className='sm:col-span-2 col-span-4 items-center w-full h-fill flex justify-center'>
+            {/* <img src="../images/chartFaculty.png" alt="Chart" /> */}
+            <PieChart
+              colors={['#3F5BCC', '#FF8989', '#E347CF']} 
+              series={[
+                {
+                  data: [
+                    { id: 0, value: 10, label: 'series A' },
+                    { id: 1, value: 15, label: 'series B' },
+                    { id: 2, value: 20, label: 'series C' },
+                  ],
+                  innerRadius: 20,
+                  outerRadius: 100,
+                  paddingAngle: 5,
+                  cornerRadius: 5,
+                  startAngle: -90,
+                  endAngle: 180,
+                },
+              ]}
+              width={400}
+              height={250}
+            />
           </div>
         </div>
         <br /><br />
