@@ -6,7 +6,7 @@ import { PieChart } from '@mui/x-charts/PieChart';
 
 const Dashboard = () => {
   const [scheduledExams, setScheduledExams] = useState([]);
-  // const [conductedExams, setConductedExams] = useState([]);
+  const [conductedExams, setConductedExams] = useState([]);
   const formateDate =(examdate)=>{
     const isoString = examdate;
     const date = new Date(isoString);
@@ -36,6 +36,25 @@ const Dashboard = () => {
     };
 
     fetchExams();
+  }, []);
+
+  useEffect(() => {
+    const qHistory = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:3000/api/faculty/quizzes/history', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setConductedExams(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error('Error fetching exams:', error);
+      }
+    };
+
+    qHistory();
   }, []);
 
   return (
@@ -133,32 +152,24 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody >
-
-              <tr className='divide-x divide-light'>
-                <td className="py-3 px-4">1</td>
-                <td className="py-3 px-4">DBMS Practical</td>
-                <td className="py-3 px-4">30</td>
-                <td className="py-3 px-4">30</td>
-                <td className="py-3 px-4">30</td>
-                <td className="py-3 px-4">15</td>
-                <td className="py-3 px-4">22</td>
-                <td className="py-3 px-4">40</td>
-                <td className="py-3 px-4"> <button className="text-light bg-primary text-lg  font-bold py-1 px-3 rounded-lg mr-2">View</button></td>
-              </tr>
-
-              <tr className='divide-x divide-light'>
-                <td className="py-3 px-4">2</td>
-                <td className="py-3 px-4">DAA Practical</td>
-                <td className="py-3 px-4">30</td>
-                <td className="py-3 px-4">30</td>
-                <td className="py-3 px-4">30</td>
-                <td className="py-3 px-4">15</td>
-                <td className="py-3 px-4">22</td>
-                <td className="py-3 px-4">40</td>
-                <td className="py-3 px-4"> <button className="text-light bg-primary text-lg  font-bold py-1 px-3 rounded-lg mr-2">View</button></td>
-              </tr>
-
-
+              {conductedExams.map((item, index) => (
+            <tr key={item.SubmissionID} className="divide-x hover:bg-gray-100 divide-gray-200">
+              <td className="py-3 px-4">{index + 1}</td>
+              <td className="py-3 px-4 text-blue-600">{item.Title}</td>
+              <td className="py-3 px-4">{item.total_question}</td>
+              <td className="py-3 px-4">{item.total_marks}</td>
+              <td className="py-3 px-4">{item.max_marks}</td>
+              <td className="py-3 px-4">{item.min_marks}</td>
+              <td className="py-3 px-4">{item.avg_marks}</td>
+              <td className="py-3 px-4">{""}</td>
+              <td className="py-3 px-4">
+              {/* ./view-quiz/${window.btoa(item.SubmissionID)} */}
+                <Link to={`./`} className="text-white bg-blue-600 text-lg font-bold py-1 px-3 rounded-lg mr-2">
+                  View
+                </Link>
+              </td>
+            </tr>
+          ))}
             </tbody>
           </table>
         </div>
