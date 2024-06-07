@@ -64,7 +64,7 @@ function StudentDashboard() {
                                 <Routes>
                                     <Route path='/' element={'Dashboard'}></Route>
                                     <Route path='/view-quiz' element={'View Quiz'}></Route>
-                                    <Route path='/view-given-quiz' element={'View Quiz'}></Route>
+                                    <Route exact path='/view-given-quiz/:id' element={'View Quiz'}></Route>
                                     <Route path='/given-feedback' element={'Given Feedback'}></Route>
                                     <Route path='/system-feedback' element={'System Feedback'}></Route>
                                     <Route path='/start-quiz/:id' element={'Start Quiz'}></Route>
@@ -84,7 +84,7 @@ function StudentDashboard() {
                         <Routes>
                             <Route path='/' element={<Dashboard />}></Route>
                             <Route path='/view-quiz' element={<ViewQuiz />}></Route>
-                            <Route path='/view-given-quiz' element={<ViewGivenQuiz />}></Route>
+                            <Route exact path='/view-given-quiz/:id' element={<ViewGivenQuiz />}></Route>
                             <Route path='/given-feedback' element={<GivenFeedback />}></Route>
                             <Route path='/system-feedback' element={<SystemFeedback />}></Route>
                             <Route path='/start-quiz/:id' element={<StartQuiz />}></Route>

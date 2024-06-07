@@ -33,6 +33,9 @@ const ViewQuiz = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.log('====================================');
+        console.log(response.data);
+        console.log('====================================');
         if (response.status === 200) {
           setQuizDetails(response.data.exam);
           setQuizQuestions(response.data.questions);
@@ -117,11 +120,11 @@ const ViewQuiz = () => {
               <div className='flex sm:justify-center'>
                 <button className='sm:col-span-1 col-span-4 group rounded-xl p-6'>
                   <p className=' text-s '>Total Feedbacks</p>
-                  <h3 className=' mt-3 text-4xl text-primary font-semibold'>10</h3>
+                  <h3 className=' mt-3 text-4xl text-primary font-semibold'>{QuizDetails.no_of_feedback}</h3>
                 </button>
                 <button className='sm:col-span-1 col-span-4 group rounded-xl p-6'>
                   <p className=' text-s '>Total Completed</p>
-                  <h3 className=' mt-3 text-4xl text-primary font-semibold'>1</h3>
+                  <h3 className=' mt-3 text-4xl text-primary font-semibold'>{QuizDetails.no_of_started_submissions}</h3>
                 </button>
               </div>
               <div className='grid justify-between gap-10 grid-cols-2 '>

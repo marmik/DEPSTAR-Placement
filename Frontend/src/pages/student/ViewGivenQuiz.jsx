@@ -1,7 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useNavigate, useParams } from 'react-router-dom';
+import { PieChart } from '@mui/x-charts/PieChart';
 
 
 const ViewGivenQuiz = () => {
+
+  const navigate = useNavigate();
+  let { id } = useParams();
+  const QuizID = window.atob(id);
+
+
+
+
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`http://localhost:3000/api/student/quizDetails/${QuizID}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.status === 200) {
+          console.log('====================================');
+          console.log(response.data);
+          console.log('====================================');
+        } else {
+          toast.warn("Internal Server Error !");
+        }
+      } catch (error) {
+        console.error('Error fetching exams:', error);
+      }
+    };
+
+    fetchQuiz();
+  }, [QuizID]);
+
   return (
     <div className="text-lg">
       <div className="bg-white p-8 rounded-3xl shadow-2xl ">
@@ -29,6 +65,10 @@ const ViewGivenQuiz = () => {
                 <td className="text-gray-600">: 30</td>
               </tr>
               <tr>
+                <td className="text-secondary font-bold pr-4">Obtained Marks</td>
+                <td className="text-gray-600">: 30</td>
+              </tr>
+              <tr>
                 <td className="text-secondary font-bold pr-4">Date</td>
                 <td className="text-gray-600">: 12/05/2024</td>
               </tr>
@@ -40,13 +80,37 @@ const ViewGivenQuiz = () => {
                 <td className="text-secondary font-bold pr-4">Status</td>
                 <td className="text-gray-600 ">: Attempted</td>
               </tr>
+              <tr>
+                <td className="text-secondary font-bold pr-4">Feedback</td>
+                <td className="text-gray-600 ">: My Feedback</td>
+              </tr>
             </tbody>
           </table>
           <div className=' '>
-            <img src='../images/image_StudentChart.png' alt="image_StudentChart.png"className='m-4' width={250} />
+          <PieChart
+              colors={['#408EFC', '#E73B28', '#3BEF74']} 
+              series={[
+                {
+                  data: [
+                    { id: 0, value: 30, label: 'Total \nMarks' },
+                    { id: 1, value: 30, label: 'Total \n Questions' },
+                    { id: 2, value: 25, label: 'Obtained \nMarks' }
+                  ],
+                  innerRadius: 30,
+                  outerRadius: 100,
+                  paddingAngle: 2,
+                  cornerRadius: 3,
+                  startAngle: -90,
+                  // endAngle: 180,
+              
+                },
+              ]}
+              width={400}
+              height={250}
+            />
             <p className='text-center text-secondary'>Performance</p>
           </div>
-            
+
         </div>
       </div>
 

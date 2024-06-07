@@ -4,6 +4,7 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { LineChart } from '@mui/x-charts/LineChart';
+import { PiWindowsLogo } from 'react-icons/pi';
 
 
 const Dashboard = () => {
@@ -19,15 +20,15 @@ const Dashboard = () => {
 
     try {
       const token = localStorage.getItem('token');
-      
-      const response = await axios.post(`http://localhost:3000/api/student/quizzes/${QuizID}/start`,null,{
+
+      const response = await axios.post(`http://localhost:3000/api/student/quizzes/${QuizID}/start`, null, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      
-      
-      if(response.status === 200){
+
+
+      if (response.status === 200) {
 
         toast.success("Quiz Started. ALL THE BEST");
 
@@ -41,7 +42,7 @@ const Dashboard = () => {
     }
 
   }
-  
+
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
@@ -55,15 +56,15 @@ const Dashboard = () => {
   const handleToggle = () => {
     setShowPopup(!showPopup);
   };
-  const formateDate =(examdate)=>{
+  const formateDate = (examdate) => {
     const isoString = examdate;
     const date = new Date(isoString);
 
     const year = date.getUTCFullYear();
     const month = String(date.getUTCMonth() + 1).padStart(2, '0');
     const day = String(date.getUTCDate()).padStart(2, '0');
-      
-    const formattedDate = `${day}-${month}-${year}`; 
+
+    const formattedDate = `${day}-${month}-${year}`;
     return formattedDate
   }
   useEffect(() => {
@@ -76,7 +77,7 @@ const Dashboard = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        
+
         // console.log(response.data);
         setUpcomingExams(response.data);
 
@@ -90,12 +91,12 @@ const Dashboard = () => {
       try {
         const token = localStorage.getItem('token');
 
-        const response = await axios.get('http://localhost:3000/api/student/quizzes/history', {
+        const response = await axios.get('http://localhost:3000/api/student/recentExams', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        
+
         console.log(response.data);
         setAttemptedExams(response.data);
 
@@ -113,60 +114,60 @@ const Dashboard = () => {
 
       {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-        <div className="bg-white p-6 rounded-lg shadow-lg m-2">
-          <div className="sm:p-6 p-2 flex flex-col rounded-lg gap-4 w-full justify-center">
-            <h2 className="text-xl font-bold mb-4">Quiz info</h2>
-            <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
-              <h2 className="sm:w-1/3 w-full text-lg font-bold">
-                Subject :<span className=" text-lg font-light">{selectedExam.Subject}</span>
-              </h2>
-              <h2 className="sm:w-1/3 w-full text-lg font-bold">
-                Title : <span className=" text-lg font-light">{selectedExam.Title}</span>
-              </h2>
-              <h2 className="sm:w-1/3 w-full text-lg font-bold">
-                Time :<span className=" text-lg font-light">{selectedExam.StartTime} TO {selectedExam.EndTime}</span>
-              </h2>
+          <div className="bg-white p-6 rounded-lg shadow-lg m-2">
+            <div className="sm:p-6 p-2 flex flex-col rounded-lg gap-4 w-full justify-center">
+              <h2 className="text-xl font-bold mb-4">Quiz info</h2>
+              <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
+                <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                  Subject :<span className=" text-lg font-light">{selectedExam.Subject}</span>
+                </h2>
+                <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                  Title : <span className=" text-lg font-light">{selectedExam.Title}</span>
+                </h2>
+                <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                  Time :<span className=" text-lg font-light">{selectedExam.StartTime} TO {selectedExam.EndTime}</span>
+                </h2>
+              </div>
+              <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
+                <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                  Description : <span className=" text-lg font-light">{selectedExam.Description}</span>
+                </h2>
+                <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                  Total Questions : <span className=" text-lg font-light">{selectedExam.Number_of_Questions}</span>
+                </h2>
+                <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                  Total Marks : <span className=" text-lg font-light">{selectedExam.Exam_Total_Marks}</span>
+                </h2>
+              </div>
+              <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
+                <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                  Date : <span className=" text-lg font-light">{formateDate(selectedExam.ExamDate)}</span>
+                </h2>
+                <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                  Status : <span className=" text-lg font-light">{selectedExam.Status}</span>
+                </h2>
+                <h2 className="sm:w-1/3 w-full text-lg font-bold">
+                  <span className=" text-lg font-light"></span>
+                </h2>
+              </div>
             </div>
-            <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
-              <h2 className="sm:w-1/3 w-full text-lg font-bold">
-                Description : <span className=" text-lg font-light">{selectedExam.Description}</span>
-              </h2>
-              <h2 className="sm:w-1/3 w-full text-lg font-bold">
-                Total Questions : <span className=" text-lg font-light">{selectedExam.Number_of_Questions}</span>
-              </h2>
-              <h2 className="sm:w-1/3 w-full text-lg font-bold">
-                Total Marks : <span className=" text-lg font-light">{selectedExam.Exam_Total_Marks}</span>
-              </h2>
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                onClick={() => { handleStartQuiz(selectedExam.ExamID) }}
+                className="bg-blue-500 text-white font-semibold py-2 px-4 rounded"
+              >
+                Start Quiz
+              </button>
+
+              <button
+                className="bg-gray-200 text-secondary font-semibold py-2 px-4 rounded"
+                onClick={handleToggle}
+              >
+                Cancel
+              </button>
             </div>
-            <div className="flex sm:flex-row flex-col gap-8 w-full justify-between">
-              <h2 className="sm:w-1/3 w-full text-lg font-bold">
-                Date : <span className=" text-lg font-light">{formateDate(selectedExam.ExamDate)}</span>
-              </h2>
-              <h2 className="sm:w-1/3 w-full text-lg font-bold">
-                Status : <span className=" text-lg font-light">{selectedExam.Status}</span>
-              </h2>
-              <h2 className="sm:w-1/3 w-full text-lg font-bold">
-                <span className=" text-lg font-light"></span>
-              </h2>
-            </div>
-          </div>
-          <div className="mt-4 flex justify-end gap-2">
-            <button
-              onClick={() => {handleStartQuiz(selectedExam.ExamID)}}
-              className="bg-blue-500 text-white font-semibold py-2 px-4 rounded"
-            >
-              Start Quiz
-            </button>
-    
-            <button
-              className="bg-gray-200 text-secondary font-semibold py-2 px-4 rounded"
-              onClick={handleToggle}
-            >
-              Cancel
-            </button>
           </div>
         </div>
-      </div>
 
       )}
 
@@ -197,12 +198,13 @@ const Dashboard = () => {
 
         <br /><br />
 
-        <h3 className="text-2xl font-semibold mb-4">Upcoming Quiz Exams</h3>
         <div className="overflow-x-auto">
+          <h3 className="text-2xl font-semibold mb-4">Upcoming Quiz Exams</h3>
           <table className="min-w-full   border rounded-lg overflow-hidden">
             <thead className="bg-primary text-light border">
               <tr>
                 <th className="text-left py-3 px-4 uppercase font-semibold text-sm">No</th>
+                <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Subject</th>
                 <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Title</th>
                 <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Total Questions</th>
                 <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Total Marks</th>
@@ -213,34 +215,45 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {upcomingExams.map((exam, index) => (
-                <tr key={exam.id} className='divide-x hover:bg-slate-100 divide-light'>
-                  <td className="py-3 px-4">{index + 1}</td>
-                  <td className="py-3 px-4">{exam.Title}</td>
-                  <td className="py-3 px-4">{exam.Number_of_Questions}</td>
-                  <td className="py-3 px-4">{exam.Exam_Total_Marks}</td>
-                  <td className="py-3 px-4">{formateDate(exam.ExamDate)}</td>
-                  <td className="py-3 px-4">{exam.StartTime}</td>
-                  <td className="py-3 px-4">{exam.EndTime}</td>
-                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
-                  <button
-  className="text-light bg-primary text-lg font-bold py-1 px-3 rounded-lg mr-2"
-  onClick={() => handleStartQuizPopUp(exam)}>Start</button>
+              {upcomingExams.length != 0 ? (
+                <>
+                  {upcomingExams.map((exam, index) => (
+                    <tr key={exam.id} className='divide-x hover:bg-slate-100 divide-light'>
+                      <td className="py-3 px-4">{index + 1}</td>
+                      <td className="py-3 px-4">{exam.Subject}</td>
+                      <td className="py-3 px-4">{exam.Title}</td>
+                      <td className="py-3 px-4">{exam.Number_of_Questions}</td>
+                      <td className="py-3 px-4">{exam.Exam_Total_Marks}</td>
+                      <td className="py-3 px-4">{formateDate(exam.ExamDate)}</td>
+                      <td className="py-3 px-4">{exam.StartTime}</td>
+                      <td className="py-3 px-4">{exam.EndTime}</td>
+                      <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
+                        <button
+                          className="text-light bg-primary text-lg font-bold py-1 px-3 rounded-lg mr-2"
+                          onClick={() => handleStartQuizPopUp(exam)}>Start</button>
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              ) : (<tr className='text-center'>
+                <td colSpan={9} className='text-lg font-semibold p-4'>
+                  No Any Upcoming Quiz
                 </td>
-                </tr>
-              ))}
+              </tr>)}
             </tbody>
           </table>
 
+
           <br /><br />
 
-          <h3 className="text-2xl font-semibold mb-4">Recently Attempted Quiz</h3>
           <div className="overflow-x-auto flex flex-wrap">
+            <h3 className="text-2xl font-semibold mb-4">Recently Attempted Quiz</h3>
 
             <table className="min-w-full border rounded-lg overflow-hidden">
               <thead className="bg-primary text-light border">
                 <tr>
                   <th className="text-left py-3 px-4 uppercase font-semibold text-sm">No</th>
+                  <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Subject</th>
                   <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Quiz</th>
                   <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Date</th>
                   <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Total Questions</th>
@@ -250,24 +263,44 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-              {AttemptedExams.map((exam, index) => (
-                <tr key={exam.id} className='divide-x hover:bg-slate-100 divide-light'>
-                  <td className="py-3 px-4">{index + 1}</td>
-                  <td className="py-3 px-4">{exam.Title}</td>
-                  <td className="py-3 px-4">{formateDate(exam.SubmissionDate)}</td>
-                  <td className="py-3 px-4">{exam.total_question}</td>
-                  <td className="py-3 px-4">{exam.total_marks}</td>
-                  <td className="py-3 px-4">{exam.obtain_Marks}</td>
-                  <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
-                  <button
-  className="text-light bg-primary text-lg font-bold py-1 px-3 rounded-lg mr-2">View</button>
-                </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+
+                {AttemptedExams.length != 0 ? (
+                  <>
+                    {AttemptedExams.map((exam, index) => (
+                      <tr key={exam.id} className='divide-x hover:bg-slate-100 divide-light'>
+                        <td className="py-3 px-4">{index + 1}</td>
+                        <td className="py-3 px-4">{exam.subject}</td>
+                        <td className="py-3 px-4">{exam.title}</td>
+                        <td className="py-3 px-4">{formateDate(exam.date)}</td>
+                        <td className="py-3 px-4">{exam.totalQuestions}</td>
+                        <td className="py-3 px-4">{exam.totalMarks}</td>
+                        <td className="py-3 px-4">{exam.obtainMarks}</td>
+                        <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
+                          <Link to={`../view-given-quiz/${window.btoa(exam.ExamID)}`}
+                            className="text-light bg-primary text-lg font-bold py-1 px-3 rounded-lg mr-2">View</Link>
+                        </td>
+                      </tr>
+
+
+
+                    ))}
+                  </>) : (<tr className='text-center'>
+                    <td colSpan={9} className='text-lg font-semibold p-4'>
+                      No Any Attempted Quiz
+                    </td>
+                  </tr>)
+                }
+              </tbody>
+            </table>
           </div>
         </div>
+        {AttemptedExams.length !=0 ? (
+
+          <div className='text-center mt-3 w-full'>
+            <Link to={"./view-quiz"} className='rounded-full px-5 py-2 bg-blue-50 w-full'>View More</Link>
+          </div>
+
+        ) : ("")}
       </div>
     </div>
   );

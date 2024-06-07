@@ -13,23 +13,23 @@ function Login() {
 
   const navigate = useNavigate();
 
-  const handleLoggedInUser= async () => {
+  const handleLoggedInUser = async () => {
     // e.preventDefault();
 
-    if(localStorage.getItem("token")){
+    if (localStorage.getItem("token")) {
       const token = localStorage.getItem("token");
       const parse = parseJwt(token);
-      if(parse.role=="Student"){
+      if (parse.role == "Student") {
         navigate("/student");
-      }      
-      else if(parse.role=="Faculty"){
+      }
+      else if (parse.role == "Faculty") {
         navigate("/faculty");
       }
-      else{
+      else {
         navigate("/");
       }
     }
-    
+
   }
   // handleLoggedInUser();
 
@@ -48,7 +48,7 @@ function Login() {
         // console.log(response);
         localStorage.setItem('token', token);
         if (role === 'Student') {
-        
+
           toast.success("Login Successfully !")
           navigate('/student');
         } else if (role === 'Faculty') {
@@ -61,7 +61,7 @@ function Login() {
         toast.error("Login Failed !")
       }
     } catch (error) {
-      
+
       toast.error("Invalid User")
     }
   };
@@ -72,11 +72,13 @@ function Login() {
         <div className="shadow-lg flex flex-row overflow-hidden h-full lg:w-1/2">
           <div className="relative hidden lg:block">
             <img src='./images/login_back.png' alt="" className="" />
-            <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center bg-primary bg-opacity-80 opacity-70">
-              <div className="text-center items-center flex-col justify-center">
+            <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center bg-primary bg-opacity-100 opacity-80">
+              {/* <div className="text-center flex items-center flex-col w-full  justify-center">
                 <h1 className="text-7xl text-white font-bold">Logo Here</h1>
-              </div>
-              <p className="text-8xl/relaxed left-0 ml-10 text-white font-bold">Depstar Placement Portal</p>
+                <img src="./images/PlaceStar.png" width={600} alt="" />
+              </div> */}
+              <p className="text-4xl/relaxed left-0 ml-10 text-white font-bold">Welcome to</p>
+              <p className="text-8xl/relaxed left-0 ml-10 text-white font-bold">DEPSTAR Placement Portal</p>
             </div>
           </div>
         </div>
@@ -87,8 +89,10 @@ function Login() {
             <img src='./images/image_charusat.png' alt="charusat" className="h-20 m-5" />
             <img src='./images/image_depstar.png' alt="depstar" className="h-20 m-5" />
           </div>
-          <div className="sm:p-40">
-            <h1 className="font-bold text-3xl flex lg:hidden md:hidden">Logo Here</h1>
+          <div className="sm:px-40 ">
+            <div className='flex w-full justify-center my-6 items-center'>
+              <img src="./images/PlaceStar.png" width={300} alt="" />
+            </div>
             <h1 className="font-bold text-3xl md:text-4xl md:mb-8 py-2 my-2 border-b-2">
               Login as {isStudent ? "Student" : "Faculty"}
             </h1>
@@ -138,7 +142,7 @@ function Login() {
                   required
                 />
               </div>
-              
+
               <button type="submit" className="self-center w-3/12 my-6 bg-primary text-light font-medium text-lg px-4 py-3 rounded-md lg:self-end shadow-xl">
                 Login
               </button>
