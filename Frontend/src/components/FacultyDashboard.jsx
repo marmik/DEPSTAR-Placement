@@ -71,7 +71,7 @@ function FacultyDashboard() {
                   <Route path='/add-quiz' element={'Add Quiz'}></Route>
                   <Route path='/manage-quiz' element={'Manage Quiz'}></Route>
                   <Route exact path='/view-quiz/:id' element={'View Quiz'}></Route>
-                  <Route path='/view-data' element={'View Quiz'}></Route>
+                  <Route path='/view-data/*' element={'View Data'}></Route>
                   <Route path='/manage-feedbacks' element={'Manage Feedbacks'}></Route>
                   <Route path='/system-feedbacks' element={'System Feedbacks'}></Route>
                   <Route path='/update-quiz/*' element={'Update Quiz'}></Route>
@@ -91,7 +91,7 @@ function FacultyDashboard() {
               <Route path='/manage-quiz' element={<ManageQuiz />}></Route>
               <Route exact path='/view-quiz/:id' element={<ViewQuiz />}></Route>
               <Route path='/manage-feedbacks' element={<ManageFeedback />}></Route>
-              <Route path='/view-data' element={<ViewData />}></Route>
+              <Route path='/view-data/:id' element={<ViewData />}></Route>
               <Route path='/system-feedbacks' element={<SystemFeedback />}></Route>
               <Route path='/update-quiz/:id' element={<UpdateQuiz />}></Route>
               <Route path='*' element={<Error404 />}></Route>

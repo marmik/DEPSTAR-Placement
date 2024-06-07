@@ -164,7 +164,7 @@ const Dashboard = () => {
               <td className="py-3 px-4">{""}</td>
               <td className="py-3 px-4">
               {/* ./view-quiz/${window.btoa(item.SubmissionID)} */}
-                <Link to={`./`} className="text-white bg-blue-600 text-lg font-bold py-1 px-3 rounded-lg mr-2">
+                <Link to={`./view-quiz/${window.btoa(item.ExamID)}`} className="text-white bg-blue-600 text-lg font-bold py-1 px-3 rounded-lg mr-2">
                   View
                 </Link>
               </td>
