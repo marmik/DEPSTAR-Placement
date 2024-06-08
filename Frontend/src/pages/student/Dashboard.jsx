@@ -91,7 +91,7 @@ const Dashboard = () => {
       try {
         const token = localStorage.getItem('token');
 
-        const response = await axios.get('http://localhost:3000/api/student/recentExams', {
+        const response = await axios.get('http://localhost:3000/api/student/quizzes/history', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -270,13 +270,13 @@ const Dashboard = () => {
                       <tr key={exam.id} className='divide-x hover:bg-slate-100 divide-light'>
                         <td className="py-3 px-4">{index + 1}</td>
                         <td className="py-3 px-4">{exam.subject}</td>
-                        <td className="py-3 px-4">{exam.title}</td>
+                        <td className="py-3 px-4">{exam.Title}</td>
                         <td className="py-3 px-4">{formateDate(exam.date)}</td>
                         <td className="py-3 px-4">{exam.totalQuestions}</td>
                         <td className="py-3 px-4">{exam.totalMarks}</td>
                         <td className="py-3 px-4">{exam.obtainMarks}</td>
                         <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
-                          <Link to={`../view-given-quiz/${window.btoa(exam.ExamID)}`}
+                          <Link to={`../view-given-quiz/${window.btoa(exam.SubmissionID)}`}
                             className="text-light bg-primary text-lg font-bold py-1 px-3 rounded-lg mr-2">View</Link>
                         </td>
                       </tr>

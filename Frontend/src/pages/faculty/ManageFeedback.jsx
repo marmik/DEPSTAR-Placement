@@ -1,6 +1,49 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 const ManageFeedback = () => {
+
+  const [ManageFeedback, setManageFeedback] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [totalFeedbackzes, setTotalFeedbackzes] = useState(0);
+
+  const filteredFeedbackzes = ManageFeedback.filter((Feedback) =>
+    Feedback.Title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const formatDate = (examdate) => {
+    const isoString = examdate;
+    const date = new Date(isoString);
+
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+
+    const formattedDate = `${day}-${month}-${year}`;
+    return formattedDate;
+  };
+
+  // useEffect(() => {
+  //   const fetchExams = async () => {
+  //     try {
+  //       const token = localStorage.getItem('token');
+  //       const response = await axios.get('http://localhost:3000/api/faculty/allQuizzes', {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //       setManageQuiz(response.data);
+  //       setTotalQuizzes(response.data.length);
+
+      
+  //     } catch (error) {
+  //       console.error('Error fetching exams:', error);
+  //     }
+  //   };
+
+  //   fetchExams();
+  // }, []);
+
+
   return (
     <div>
      <div className="items-center justify-between  mb-8">
@@ -28,18 +71,18 @@ const ManageFeedback = () => {
                     </tr>
                   </thead>
                   <tbody>
+                  {filteredFeedbackzes.map((exam, index) => (
                     <tr className="divide-x divide-light">
-                      <td className="text-left py-3  px-4  text-sm">1</td>
-                      <td className="text-left py-3  px-4 text-sm">SE Practical</td>
-                      <td className="text-left py-3  px-4 text-sm">S.E</td>
-                      <td className="text-left py-3  px-4 text-sm">12/05/2024</td>
-                      <td className="text-left py-3  px-4 text-sm">30</td>
-                      <td className="text-left py-3  px-4 text-sm">
-                        <button className="text-light bg-primary text-lg font-bold py-1 px-3 rounded-lg mr-2">
-                          View Feedback
-                        </button>
-                      </td>
-                    </tr>
+                    <td className="text-left py-3  px-4  text-sm">1</td>
+                    <td className="text-left py-3  px-4 text-sm">SE Practical</td>
+                    <td className="text-left py-3  px-4 text-sm">S.E</td>
+                    <td className="text-left py-3  px-4 text-sm">12/05/2024</td>
+                    <td className="text-left py-3  px-4 text-sm">30</td>
+                    <td className="text-left py-3  px-4 text-sm">
+                    </td>
+                  </tr>
+                  ))}
+                  
                     <tr className="divide-x divide-light">
                       <td className="text-left py-3 px-4 uppercase  text-sm">2</td>
                       <td className="text-left py-3 px-4 uppercase  text-sm">DBMS Practical</td>

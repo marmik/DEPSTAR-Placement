@@ -8,7 +8,7 @@ const ViewData = () => {
   let { id } = useParams();
   const QuizID = window.atob(id);
   const [submitioninfo, setsubmitioninfo] = useState([]);
-  
+  const [searchQuery, setSearchQuery] = useState("");
   useEffect(() => {
     const fetchsubmitioninfo = async () => {
       try {
@@ -32,13 +32,21 @@ const ViewData = () => {
     fetchsubmitioninfo();
   }, [QuizID]);
 
+  
+  const filteredQuizzes = submitioninfo.filter((quiz) =>
+    quiz.username.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div>
      <div className="items-center justify-between  mb-8">
      <h2 className="text-xl px-6 font-bold mb-4">Search Student</h2>
         <div className="bg-white py-3 px-6 flex ">
         <label className="flex flex-col ">
-              <input type="text"  placeholder="Search Quiz" className="p-4 mt-2 border-2 border-slate-300 rounded-md  focus:border-primary focus:outline-none" />
+              <input type="text"  placeholder="Search Quiz" className="p-4 mt-2 border-2 border-slate-300 rounded-md  focus:border-primary focus:outline-none" 
+               value={searchQuery}
+               onChange={(e) => setSearchQuery(e.target.value)}
+               />
             </label>
         </div>
       </div>
@@ -61,7 +69,7 @@ const ViewData = () => {
                 </thead>
                 <tbody>
 
-                {submitioninfo.map((element,index) => { 
+                {filteredQuizzes.map((element,index) => { 
                     return(<tr className="divide-x divide-light">
                     <td className="text-left py-3 px-4 text-sm">{index+1}</td>
                       <td className="text-left py-3 px-4 text-sm">{element.username}</td>
