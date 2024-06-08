@@ -93,9 +93,9 @@ const ViewGivenQuiz = () => {
               series={[
                 {
                   data: [
-                    { id: 0, value: 10 , label: 'Total \nMarks' },
-                    { id: 1, value: 10 , label: 'Total \n Questions' },
-                    { id: 2, value: quizdata.totalMarks, label: 'Obtained \nMarks' }
+                    { id: 0, value:quizdata.exam ? quizdata.exam.Exam_Total_Marks : 0, label: 'Total \nMarks' },
+                    { id: 1, value: quizdata.exam ? quizdata.exam.Number_of_Questions :0 , label: 'Total \n Questions' },
+                    { id: 2, value: quizdata.exam ? quizdata.totalMarks :0, label: 'Obtained \nMarks' }
                   ],
                   innerRadius: 30,
                   outerRadius: 100,
