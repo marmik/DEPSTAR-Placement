@@ -13,15 +13,15 @@ const ViewQuiz = () => {
   const [examdata, setexamdata] = useState([]);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
 
-  const formateDate =(examdate)=>{
+  const formateDate = (examdate) => {
     const isoString = examdate;
     const date = new Date(isoString);
 
     const year = date.getUTCFullYear();
     const month = String(date.getUTCMonth() + 1).padStart(2, '0');
     const day = String(date.getUTCDate()).padStart(2, '0');
-      
-    const formattedDate = `${day}-${month}-${year}`; 
+
+    const formattedDate = `${day}-${month}-${year}`;
     return formattedDate
   }
 
@@ -72,11 +72,11 @@ const ViewQuiz = () => {
     }
     setShowDeletePopup(false);
   };
-  
+
   return (
-    <div className="flex-wrap">
+    <div className="p-4 flex-wrap">
       <div className="bg-slate-100 text-lg p-8 rounded-lg">
-      <div className="flex sm:flex-row flex-col justify-between ">
+        <div className="flex sm:flex-row flex-col justify-between ">
           <table className=''>
             <tbody>
               <tr>
@@ -156,21 +156,26 @@ const ViewQuiz = () => {
         </div>
 
         <div className="w-full flex gap-2 flex-wrap rounded-md mt-16 items-center justify-center">
-          <Link to={`/faculty/update-quiz/${window.btoa(QuizID)}`}>
-            <button className="bg-green-500 text-white font-semibold py-2 px-4 rounded mr-2">
-              Update
-            </button>
-          </Link>
-          <button 
+
+          {QuizDetails.Status != "Completed" && (
+
+            <Link to={`/faculty/update-quiz/${window.btoa(QuizID)}`}>
+              <button className="bg-green-500 text-white font-semibold py-2 px-4 rounded mr-2">
+                Update
+              </button>
+            </Link>
+
+          )}
+          <button
             className="bg-red-500 text-white font-semibold py-2 px-4 rounded mr-2"
             onClick={() => setShowDeletePopup(true)}
           >
             Delete
           </button>
           {QuizDetails.Status === "Completed" && (
-            
+
             <button onClick={() => { navigate(`/faculty/view-data/${window.btoa(QuizID)}`) }} className="bg-primary text-white font-semibold py-2 px-4 rounded mr-2">
-              View More
+              View Students Marks
             </button>
           )}
         </div>
@@ -205,13 +210,13 @@ const ViewQuiz = () => {
             <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
             <p>Are you sure you want to delete this quiz?</p>
             <div className="mt-4 flex justify-end gap-2">
-              <button 
+              <button
                 className="bg-red-500 text-white font-semibold py-2 px-4 rounded"
                 onClick={handleDeleteQuiz}
               >
                 Confirm
               </button>
-              <button 
+              <button
                 className="bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded"
                 onClick={() => setShowDeletePopup(false)}
               >

@@ -183,7 +183,7 @@ const UpdateQuiz = () => {
   // }, [questionsNo]); 
   return (
     <>
-      <div className="flex flex-col">
+      <div className=" p-4 text-secondary flex flex-col">
         <div className="flex sm:flex-row flex-col gap-2">
           <div className="sm:w-1/5 flex-row">
             <label className="flex flex-col">Select Subject

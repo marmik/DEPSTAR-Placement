@@ -30,9 +30,9 @@ const SystemFeedback = () => {
     }
   };
   return (
-    <div className="flex flex-col md:flex-row justify-between">
-    <div className="bg-white p-6 rounded-lg  md:w-2/3">
-      <label htmlFor="feedback" className="block text-gray-700 text-lg font-bold mb-2">System Feedbacks</label>
+    <div className="p-4 text-secondary flex flex-col md:flex-row justify-between">
+    <div className="bg-white rounded-lg  md:w-2/3">
+      <label htmlFor="feedback" className="block text-lg font-bold mb-2">System Feedbacks</label>
       <form onSubmit={handleSubmit}>
       <textarea id="feedback" className="w-full p-4 border border-gray-300 rounded-lg mb-4" rows={10} placeholder="Write your Feedback Here"  value={feedback}
             onChange={(e) => setfeedback(e.target.value)}/>

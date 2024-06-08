@@ -57,7 +57,7 @@ function StudentDashboard() {
 
                 <div className={`${sidebarOpen ? 'sm:col-span-4 col-span-2 ' : ' sm:col-span-5 col-span-5'}  h-screen overflow-y-auto overflow-x-hidden`}>
 
-                    <div className='bg-slate-200  flex justify-between items-center sticky top-0 w-full p-7'>
+                    <div className='z-10 bg-slate-200  flex justify-between items-center sticky top-0 w-full p-7'>
                         <div className='flex justify-center items-center gap-10'>
                             <GiHamburgerMenu className='text-2xl cursor-pointer ' onClick={toggleSidebar} />
                             <h2 className='font-bold text-2xl'>

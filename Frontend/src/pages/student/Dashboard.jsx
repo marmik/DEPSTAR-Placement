@@ -91,7 +91,7 @@ const Dashboard = () => {
       try {
         const token = localStorage.getItem('token');
 
-        const response = await axios.get('http://localhost:3000/api/student/quizzes/history', {
+        const response = await axios.get('http://localhost:3000/api/student/recentExams', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -178,7 +178,7 @@ const Dashboard = () => {
             <h3 className=' mt-3 text-6xl text-primary group-hover:text-light font-bold'>10</h3>
           </button>
           <button className='sm:col-span-1 col-span-4 group hover:shadow-2xl bg-light hover:bg-primary transition-all rounded-xl p-6'>
-            <p className=' text-xl group-hover:text-light'>Total Feedbacks Given</p>
+            <p className=' text-xl group-hover:text-light'>Total Upcoming Quiz</p>
             <h3 className=' mt-3 text-6xl text-primary group-hover:text-light font-bold'>10</h3>
           </button>
           <div className='sm:col-span-2 col-span-4 items-center w-full h-fill flex justify-center'>
@@ -198,56 +198,52 @@ const Dashboard = () => {
 
         <br /><br />
 
-        <div className="overflow-x-auto">
-          <h3 className="text-2xl font-semibold mb-4">Upcoming Quiz Exams</h3>
-          <table className="min-w-full   border rounded-lg overflow-hidden">
-            <thead className="bg-primary text-light border">
-              <tr>
-                <th className="text-left py-3 px-4 uppercase font-semibold text-sm">No</th>
-                <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Subject</th>
-                <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Title</th>
-                <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Total Questions</th>
-                <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Total Marks</th>
-                <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Date</th>
-                <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Start Time</th>
-                <th className="text-left py-3 px-4 uppercase font-semibold text-sm">End Time</th>
-                <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {upcomingExams.length != 0 ? (
-                <>
-                  {upcomingExams.map((exam, index) => (
-                    <tr key={exam.id} className='divide-x hover:bg-slate-100 divide-light'>
-                      <td className="py-3 px-4">{index + 1}</td>
-                      <td className="py-3 px-4">{exam.Subject}</td>
-                      <td className="py-3 px-4">{exam.Title}</td>
-                      <td className="py-3 px-4">{exam.Number_of_Questions}</td>
-                      <td className="py-3 px-4">{exam.Exam_Total_Marks}</td>
-                      <td className="py-3 px-4">{formateDate(exam.ExamDate)}</td>
-                      <td className="py-3 px-4">{exam.StartTime}</td>
-                      <td className="py-3 px-4">{exam.EndTime}</td>
-                      <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
-                        <button
-                          className="text-light bg-primary text-lg font-bold py-1 px-3 rounded-lg mr-2"
-                          onClick={() => handleStartQuizPopUp(exam)}>Start</button>
-                      </td>
-                    </tr>
-                  ))}
-                </>
-              ) : (<tr className='text-center'>
-                <td colSpan={9} className='text-lg font-semibold p-4'>
-                  No Any Upcoming Quiz
-                </td>
-              </tr>)}
-            </tbody>
-          </table>
+        <h3 className="text-2xl font-semibold mb-4">Upcoming Quiz Exams</h3>
+        <div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full   border rounded-lg overflow-hidden">
+              <thead className="bg-primary text-light border">
+                <tr>
+                  <th className="text-left py-3 px-4 uppercase font-semibold text-sm">No</th>
+                  <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Subject</th>
+                  <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Title</th>
+                  <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Total Questions</th>
+                  <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Total Marks</th>
+                  <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Date</th>
+                  <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Start Time</th>
+                  <th className="text-left py-3 px-4 uppercase font-semibold text-sm">End Time</th>
+                  <th className="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
+                </tr>
+              </thead>
+              <tbody>
 
+                {upcomingExams.map((exam, index) => (
+                  <tr key={exam.id} className='divide-x hover:bg-slate-100 divide-light'>
+                    <td className="py-3 px-4">{index + 1}</td>
+                    <td className="py-3 px-4">{exam.Subject}</td>
+                    <td className="py-3 px-4">{exam.Title}</td>
+                    <td className="py-3 px-4">{exam.Number_of_Questions}</td>
+                    <td className="py-3 px-4">{exam.Exam_Total_Marks}</td>
+                    <td className="py-3 px-4">{formateDate(exam.ExamDate)}</td>
+                    <td className="py-3 px-4">{exam.StartTime}</td>
+                    <td className="py-3 px-4">{exam.EndTime}</td>
+                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
+                      <button
+                        className="text-light bg-primary text-lg font-bold py-1 px-3 rounded-lg mr-2"
+                        onClick={() => handleStartQuizPopUp(exam)}>Start</button>
+                    </td>
+                  </tr>
+                ))}
+
+              </tbody>
+            </table>
+          </div>
+          {upcomingExams.length == 0 ? (<p className='py-4 text-center w-full'>No any Upcoming Quiz</p>) : ("")}
 
           <br /><br />
 
+          <h3 className="text-2xl font-semibold mb-4">Recently Attempted Quiz</h3>
           <div className="overflow-x-auto flex flex-wrap">
-            <h3 className="text-2xl font-semibold mb-4">Recently Attempted Quiz</h3>
 
             <table className="min-w-full border rounded-lg overflow-hidden">
               <thead className="bg-primary text-light border">
@@ -264,43 +260,39 @@ const Dashboard = () => {
               </thead>
               <tbody>
 
-                {AttemptedExams.length != 0 ? (
-                  <>
-                    {AttemptedExams.map((exam, index) => (
-                      <tr key={exam.id} className='divide-x hover:bg-slate-100 divide-light'>
-                        <td className="py-3 px-4">{index + 1}</td>
-                        <td className="py-3 px-4">{exam.subject}</td>
-                        <td className="py-3 px-4">{exam.Title}</td>
-                        <td className="py-3 px-4">{formateDate(exam.date)}</td>
-                        <td className="py-3 px-4">{exam.totalQuestions}</td>
-                        <td className="py-3 px-4">{exam.totalMarks}</td>
-                        <td className="py-3 px-4">{exam.obtainMarks}</td>
-                        <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
-                          <Link to={`../view-given-quiz/${window.btoa(exam.SubmissionID)}`}
-                            className="text-light bg-primary text-lg font-bold py-1 px-3 rounded-lg mr-2">View</Link>
-                        </td>
-                      </tr>
 
-
-
-                    ))}
-                  </>) : (<tr className='text-center'>
-                    <td colSpan={9} className='text-lg font-semibold p-4'>
-                      No Any Attempted Quiz
+                {AttemptedExams.map((exam, index) => (
+                  <tr key={exam.id} className='divide-x hover:bg-slate-100 divide-light'>
+                    <td className="py-3 px-4">{index + 1}</td>
+                    <td className="py-3 px-4"><Link to={`../view-given-quiz/${window.btoa(exam.quizID)}`}
+                        className="text-primary">{exam.title}</Link></td>
+                    <td className="py-3 px-4">{exam.subject}</td>
+                    <td className="py-3 px-4">{formateDate(exam.date)}</td>
+                    <td className="py-3 px-4">{exam.totalQuestions}</td>
+                    <td className="py-3 px-4">{exam.totalMarks}</td>
+                    <td className="py-3 px-4">{exam.obtainMarks}</td>
+                    <td className="text-left py-3 px-4 uppercase font-semibold text-sm">
+                      <Link to={`../view-given-quiz/${window.btoa(exam.quizID)}`}
+                        className="text-light bg-primary text-lg font-bold py-1 px-3 rounded-lg mr-2">View</Link>
                     </td>
-                  </tr>)
-                }
+                  </tr>
+
+
+
+                ))}
+
               </tbody>
             </table>
           </div>
         </div>
-        {AttemptedExams.length !=0 ? (
+        {AttemptedExams.length != 0 ? (
 
-          <div className='text-center mt-3 w-full'>
-            <Link to={"./view-quiz"} className='rounded-full px-5 py-2 bg-blue-50 w-full'>View More</Link>
+          <div className='text-center py-4 w-full'>
+            <Link to={"./view-quiz"} className='rounded-full px-5 py-2 bg-blue-50 text-primary w-full'>View More</Link>
           </div>
 
         ) : ("")}
+        {AttemptedExams.length == 0 ? (<p className='py-4 text-center w-full'>No any Attempted Quiz</p>) : ("")}
       </div>
     </div>
   );
