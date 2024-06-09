@@ -8,10 +8,13 @@ require('dotenv').config();
 // Create connection pool for MySQL
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
     user: process.env.DB_USER,
-    password: '',
-    database: process.env.DB_NAME
-});
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    timezone: "Z",
+    socketPath: process.env.DB_SOCKET_PATH
+  });
 
 // Create express app
 const app = express();

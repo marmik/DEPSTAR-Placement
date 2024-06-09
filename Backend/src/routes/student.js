@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const vverifyToken = require("./../middlewares/middleware.js");
 const moment = require("moment");
+const nodemailer = require('nodemailer');
+
 
 require("dotenv").config();
 
@@ -34,10 +36,39 @@ connection.connect((err) => {
   console.log("Connected to MySQL as id", connection.threadId);
 });
 
-router.get("/dashboard", verifyToken, checkRole("Student"), (req, res) => {
-  const username = req.user.username;
-  res.status(200).json({
-    message: `Welcome, ${username}! You have access to this protected endpoint`,
+
+// API for Student to View total and Scheduled Exams
+router.get('/student/dashboard', verifyToken, checkRole('Student'), (req, res) => {
+  const studentID = req.user.userID;
+
+  const scheduledQuery = `
+    SELECT COUNT(*) AS total_scheduled 
+    FROM Exams 
+    WHERE ExamDate >= CURDATE() 
+      AND EndTime >= CURRENT_TIME()
+      AND studentID = ?`; // Use studentID for student
+
+  const totalExamsQuery = `
+    SELECT COUNT(*) AS total_attempted 
+    FROM ExamAttempts 
+    WHERE studentID = ?`; // Use studentID for student
+
+  connection.query([scheduledQuery, totalExamsQuery], [studentID, studentID], (err, results) => {
+    if (err) {
+      console.error('Error fetching dashboard data:', err);
+      return res.status(500).json({ error: 'Could not fetch dashboard data' }); // Use res.status for error handling (or middleware if applicable)
+    }
+
+    // Extract counts directly from results
+    const totalScheduled = results[0][0].total_scheduled;
+    const totalAttempted = results[1][0].total_attempted;
+
+    // Prepare and return response data
+    const response = {
+      totalScheduledExams: totalScheduled,
+      totalAttemptedExams,
+    };
+    res.json(response);
   });
 }); // not tested
 
@@ -181,6 +212,76 @@ router.post(
 );
 
 
+// router.post(
+//   "/quizzes/:id/submit",
+//   verifyToken,
+//   checkRole("Student"),
+//   (req, res) => {
+//     const examId = req.params.id;
+//     const userId = req.user.userID;
+//     const answers = req.body.answers;
+
+//     // Validate that answers is defined and is an array
+//     if (!answers || !Array.isArray(answers)) {
+//       return res.status(400).json({ error: "Invalid or missing answers" });
+//     }
+
+//     // Check if the exam is over by comparing the end time
+//     connection.query(
+//       "SELECT ExamDate, EndTime FROM Exams WHERE ExamID = ?",
+//       [examId],
+//       (error, results) => {
+//         if (error) {
+//           console.error(error);
+//           return res.status(500).json({ error: "Internal server error" });
+//         } else if (results.length === 0) {
+//           return res.status(400).json({ error: "Exam not found" });
+//         } else {
+//           const examDate = moment(results[0].ExamDate).format("YYYY-MM-DD");
+//           const endTime = results[0].EndTime;
+//           const endDateTime = moment(`${examDate} ${endTime}`, "YYYY-MM-DD HH:mm:ss");
+//           const currentTime = moment();
+
+//           console.log("End Date:", examDate);
+//           console.log("End Time:", endTime);
+//           console.log("End Date Time:", endDateTime.format("YYYY-MM-DD HH:mm:ss"));
+//           console.log("Current Time:", currentTime.format("YYYY-MM-DD HH:mm:ss"));
+
+//           const oneMinuteAfterEndTime = endDateTime.clone().add(1, 'minutes');
+//           if (currentTime.isAfter(oneMinuteAfterEndTime)) {
+//             return res
+//               .status(400)
+//               .json({ error: "Submission is only allowed within 1 minute after the end time" });
+//           } else {
+//             // Continue with submission logic
+//             // Check if the user has already submitted this exam
+//             connection.query(
+//               "SELECT SubmissionID FROM QuizSubmissions WHERE ExamID = ? AND UserID = ?",
+//               [examId, userId],
+//               (error, results) => {
+//                 if (error) {
+//                   console.error(error);
+                  // return res.status(500).json({ error: "Internal server error" });
+//                 } else {
+//                   if (results.length > 0) {
+//                     // Assuming the SubmissionID is the first result's property
+//                     const submissionID = results[0].SubmissionID;
+//                     // Create a new submission record
+//                     insertAnswers(submissionID, answers, res);
+//                   } else {
+//                     // Handle case where there is no submission found
+//                     return res.status(404).json({ error: "Submission not found" });
+//                   }
+//                 }
+//               }
+//             );            
+//           }
+//         }
+//       }
+//     );
+//   }
+// );
+
 router.post(
   "/quizzes/:id/submit",
   verifyToken,
@@ -235,15 +336,28 @@ router.post(
                   if (results.length > 0) {
                     // Assuming the SubmissionID is the first result's property
                     const submissionID = results[0].SubmissionID;
-                    // Create a new submission record
-                    insertAnswers(submissionID, answers, res);
+                    
+                    // Update the status to "attempted"
+                    connection.query(
+                      "UPDATE QuizSubmissions SET Status = 'Attempted' WHERE SubmissionID = ?",
+                      [submissionID],
+                      (error, results) => {
+                        if (error) {
+                          console.error(error);
+                          return res.status(500).json({ error: "Failed to update submission status" });
+                        } else {
+                          // Create a new submission record
+                          insertAnswers(submissionID, answers, res);
+                        }
+                      }
+                    );
                   } else {
                     // Handle case where there is no submission found
                     return res.status(404).json({ error: "Submission not found" });
                   }
                 }
               }
-            );            
+            );
           }
         }
       }
@@ -256,7 +370,7 @@ const insertAnswers = (submissionId, answers, res) => {
   const values = answers.map((answer) => [
     submissionId,
     answer.questionId,
-    answer.answer,
+    answer.selectedOption,
   ]);
 
   // Insert answers into the database
@@ -433,7 +547,10 @@ router.post(
 ); //tested
 
 
-// Save Quiz Feedback API
+
+
+
+// View Quiz Feedback API// Save Quiz Feedback API
 router.post("/quizFeedback/:quizId", verifyToken, checkRole("Student"), (req, res) => {
   const quiz_id = req.params.quizId;
   const { ExamFeedback } = req.body;
@@ -470,7 +587,6 @@ router.post("/quizFeedback/:quizId", verifyToken, checkRole("Student"), (req, re
 }); //tested
 
 
-// View Quiz Feedback API
 router.get(
   "/quizFeedback/:quizId",
   verifyToken,
@@ -602,7 +718,101 @@ router.get(
   }
 ); // already there in faculty USE THAT API
 
-// 25. GET /api/student/quizzes/history - View past quiz attempts and scores
+// // 25. GET /api/student/quizzes/history - View past quiz attempts and scores
+// router.get(
+//   "/quizzes/history",
+//   verifyToken,
+//   checkRole("Student"),
+//   (req, res) => {
+//     const userId = req.user.userID;
+
+//     const query = `
+//     SELECT 
+//       e.ExamID,
+//       s.SubmissionID, 
+//       e.Title, 
+//       s.SubmissionDate, 
+//       sqd.total_marks AS obtain_Marks, 
+//       e.Number_of_Questions AS total_question, 
+//       e.Exam_Total_Marks AS total_marks, 
+//       (SELECT SUM(CASE WHEN q.Correct_Option = a.AnswerText THEN 1 ELSE 0 END) 
+//        FROM questionanswers a 
+//        JOIN questions q ON a.QuestionID = q.QuestionID 
+//        WHERE a.SubmissionID = s.SubmissionID) AS score 
+//     FROM 
+//       quizsubmissions s 
+//     JOIN 
+//       exams e ON s.ExamID = e.ExamID 
+//     JOIN 
+//       student_quiz_details sqd ON s.ExamID = sqd.exam_id AND s.UserID = sqd.student_id
+//     WHERE 
+//       s.UserID = ?
+//     `;
+
+//     connection.query(query, [userId], (error, results) => {
+//       if (error) {
+//         console.error("Error fetching quiz history:", error);
+//         return res.status(500).json({ error: "Internal server error" });
+//       }
+//       res.json(results);
+//     });
+//   }
+// );  //tested
+
+// router.get(
+//   "/quizzes/history",
+//   verifyToken,
+//   checkRole("Student"),
+//   (req, res) => {
+//     const userId = req.user.userID;
+
+//     const query = `
+//       SELECT 
+//         e.ExamID AS quizID,
+//         e.Subject AS subject,
+//         e.Title AS title,
+//         e.ExamDate AS date,
+//         e.Number_of_Questions AS totalQuestions,
+//         e.Exam_Total_Marks AS totalMarks,
+//         (SELECT 
+//           SUM(CASE WHEN q.Correct_Option = a.AnswerText THEN q.Mark ELSE 0 END) 
+//          FROM 
+//           questionanswers a 
+//          JOIN 
+//           questions q ON a.QuestionID = q.QuestionID 
+//          WHERE 
+//           a.SubmissionID = s.SubmissionID
+//         ) AS obtainMarks
+//       FROM 
+//         exams e
+//       JOIN 
+//         quizsubmissions s ON e.ExamID = s.ExamID
+//       JOIN 
+//         users u ON e.className = u.class AND e.sem = u.sem AND e.batch = u.batch
+//       WHERE 
+//         u.UserID = ? 
+//         AND (e.ExamDate < CURDATE() OR (e.ExamDate = CURDATE() AND e.EndTime < CURTIME()))
+//       ORDER BY 
+//         e.ExamDate DESC, e.StartTime DESC
+//     `;
+
+//     connection.query(query, [userId], (err, results) => {
+//       if (err) {
+//         console.error("Error fetching recent exams:", err);
+//         return res.status(500).json({ error: "Could not fetch recent exams" });
+//       }
+
+//       // Format the exam dates using moment.js
+//       const formattedResults = results.map((exam) => ({
+//         ...exam,
+//         date: moment(exam.date).format("YYYY-MM-DD"),
+//       }));
+
+//       res.json(formattedResults);
+//     });
+//   }
+// );
+
 router.get(
   "/quizzes/history",
   verifyToken,
@@ -611,37 +821,93 @@ router.get(
     const userId = req.user.userID;
 
     const query = `
-    SELECT 
-      s.SubmissionID, 
-      e.Title, 
-      s.SubmissionDate, 
-      sqd.total_marks AS obtain_Marks, 
-      e.Number_of_Questions AS total_question, 
-      e.Exam_Total_Marks AS total_marks, 
-      (SELECT SUM(CASE WHEN q.Correct_Option = a.AnswerText THEN 1 ELSE 0 END) 
-       FROM questionanswers a 
-       JOIN questions q ON a.QuestionID = q.QuestionID 
-       WHERE a.SubmissionID = s.SubmissionID) AS score 
-    FROM 
-      quizsubmissions s 
-    JOIN 
-      exams e ON s.ExamID = e.ExamID 
-    JOIN 
-      student_quiz_details sqd ON s.ExamID = sqd.exam_id AND s.UserID = sqd.student_id
-    WHERE 
-      s.UserID = ?
+      SELECT 
+        e.ExamID AS quizID,
+        e.Subject AS subject,
+        e.Title AS title,
+        e.ExamDate AS date,
+        e.Number_of_Questions AS totalQuestions,
+        e.Exam_Total_Marks AS totalMarks,
+        (SELECT 
+          SUM(CASE WHEN q.Correct_Option = a.AnswerText THEN q.Mark ELSE 0 END) 
+         FROM 
+          questionanswers a 
+         JOIN 
+          questions q ON a.QuestionID = q.QuestionID 
+         WHERE 
+          a.SubmissionID = s.SubmissionID
+        ) AS obtainMarks,
+        s.SubmissionDate AS submissionTime
+      FROM 
+        exams e
+      JOIN 
+        quizsubmissions s ON e.ExamID = s.ExamID
+      JOIN 
+        users u ON e.className = u.class AND e.sem = u.sem AND e.batch = u.batch
+      WHERE 
+        u.UserID = ? 
+        AND s.status = 'Attempted'
+        AND (e.ExamDate < CURDATE() OR (e.ExamDate = CURDATE() AND e.EndTime < CURTIME()))
+      ORDER BY 
+        s.SubmissionDate DESC, e.ExamDate DESC, e.StartTime DESC
     `;
 
-    connection.query(query, [userId], (error, results) => {
-      if (error) {
-        console.error("Error fetching quiz history:", error);
-        return res.status(500).json({ error: "Internal server error" });
+    connection.query(query, [userId], (err, results) => {
+      if (err) {
+        console.error("Error fetching recent exams:", err);
+        return res.status(500).json({ error: "Could not fetch recent exams" });
       }
-      res.json(results);
+
+      // Format the exam dates using moment.js
+      const formattedResults = results.map((exam) => ({
+        ...exam,
+        date: moment(exam.date).format("YYYY-MM-DD"),
+        submissionTime: moment(exam.submissionTime).format("YYYY-MM-DD HH:mm:ss")
+      }));
+
+      res.json(formattedResults);
     });
   }
-);  //tested
+);
 
+
+
+
+// // GET /api/student/upcomingExams - View upcoming exams for a particular student
+// router.get("/upcomingExams", verifyToken, checkRole("Student"), (req, res) => {
+//   const studentId = req.user.userID;
+//   const studentClass = req.user.class; // Assume class is a property of req.user
+//   const studentSemester = req.user.sem; // Assume semester is a property of req.user
+//   const studentBatch = req.user.batch; // Assume batch is a property of req.user
+
+//   const query = `
+//     SELECT e.ExamID, e.Title, e.ExamDate, e.StartTime, e.EndTime, e.Number_of_Questions, e.Exam_Total_Marks, e.Subject, e.Description, e.Status
+//     FROM Exams e
+//     JOIN Users u ON e.className = u.class AND e.sem = u.sem
+//     LEFT JOIN quizsubmissions qs ON e.ExamID = qs.ExamID AND qs.UserID = ?
+//     WHERE u.UserID = ? 
+//       AND (e.ExamDate > CURDATE() OR (e.ExamDate = CURDATE() AND e.EndTime >= CURTIME()))
+//       AND (qs.Status IS NULL OR qs.Status != 'Attempted')
+//     ORDER BY e.ExamDate ASC, e.StartTime ASC
+//   `;
+
+//   connection.query(query, [studentId, studentId], (err, results) => {
+//     if (err) {
+//       console.error("Error fetching upcoming exams:", err);
+//       return res.status(500).json({ error: "Could not fetch upcoming exams" });
+//     }
+
+//     // Format the exam dates and times using moment.js
+//     const formattedResults = results.map((exam) => ({
+//       ...exam,
+//       ExamDate: moment(exam.ExamDate).format("YYYY-MM-DD"),
+//       StartTime: moment(exam.StartTime, "HH:mm:ss").format("HH:mm:ss"),
+//       EndTime: moment(exam.EndTime, "HH:mm:ss").format("HH:mm:ss")
+//     }));
+
+//     res.json(formattedResults);
+//   });
+// });
 
 // GET /api/student/upcomingExams - View upcoming exams for a particular student
 router.get("/upcomingExams", verifyToken, checkRole("Student"), (req, res) => {
@@ -681,33 +947,136 @@ router.get("/upcomingExams", verifyToken, checkRole("Student"), (req, res) => {
 
 
 
-//. GET /api/student/recentExams - View recent exams
+// //. GET /api/student/recentExams - View recent exams
+// router.get("/recentExams", verifyToken, checkRole("Student"), (req, res) => {
+//   const query = `
+//     SELECT e.ExamID, e.Title, e.ExamDate, e.StartTime, e.EndTime 
+//     FROM Exams e
+//     JOIN Users u ON e.className = u.class AND e.sem = u.sem AND e.batch = u.batch
+//     WHERE u.UserID = ? AND (e.ExamDate < CURDATE() OR (e.ExamDate = CURDATE() AND e.EndTime < CURTIME()))
+//     ORDER BY e.ExamDate DESC, e.StartTime DESC
+//   `;
+
+//   connection.query(query, [req.user.userID], (err, results) => {
+//     if (err) {
+//       console.error("Error fetching recent exams:", err);
+//       return res.status(500).json({ error: "Could not fetch recent exams" });
+//     }
+
+//     // Format the exam dates and times using moment.js
+//     const formattedResults = results.map((exam) => ({
+//       ...exam,
+//       ExamDate: moment(exam.ExamDate).format("YYYY-MM-DD"),
+//       StartTime: moment(exam.StartTime, "HH:mm:ss").format("HH:mm:ss"),
+//       EndTime: moment(exam.EndTime, "HH:mm:ss").format("HH:mm:ss"),
+//     }));
+
+//     res.json(formattedResults);
+//   });
+// }); //tested
+
+
+// // GET /api/student/recentExams - View recent exams
+// router.get("/recentExams", verifyToken, checkRole("Student"), (req, res) => {
+//   const userId = req.user.userID;
+
+//   const query = `
+//     SELECT 
+//       e.ExamID AS quizID,
+//       e.Subject AS subject,
+//       e.Title AS title,
+//       e.ExamDate AS date,
+//       e.Number_of_Questions AS totalQuestions,
+//       e.Exam_Total_Marks AS totalMarks,
+//       (SELECT 
+//         SUM(CASE WHEN q.Correct_Option = a.AnswerText THEN q.Mark ELSE 0 END) 
+//        FROM 
+//         questionanswers a 
+//        JOIN 
+//         questions q ON a.QuestionID = q.QuestionID 
+//        WHERE 
+//         a.SubmissionID = s.SubmissionID
+//       ) AS obtainMarks
+//     FROM 
+//       exams e
+//     JOIN 
+//       quizsubmissions s ON e.ExamID = s.ExamID
+//     JOIN 
+//       users u ON e.className = u.class AND e.sem = u.sem AND e.batch = u.batch
+//     WHERE 
+//       u.UserID = ? 
+//       AND (e.ExamDate < CURDATE() OR (e.ExamDate = CURDATE() AND e.EndTime < CURTIME()))
+//     ORDER BY 
+//       e.ExamDate DESC, e.StartTime DESC
+//     LIMIT 5
+//   `;
+
+//   connection.query(query, [userId], (err, results) => {
+//     if (err) {
+//       console.error("Error fetching recent exams:", err);
+//       return res.status(500).json({ error: "Could not fetch recent exams" });
+//     }
+
+//     // Format the exam dates and times using moment.js
+//     const formattedResults = results.map((exam) => ({
+//       ...exam,
+//       date: moment(exam.date).format("YYYY-MM-DD"),
+//     }));
+
+//     res.json(formattedResults);
+//   });
+// }); // tested
+
 router.get("/recentExams", verifyToken, checkRole("Student"), (req, res) => {
+  const userId = req.user.userID;
+
   const query = `
-    SELECT e.ExamID, e.Title, e.ExamDate, e.StartTime, e.EndTime 
-    FROM Exams e
-    JOIN Users u ON e.className = u.class AND e.sem = u.sem AND e.batch = u.batch
-    WHERE u.UserID = ? AND (e.ExamDate < CURDATE() OR (e.ExamDate = CURDATE() AND e.EndTime < CURTIME()))
-    ORDER BY e.ExamDate DESC, e.StartTime DESC
+    SELECT 
+      e.ExamID AS quizID,
+      e.Subject AS subject,
+      e.Title AS title,
+      e.ExamDate AS date,
+      e.Number_of_Questions AS totalQuestions,
+      e.Exam_Total_Marks AS totalMarks,
+      (SELECT 
+        SUM(CASE WHEN q.Correct_Option = a.AnswerText THEN q.Mark ELSE 0 END) 
+       FROM 
+        questionanswers a 
+       JOIN 
+        questions q ON a.QuestionID = q.QuestionID 
+       WHERE 
+        a.SubmissionID = s.SubmissionID
+      ) AS obtainMarks
+    FROM 
+      exams e
+    JOIN 
+      quizsubmissions s ON e.ExamID = s.ExamID
+    JOIN 
+      users u ON e.className = u.class AND e.sem = u.sem AND e.batch = u.batch
+    WHERE 
+      u.UserID = ? 
+      AND s.status = 'Attempted'
+      AND (e.ExamDate < CURDATE() OR (e.ExamDate = CURDATE() AND e.EndTime < CURTIME()))
+    ORDER BY 
+      e.ExamDate DESC, e.StartTime DESC
+    LIMIT 5
   `;
 
-  connection.query(query, [req.user.userID], (err, results) => {
+  connection.query(query, [userId], (err, results) => {
     if (err) {
       console.error("Error fetching recent exams:", err);
       return res.status(500).json({ error: "Could not fetch recent exams" });
     }
 
-    // Format the exam dates and times using moment.js
+    // Format the exam dates using moment.js
     const formattedResults = results.map((exam) => ({
       ...exam,
-      ExamDate: moment(exam.ExamDate).format("YYYY-MM-DD"),
-      StartTime: moment(exam.StartTime, "HH:mm:ss").format("HH:mm:ss"),
-      EndTime: moment(exam.EndTime, "HH:mm:ss").format("HH:mm:ss"),
+      date: moment(exam.date).format("YYYY-MM-DD"),
     }));
 
     res.json(formattedResults);
   });
-}); //tested
+});
 
 //. GET /api/student/recentAttemptedQuizzes - View recent attempted quizzes
 router.get(
@@ -731,46 +1100,118 @@ router.get(
   }
 ); //tested
 
-//. GET /api/student/afterAttemptedQuizDetails - View after attempted quiz details
-router.get(
-  "/afterAttemptedQuizDetails/:ExamID",
-  verifyToken,
-  checkRole("Student"),
-  (req, res) => {
-    const userId = req.user.userID;
-    const examID = req.params.ExamID;
-    const query = `
-    SELECT e.Title, s.SubmissionDate, q.QuestionText, q.Correct_Option AS CorrectAnswer, qa.AnswerText AS SelectedAnswer, q.Mark AS Marks
-    FROM quizsubmissions s
-    JOIN exams e ON s.ExamID = e.ExamID
-    JOIN questionanswers qa ON s.SubmissionID = qa.SubmissionID
-    JOIN questions q ON qa.QuestionID = q.QuestionID
-    WHERE s.UserID = ? AND s.status = 'Attempted' AND s.ExamID = ?
-    ORDER BY s.SubmissionDate DESC
-  `;
 
-    connection.query(query, [userId, examID], (err, results) => {
+router.get('/quizDetails/:id', verifyToken, checkRole('Student'), (req, res) => {
+  const quizId = req.params.id;
+  const examQuery = "SELECT * FROM Exams WHERE ExamID = ?";
+  const questionsQuery = "SELECT * FROM Questions WHERE ExamID = ?";
+  const optionsQuery = "SELECT * FROM QuestionOptions WHERE QuestionID = ?";
+  const feedbackQuery = "SELECT feedback FROM quiz_feedback WHERE quiz_id = ?";
+  const marksQuery = "SELECT Mark FROM Questions WHERE QuestionID = ?";
+  const totalMarksQuery = "SELECT total_marks FROM student_quiz_details WHERE student_id = ? AND exam_id = ?";
+
+  // Fetch exam details
+  connection.query(examQuery, [quizId], (err, examResults) => {
+    if (err) {
+      console.error('Error fetching quiz details:', err);
+      return res.status(500).json({ error: 'Could not fetch quiz details' });
+    }
+
+    if (examResults.length === 0) {
+      return res.status(404).json({ error: 'Quiz not found' });
+    }
+
+    // Fetch questions related to the exam
+    connection.query(questionsQuery, [quizId], (err, questionsResults) => {
       if (err) {
-        console.error("Error fetching after attempted quiz details:", err);
-        return res
-          .status(500)
-          .json({ error: "Could not fetch after attempted quiz details" });
+        console.error('Error fetching questions:', err);
+        return res.status(500).json({ error: 'Could not fetch questions' });
       }
 
-      // Format the results
-      const formattedResults = results.map((result) => ({
-        Title: result.Title,
-        SubmissionDate: result.SubmissionDate,
-        QuestionText: result.QuestionText,
-        CorrectAnswer: result.CorrectAnswer,
-        SelectedAnswer: result.SelectedAnswer,
-        Marks: result.Marks,
-      }));
+      if (questionsResults.length === 0) {
+        return res.json({
+          exam: examResults[0],
+          questions: [],
+          feedback: '',
+          totalMarks: 0
+        });
+      }
 
-      res.json(formattedResults);
+      // Fetch options and selected option for each question
+      const fetchQuestionsPromises = questionsResults.map(question => {
+        return new Promise((resolve, reject) => {
+          connection.query(optionsQuery, [question.QuestionID], (err, optionsResults) => {
+            if (err) {
+              reject(err);
+            } else {
+              // Fetch selected option by student
+              connection.query('SELECT AnswerText FROM questionanswers WHERE SubmissionID IN (SELECT SubmissionID FROM quizsubmissions WHERE ExamID = ? AND UserID = ?) AND QuestionID = ?', [quizId, req.user.userID, question.QuestionID], (err, selectedOptionResult) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  const selectedOption = selectedOptionResult[0] ? selectedOptionResult[0].AnswerText : null;
+                  // Fetch marks for the question
+                  connection.query(marksQuery, [question.QuestionID], (err, marksResult) => {
+                    if (err) {
+                      reject(err);
+                    } else {
+                      const marks = marksResult[0] ? marksResult[0].Mark : 0;
+                      const isCorrect = selectedOption === question.Correct_Option;
+                      const obtainMarks = isCorrect ? marks : 0;
+                      question.options = optionsResults;
+                      question.selectedOption = selectedOption;
+                      question.obtainMarks = obtainMarks;
+                      resolve(question);
+                    }
+                  });
+                }
+              });
+            }
+          });
+        });
+      });
+
+      // Fetch feedback
+      connection.query(feedbackQuery, [quizId], (err, feedbackResults) => {
+        if (err) {
+          console.error('Error fetching feedback:', err);
+          return res.status(500).json({ error: 'Could not fetch feedback' });
+        }
+
+        const feedbackTexts = feedbackResults.map(feedback => feedback.feedback);
+
+        // Concatenate feedback texts into a single string
+        const allFeedback = feedbackTexts.join('\n');
+
+        // Fetch total marks
+        connection.query(totalMarksQuery, [req.user.userID, quizId], (err, totalMarksResult) => {
+          if (err) {
+            console.error('Error fetching total marks:', err);
+            return res.status(500).json({ error: 'Could not fetch total marks' });
+          }
+
+          const totalMarks = totalMarksResult[0] ? totalMarksResult[0].total_marks : 0;
+
+          // Wait for all questions to be fetched
+          Promise.all(fetchQuestionsPromises)
+            .then(questionsWithDetails => {
+              res.json({
+                exam: examResults[0],
+                questions: questionsWithDetails,
+                feedback: allFeedback,
+                totalMarks: totalMarks
+              });
+            })
+            .catch(err => {
+              console.error('Error fetching question details:', err);
+              res.status(500).json({ error: 'Could not fetch question details' });
+            });
+        });
+      });
     });
-  }
-); //tested
+  });
+});
+
 
 //. GET /api/student/quizFeedback - View quiz feedback
 router.post(
@@ -785,6 +1226,7 @@ router.post(
     // Query to fetch student name based on student ID
     const studentNameQuery =
       "SELECT Username AS student_name FROM users WHERE UserID = ?";
+      console.log(student_name);
 
     // Execute the query to fetch student name
     connection.query(studentNameQuery, [student_id], (nameErr, nameResult) => {
@@ -798,7 +1240,7 @@ router.post(
 
       // Insert feedback into the database
       const feedbackInsertQuery =
-        "INSERT INTO feedback (student_id, student_name, feedback) VALUES (?, ?, ?)";
+        "INSERT INTO feedback (student_id, studentname, feedback) VALUES (?, ?, ?)";
       connection.query(
         feedbackInsertQuery,
         [student_id, student_name, feedback],
@@ -965,6 +1407,163 @@ router.post("/feedback", verifyToken, checkRole("Student"), (req, res) => {
       }
     );
   });
+});
+
+
+
+router.get('/quizDetails/:id', verifyToken, checkRole('Student'), (req, res) => {
+  const quizId = req.params.id;
+  const examQuery = "SELECT * FROM Exams WHERE ExamID = ?";
+  const questionsQuery = "SELECT * FROM Questions WHERE ExamID = ?";
+  const optionsQuery = "SELECT * FROM QuestionOptions WHERE QuestionID = ?";
+  const feedbackQuery = "SELECT COUNT(*) AS total_feedback FROM quiz_feedback WHERE quiz_id = ?";
+  const attemptsQuery = "SELECT COUNT(DISTINCT UserID) AS total_completed FROM quizsubmissions WHERE ExamID = ? AND Status = 'Attempted'";
+  const maxMarksQuery = "SELECT MAX(Exam_Total_Marks) AS max_marks FROM Exams WHERE ExamID = ?";
+  const minMarksQuery = "SELECT MIN(Exam_Total_Marks) AS min_marks FROM Exams WHERE ExamID = ?";
+  const avgMarksQuery = "SELECT AVG(Exam_Total_Marks) AS avg_marks FROM Exams WHERE ExamID = ?";
+
+  // Fetch exam details
+  connection.query(examQuery, [quizId], (err, examResults) => {
+      if (err) {
+          console.error('Error fetching quiz details:', err);
+          return res.status(500).json({ error: 'Could not fetch quiz details' });
+      }
+
+      if (examResults.length === 0) {
+          return res.status(404).json({ error: 'Quiz not found' });
+      }
+
+      // Fetch questions related to the exam
+      connection.query(questionsQuery, [quizId], (err, questionsResults) => {
+          if (err) {
+              console.error('Error fetching questions:', err);
+              return res.status(500).json({ error: 'Could not fetch questions' });
+          }
+
+          if (questionsResults.length === 0) {
+              return res.json({
+                  exam: examResults[0],
+                  questions: [],
+                  total_feedback: 0,
+                  total_completed: 0,
+                  max_marks: 0,
+                  min_marks: 0,
+                  avg_marks: 0
+              });
+          }
+
+          // Fetch options and selected option for each question
+          const fetchOptionsPromises = questionsResults.map(question => {
+              return new Promise((resolve, reject) => {
+                  connection.query(optionsQuery, [question.QuestionID], (err, optionsResults) => {
+                      if (err) {
+                          reject(err);
+                      } else {
+                          // Fetch selected option by student
+                          connection.query('SELECT AnswerText FROM questionanswers WHERE SubmissionID IN (SELECT SubmissionID FROM quizsubmissions WHERE ExamID = ? AND UserID = ?) AND QuestionID = ?', [quizId, req.user.userID, question.QuestionID], (err, selectedOptionResult) => {
+                              if (err) {
+                                  reject(err);
+                              } else {
+                                  const selectedOption = selectedOptionResult[0] ? selectedOptionResult[0].AnswerText : null;
+                                  question.options = optionsResults;
+                                  question.selectedOption = selectedOption;
+                                  resolve(question);
+                              }
+                          });
+                      }
+                  });
+              });
+          });
+
+          // Fetch additional information
+          Promise.all([
+              queryPromise(feedbackQuery, [quizId]),
+              queryPromise(attemptsQuery, [quizId]),
+              queryPromise(maxMarksQuery, [quizId]),
+              queryPromise(minMarksQuery, [quizId]),
+              queryPromise(avgMarksQuery, [quizId])
+          ])
+          .then(([feedbackResults, attemptsResults, maxMarksResults, minMarksResults, avgMarksResults]) => {
+              const total_feedback = feedbackResults[0].total_feedback;
+              const total_completed = attemptsResults[0].total_completed;
+              const max_marks = maxMarksResults[0].max_marks;
+              const min_marks = minMarksResults[0].min_marks;
+              const avg_marks = avgMarksResults[0].avg_marks;
+
+              // Wait for all options to be fetched
+              Promise.all(fetchOptionsPromises)
+                  .then(questionsWithOptions => {
+                      res.json({
+                          exam: examResults[0],
+                          questions: questionsWithOptions,
+                          total_feedback: total_feedback,
+                          total_completed: total_completed,
+                          max_marks: max_marks,
+                          min_marks: min_marks,
+                          avg_marks: avg_marks
+                      });
+                  })
+                  .catch(err => {
+                      console.error('Error fetching question options:', err);
+                      res.status(500).json({ error: 'Could not fetch question options' });
+                  });
+          })
+          .catch(err => {
+              console.error('Error fetching additional information:', err);
+              res.status(500).json({ error: 'Could not fetch additional information' });
+          });
+      });
+  });
+});   //tested
+
+// Helper function for executing SQL queries
+function queryPromise(query, params) {
+  return new Promise((resolve, reject) => {
+      connection.query(query, params, (error, results) => {
+          if (error) {
+              reject(error);
+          } else {
+              resolve(results);
+          }
+      });
+  });
+}
+
+
+
+// ========================================================== mail =====================================================================
+
+
+// Nodemailer transporter setup
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_SERVICE,
+  port: process.env.EMAIL_PORT,
+  secure: false, // true for 465, false for other ports
+  auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
+  }
+});
+
+
+// Endpoint to send email
+router.post('/send-email', async (req, res) => {
+  const { to, subject, text } = req.body;
+
+  const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to,
+      subject,
+      text
+  };
+
+  try {
+      await transporter.sendMail(mailOptions);
+      res.status(200).send('Email sent successfully');
+  } catch (error) {
+      console.error('Error sending email:', error);
+      res.status(500).send('Error sending email');
+  }
 });
 
 
