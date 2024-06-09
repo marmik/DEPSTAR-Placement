@@ -31,7 +31,7 @@ const Dashboard = () => {
         setScheduledExams(response.data);
 
       } catch (error) {
-        console.error('Error fetching exams:', error);
+        // console.error('Error fetching exams:', error);
       }
     };
 
@@ -50,7 +50,7 @@ const Dashboard = () => {
         setConductedExams(response.data);
         // console.log(response.data);
       } catch (error) {
-        console.error('Error fetching exams:', error);
+        // console.error('Error fetching exams:', error);
       }
     };
 

@@ -34,7 +34,7 @@ const ManageQuiz = () => {
 
 
       } catch (error) {
-        console.error('Error fetching exams:', error);
+        // console.error('Error fetching exams:', error);
       }
     };
 
@@ -123,11 +123,9 @@ const ManageQuiz = () => {
                 ))}
               </tbody>
             </table>
-            {filteredQuizzes.length === 0 && (
-              <p className="text-center py-3">No quizzes found</p>
-            )}
           </div>
         </div>
+        {filteredQuizzes.length == 0 ? (<p className='py-4 text-center w-full'>No any Attempted Quiz</p>) : ("")}
       </div>
     </div>
 

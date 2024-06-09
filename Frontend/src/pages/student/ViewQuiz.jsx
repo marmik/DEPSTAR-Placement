@@ -19,7 +19,7 @@ const ViewQuiz = () => {
           },
         });
 
-        console.log(response.data);
+        // console.log(response.data);
         setAttemptedExams(response.data);
         setTotalQuizzes(response.data.length);
 
@@ -104,12 +104,9 @@ const ViewQuiz = () => {
                 ))}
               </tbody>
             </table>
-            {filteredQuizzes.length === 0 && (
-              <p className="text-center py-3">No quizzes found</p>
-            )}
-
           </div>
         </div>
+        {filteredQuizzes.length == 0 ? (<p className='py-4 text-center w-full'>No any Attempted Quiz</p>) : ("")}
       </div>
     </div>
 

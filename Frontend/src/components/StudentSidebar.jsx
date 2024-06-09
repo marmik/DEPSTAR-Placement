@@ -18,8 +18,8 @@ const StudentSidebar = () => {
 
     return (
         <div className=" flex flex-col bg-primary text-white h-screen overflow-hidden">
-            <div className="flex items-center justify-center h-20">
-                <span className="text-xl font-bold">Logo</span>
+                <div className="flex items-center justify-center p-4">
+                <img src="../images/PlaceStarWhite.png" width={200} alt="" />
             </div>
             <nav className="flex-grow  py-4 px-6">
                 <ul className='flex flex-col gap-4'>

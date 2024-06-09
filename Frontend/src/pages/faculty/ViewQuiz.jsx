@@ -34,9 +34,9 @@ const ViewQuiz = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log('====================================');
-        console.log(response.data);
-        console.log('====================================');
+        // console.log('====================================');
+        // console.log(response.data);
+        // console.log('====================================');
         if (response.status === 200) {
           setQuizDetails(response.data.exam);
           setQuizQuestions(response.data.questions);
@@ -45,7 +45,7 @@ const ViewQuiz = () => {
           toast.warn("Internal Server Error !");
         }
       } catch (error) {
-        console.error('Error fetching exams:', error);
+        // console.error('Error fetching exams:', error);
       }
     };
 
@@ -67,7 +67,7 @@ const ViewQuiz = () => {
         toast.error('Failed to delete quiz!');
       }
     } catch (error) {
-      console.error('Error deleting quiz:', error);
+      // console.error('Error deleting quiz:', error);
       toast.error('Error deleting quiz!');
     }
     setShowDeletePopup(false);
@@ -157,7 +157,7 @@ const ViewQuiz = () => {
 
         <div className="w-full flex gap-2 flex-wrap rounded-md mt-16 items-center justify-center">
 
-          {QuizDetails.Status != "Completed" && (
+          {QuizDetails.Status === "Not Started" && (
 
             <Link to={`/faculty/update-quiz/${window.btoa(QuizID)}`}>
               <button className="bg-green-500 text-white font-semibold py-2 px-4 rounded mr-2">
@@ -166,12 +166,14 @@ const ViewQuiz = () => {
             </Link>
 
           )}
-          <button
-            className="bg-red-500 text-white font-semibold py-2 px-4 rounded mr-2"
-            onClick={() => setShowDeletePopup(true)}
-          >
-            Delete
-          </button>
+          {QuizDetails.Status === "Not Started"  && (
+            <button
+              className="bg-red-500 text-white font-semibold py-2 px-4 rounded mr-2"
+              onClick={() => setShowDeletePopup(true)}
+            >
+              Delete
+            </button>
+          )}
           {QuizDetails.Status === "Completed" && (
 
             <button onClick={() => { navigate(`/faculty/view-data/${window.btoa(QuizID)}`) }} className="bg-primary text-white font-semibold py-2 px-4 rounded mr-2">

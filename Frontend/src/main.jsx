@@ -13,6 +13,7 @@ import AdminDashboard from './components/AdminDashboard.jsx';
 import Error404 from './pages/Error404.jsx';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ContactUs from './pages/ContactUs.jsx';
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />
+  },
+  {
+    path: "/developers",
+    element: <ContactUs/>
   },
   {
     path: "/Faculty/*",

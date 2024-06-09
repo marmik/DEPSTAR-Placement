@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { CiUser } from 'react-icons/ci';
 import { RiLockPasswordLine } from 'react-icons/ri';
 import { parseJwt } from '../model/JwtDecode';
@@ -148,6 +148,7 @@ function Login() {
               </button>
             </form>
           </div>
+          <Link to={"/developers"} className='absolute bottom-0 right-0 p-2' >Developers</Link>
         </div>
       </div>
     </>

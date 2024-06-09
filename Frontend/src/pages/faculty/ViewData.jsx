@@ -28,7 +28,7 @@ const ViewData = () => {
           toast.warn("Internal Server Error !");
         }
       } catch (error) {
-        console.error('Error fetching exams:', error);
+        // console.error('Error fetching exams:', error);
       }
     };
 

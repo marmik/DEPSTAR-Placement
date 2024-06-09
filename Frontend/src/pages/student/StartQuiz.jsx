@@ -141,7 +141,7 @@ const StartQuiz = () => {
       // console.log(">0>",response.data);
 
     } catch (error) {
-      console.error('Error fetching Result:', error);
+      // console.error('Error fetching Result:', error);
       toast.error("Something Went Wrong ! Please try again Later ");
     }
   };

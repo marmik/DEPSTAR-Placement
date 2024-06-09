@@ -38,7 +38,7 @@ const ManageFeedback = () => {
 
 
       } catch (error) {
-        console.error('Error fetching exams:', error);
+        // console.error('Error fetching exams:', error);
       }
     };
 
@@ -50,23 +50,23 @@ const ManageFeedback = () => {
   );
   return (
     <div className='p-4 text-secondary'>
-      
-        <div className="py-3 ">
-          <h2 className="text-2xl  font-semibold mb-2">Search Quiz</h2>
-          <label className="flex flex-col">
-            <input
-              type="text"
-              placeholder="Search Quiz"
-              className="p-4 border-2 w-full sm:w-1/4 border-slate-300 rounded-md focus:border-primary focus:outline-none"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </label>
-        </div>
-      
-      <br/>
-      <hr/>
-      <br/>
+
+      <div className="py-3 ">
+        <h2 className="text-2xl  font-semibold mb-2">Search Quiz</h2>
+        <label className="flex flex-col">
+          <input
+            type="text"
+            placeholder="Search Quiz"
+            className="p-4 border-2 w-full sm:w-1/4 border-slate-300 rounded-md focus:border-primary focus:outline-none"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </label>
+      </div>
+
+      <br />
+      <hr />
+      <br />
       <div>
         <div className="bg-white rounded-md">
           <h2 className="text-xl py-4">Manage Feedbacks</h2>
@@ -89,12 +89,12 @@ const ManageFeedback = () => {
                     {filteredFeedbackzes.map((exam, index) => (
                       <tr className="divide-x divide-light">
                         <td className="text-left py-3  px-4 ">{index + 1}</td>
-                        <td className="text-left py-3 text-primary  px-4"> 
+                        <td className="text-left py-3 text-primary  px-4">
                           <Link
                             to={`../view-data/${window.btoa(exam.ExamID)}`}
-                          
+
                           >
-                              {exam.title}
+                            {exam.title}
                           </Link></td>
                         <td className="text-left py-3  px-4">{exam.subject}</td>
                         <td className="text-left py-3  px-4">{formatDate(exam.ExamDate)}</td>
@@ -104,9 +104,9 @@ const ManageFeedback = () => {
                             to={`../view-data/${window.btoa(exam.ExamID)}`}
                             className="text-white bg-primary text-lg py-2 px-3 rounded-md mr-2"
                           >
-                 
-                              View
-                    
+
+                            View
+
                           </Link>
                         </td>
                       </tr>
@@ -116,6 +116,7 @@ const ManageFeedback = () => {
               </div>
             </div>
           </div>
+          {filteredFeedbackzes.length == 0 ? (<p className='py-4 text-center w-full'>No any Quiz Conducted</p>) : ("")}
         </div>
       </div>
     </div>

@@ -81,7 +81,7 @@ const AddQuiz = () => {
       !title ||
       !description ||
       !totalMarks ||
-      !totalQuestions ||
+      !totalQuestions || 
       !status ||
       !sem ||
       !className ||
@@ -91,6 +91,15 @@ const AddQuiz = () => {
       !endTime
     ) {
       toast.error('Please fill all the fields to create Quiz.');
+      return;
+    }
+
+    if(Number(totalMarks)<=0 ){
+      toast.error('Marks Must be Greater than 0');
+      return;
+    }
+    if(Number(totalQuestions)<=0 ){
+      toast.error('Question Must be Greater than 0');
       return;
     }
 
@@ -105,7 +114,7 @@ const AddQuiz = () => {
     const token = localStorage.getItem('token'); // Retrieve the token from localStorage
 
     try {
-      const response = await axios.post('http://localhost:3000/api/faculty/createNewQuiz', quizData, { 
+      const response = await axios.post('http://localhost:3000/api/faculty/createNewQuiz', quizData, {
         headers: {
           Authorization: `Bearer ${token}` // Add the token to the Authorization header
         }
@@ -123,9 +132,14 @@ const AddQuiz = () => {
 
   const [Questionlist, setQuestionlist] = useState([]);
   useEffect(() => {
-    setQuestionlist([...Array(QuestionsNo | 0)].map((e, i) => (
-      <Questions key={i} i={i} updateQuestion={updateQuestion} />
-    )));
+    try {
+
+      setQuestionlist([...Array(QuestionsNo | 0)].map((e, i) => (
+        <Questions key={i} i={i} updateQuestion={updateQuestion} />
+      )));
+    } catch (error) {
+      toast.warn("Invalid Question Length !")
+    }
   }, [QuestionsNo | 0]);
 
   return (
@@ -157,7 +171,7 @@ const AddQuiz = () => {
 
           <div className="sm:w-1/5">
             <label className="flex flex-col">Total Marks
-              <input type="number" name="totalMarks" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" required onChange={handleInputChange} />
+              <input type="number" min={1} name="totalMarks" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" required onChange={handleInputChange} />
             </label>
           </div>
         </div>
@@ -165,7 +179,7 @@ const AddQuiz = () => {
         <div className="flex w-full sm:flex-row gap-2 my-3 flex-col">
           <div className="sm:w-1/5">
             <label className="flex flex-col">Total Questions
-              <input type="number" name="totalQuestions" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" required onChange={handleInputChange} />
+              <input type="number" min={1} name="totalQuestions" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" required onChange={handleInputChange} />
             </label>
           </div>
 
@@ -231,7 +245,7 @@ const AddQuiz = () => {
           <div className="sm:w-1/5 flex-row">
             <label className="flex flex-col">Batch
               <select name="batch" required autoComplete="name" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" onChange={handleInputChange}>
-              <option disabled selected value="">Select Batch</option>
+                <option disabled selected value="">Select Batch</option>
                 <option value="All">All</option>
                 <option value="A">A</option>
                 <option value="B">B</option>

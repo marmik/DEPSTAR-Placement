@@ -22,9 +22,9 @@ const ViewGivenQuiz = () => {
         },
       });
       if (response.status === 200) {
-        console.log('====================================');
-        console.log(response.data);
-        console.log('====================================');
+        // console.log('====================================');
+        // console.log(response.data);
+        // console.log('====================================');
         setquizdata(response.data);
 
        
@@ -32,13 +32,26 @@ const ViewGivenQuiz = () => {
         toast.warn("Internal Server Error !");
       }
     } catch (error) {
-      console.error('Error fetching exams:', error);
+      // console.error('Error fetching exams:', error);
     }
   };
 
   useEffect(() => {
     fetchQuiz();
   }, [QuizID]);
+
+  const formateDate = (examdate) => {
+    const isoString = examdate;
+    const date = new Date(isoString);
+
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+
+    const formattedDate = `${day}-${month}-${year}`;
+    return formattedDate
+  }
+
   return (
     <div className="text-lg">
       <div className="bg-white p-8 rounded-3xl shadow-2xl ">
@@ -71,11 +84,11 @@ const ViewGivenQuiz = () => {
               </tr>
               <tr>
                 <td className="text-secondary font-bold pr-4">Date</td>
-                <td className="text-gray-600">: {quizdata.exam ? quizdata.exam.ExamDate : ""}</td>
+                <td className="text-gray-600">: {quizdata.exam ? formateDate(quizdata.exam.ExamDate) : ""}</td>
               </tr>
               <tr>
                 <td className="text-secondary font-bold pr-4">Time</td>
-                <td className="text-gray-600 ">: <span className="">{quizdata.exam ? quizdata.exam.StartTime : ""}</span></td>
+                <td className="text-gray-600 ">: <span className="">{quizdata.exam ? quizdata.exam.StartTime+" To "+quizdata.exam.EndTime : ""}</span></td>
               </tr>
               <tr>
                 <td className="text-secondary font-bold pr-4">Status</td>
@@ -132,7 +145,8 @@ const ViewGivenQuiz = () => {
                   </p>
                 </div>
               </div>
-              <div className="flex sm:flex-row flex-col "><span className="p-2 font-bold">Options:</span>
+              <div className=""><span className="p-2 font-bold">Options:</span>
+              
                 {['OptionA', 'OptionB', 'OptionC', 'OptionD',].map((option, optionIndex) => {
                   const optionLetter = String.fromCharCode(65 + optionIndex);
                   const optionText = question.options[0][`Option${optionLetter}`];

@@ -14,6 +14,7 @@ const Dashboard = () => {
   const [selectedExam, setSelectedExam] = useState(null);
   // const [conductedExams, setConductedExams] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
+  
 
   const handleStartQuiz = async (QuizID) => {
 
@@ -97,11 +98,11 @@ const Dashboard = () => {
           },
         });
 
-        console.log(response.data);
+        // console.log(response.data);
         setAttemptedExams(response.data);
 
       } catch (error) {
-        console.error('Error fetching exams:', error);
+        // console.error('Error fetching exams:', error);
         toast.error("Something Went Wrong ! Please try again Later ");
       }
     };
@@ -113,7 +114,7 @@ const Dashboard = () => {
     <div className='p-4 text-secondary'>
 
       {showPopup && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed z-10 inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg m-2">
             <div className="sm:p-6 p-2 flex flex-col rounded-lg gap-4 w-full justify-center">
               <h2 className="text-xl font-bold mb-4">Quiz info</h2>
@@ -285,7 +286,7 @@ const Dashboard = () => {
             </table>
           </div>
         </div>
-        {AttemptedExams.length != 0 ? (
+        {AttemptedExams.length == 5 ? (
 
           <div className='text-center py-4 w-full'>
             <Link to={"./view-quiz"} className='rounded-full px-5 py-2 bg-blue-50 text-primary w-full'>View More</Link>
