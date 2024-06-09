@@ -62,16 +62,16 @@ function FacultyDashboard() {
 
         <div className={`${sidebarOpen ? 'sm:col-span-4 col-span-2 ' : ' sm:col-span-5 col-span-5'}  h-screen overflow-y-auto overflow-x-hidden`}>
 
-          <div className='bg-slate-200  flex-wrap gap-10 flex justify-between items-center sticky top-0 w-full p-7'>
+          <div className='z-10 bg-slate-200  flex-wrap gap-10 flex justify-between items-center sticky top-0 w-full p-7'>
             <div className='flex justify-center  items-center gap-10'>
               <GiHamburgerMenu className='text-2xl cursor-pointer ' onClick={toggleSidebar} />
               <h2 className='font-bold text-2xl'>
               <Routes>
-                  <Route path='/' element={'Faculty Dashboard'}></Route>
+                  <Route path='/' element={'Dashboard'}></Route>
                   <Route path='/add-quiz' element={'Add Quiz'}></Route>
                   <Route path='/manage-quiz' element={'Manage Quiz'}></Route>
                   <Route exact path='/view-quiz/:id' element={'View Quiz'}></Route>
-                  <Route path='/view-data' element={'View Quiz'}></Route>
+                  <Route path='/view-data/*' element={'View Data'}></Route>
                   <Route path='/manage-feedbacks' element={'Manage Feedbacks'}></Route>
                   <Route path='/system-feedbacks' element={'System Feedbacks'}></Route>
                   <Route path='/update-quiz/*' element={'Update Quiz'}></Route>
@@ -91,7 +91,7 @@ function FacultyDashboard() {
               <Route path='/manage-quiz' element={<ManageQuiz />}></Route>
               <Route exact path='/view-quiz/:id' element={<ViewQuiz />}></Route>
               <Route path='/manage-feedbacks' element={<ManageFeedback />}></Route>
-              <Route path='/view-data' element={<ViewData />}></Route>
+              <Route path='/view-data/:id' element={<ViewData />}></Route>
               <Route path='/system-feedbacks' element={<SystemFeedback />}></Route>
               <Route path='/update-quiz/:id' element={<UpdateQuiz />}></Route>
               <Route path='*' element={<Error404 />}></Route>

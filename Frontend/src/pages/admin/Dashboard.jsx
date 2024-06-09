@@ -1,4 +1,5 @@
 import React from 'react'
+import { LineChart } from '@mui/x-charts/LineChart';
 
 const Dashboard = () => {
   return (
@@ -24,10 +25,20 @@ const Dashboard = () => {
       </div>
     </div>
     </div>
-    <div className="lg:w-1/3 sm:w-full md:w-full text-center mt-10">
-      <img src='..\..\images/image_chart.png' alt="gergwrgr" className='p-5' />
-      System Usage
-    </div>
+    <div className='sm:col-span-2 col-span-4 items-center w-full h-fill flex justify-center flex-col'>
+      {/* <img src='..\..\images/image_chart.png' alt="gergwrgr" className='p-5' /> */}
+            <LineChart
+              xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
+              series={[
+                {
+                  data: [2, 5.5, 2, 8.5, 1.5, 5],
+                },
+              ]}
+              width={500}
+              height={300}
+            />
+            System Usage
+          </div>
     </div>
     </>
   )

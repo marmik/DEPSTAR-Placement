@@ -10,17 +10,18 @@ const ViewQuiz = () => {
   const QuizID = window.atob(id);
   const [QuizDetails, setQuizDetails] = useState("");
   const [QuizQuestions, setQuizQuestions] = useState("");
+  const [examdata, setexamdata] = useState([]);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
 
-  const formateDate =(examdate)=>{
+  const formateDate = (examdate) => {
     const isoString = examdate;
     const date = new Date(isoString);
 
     const year = date.getUTCFullYear();
     const month = String(date.getUTCMonth() + 1).padStart(2, '0');
     const day = String(date.getUTCDate()).padStart(2, '0');
-      
-    const formattedDate = `${day}-${month}-${year}`; 
+
+    const formattedDate = `${day}-${month}-${year}`;
     return formattedDate
   }
 
@@ -33,14 +34,18 @@ const ViewQuiz = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+        // console.log('====================================');
+        // console.log(response.data);
+        // console.log('====================================');
         if (response.status === 200) {
           setQuizDetails(response.data.exam);
           setQuizQuestions(response.data.questions);
+          setexamdata(response.data);
         } else {
           toast.warn("Internal Server Error !");
         }
       } catch (error) {
-        console.error('Error fetching exams:', error);
+        // console.error('Error fetching exams:', error);
       }
     };
 
@@ -62,14 +67,14 @@ const ViewQuiz = () => {
         toast.error('Failed to delete quiz!');
       }
     } catch (error) {
-      console.error('Error deleting quiz:', error);
+      // console.error('Error deleting quiz:', error);
       toast.error('Error deleting quiz!');
     }
     setShowDeletePopup(false);
   };
-  
+
   return (
-    <div className="flex-wrap">
+    <div className="p-4 flex-wrap">
       <div className="bg-slate-100 text-lg p-8 rounded-lg">
         <div className="flex sm:flex-row flex-col justify-between ">
           <table className=''>
@@ -117,11 +122,11 @@ const ViewQuiz = () => {
               <div className='flex sm:justify-center'>
                 <button className='sm:col-span-1 col-span-4 group rounded-xl p-6'>
                   <p className=' text-s '>Total Feedbacks</p>
-                  <h3 className=' mt-3 text-4xl text-primary font-semibold'>10</h3>
+                  <h3 className=' mt-3 text-4xl text-primary font-semibold'>{examdata.total_feedback}</h3>
                 </button>
                 <button className='sm:col-span-1 col-span-4 group rounded-xl p-6'>
                   <p className=' text-s '>Total Completed</p>
-                  <h3 className=' mt-3 text-4xl text-primary font-semibold'>1</h3>
+                  <h3 className=' mt-3 text-4xl text-primary font-semibold'>{examdata.total_attendance}</h3>
                 </button>
               </div>
               <div className='grid justify-between gap-10 grid-cols-2 '>
@@ -129,19 +134,19 @@ const ViewQuiz = () => {
                   <tbody>
                     <tr>
                       <td className="text-secondary font-semibold pr-4">Total Attendance</td>
-                      <td className="text-gray-600">: 10</td>
+                      <td className="text-gray-600">: {examdata.total_attendance}</td>
                     </tr>
                     <tr>
                       <td className="text-secondary font-semibold pr-4">Maximum Marks</td>
-                      <td className="text-gray-600">: 30</td>
+                      <td className="text-gray-600">: {examdata.max_marks}</td>
                     </tr>
                     <tr>
                       <td className="text-secondary font-semibold pr-4">Minimum Marks</td>
-                      <td className="text-gray-600">: 12</td>
+                      <td className="text-gray-600">: {examdata.min_marks}</td>
                     </tr>
                     <tr>
                       <td className="text-secondary font-semibold pr-4">Average Marks</td>
-                      <td className="text-gray-600">: 22</td>
+                      <td className="text-gray-600">: {examdata.avg_marks}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -151,20 +156,28 @@ const ViewQuiz = () => {
         </div>
 
         <div className="w-full flex gap-2 flex-wrap rounded-md mt-16 items-center justify-center">
-          <Link to={`/faculty/update-quiz/${window.btoa(QuizID)}`}>
-            <button className="bg-green-500 text-white font-semibold py-2 px-4 rounded mr-2">
-              Update
+
+          {QuizDetails.Status === "Not Started" && (
+
+            <Link to={`/faculty/update-quiz/${window.btoa(QuizID)}`}>
+              <button className="bg-green-500 text-white font-semibold py-2 px-4 rounded mr-2">
+                Update
+              </button>
+            </Link>
+
+          )}
+          {QuizDetails.Status === "Not Started"  && (
+            <button
+              className="bg-red-500 text-white font-semibold py-2 px-4 rounded mr-2"
+              onClick={() => setShowDeletePopup(true)}
+            >
+              Delete
             </button>
-          </Link>
-          <button 
-            className="bg-red-500 text-white font-semibold py-2 px-4 rounded mr-2"
-            onClick={() => setShowDeletePopup(true)}
-          >
-            Delete
-          </button>
+          )}
           {QuizDetails.Status === "Completed" && (
-            <button onClick={() => { navigate("../view-data") }} className="bg-primary text-white font-semibold py-2 px-4 rounded mr-2">
-              View More
+
+            <button onClick={() => { navigate(`/faculty/view-data/${window.btoa(QuizID)}`) }} className="bg-primary text-white font-semibold py-2 px-4 rounded mr-2">
+              View Students Marks
             </button>
           )}
         </div>
@@ -199,13 +212,13 @@ const ViewQuiz = () => {
             <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
             <p>Are you sure you want to delete this quiz?</p>
             <div className="mt-4 flex justify-end gap-2">
-              <button 
+              <button
                 className="bg-red-500 text-white font-semibold py-2 px-4 rounded"
                 onClick={handleDeleteQuiz}
               >
                 Confirm
               </button>
-              <button 
+              <button
                 className="bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded"
                 onClick={() => setShowDeletePopup(false)}
               >
@@ -220,3 +233,5 @@ const ViewQuiz = () => {
 };
 
 export default ViewQuiz;
+
+

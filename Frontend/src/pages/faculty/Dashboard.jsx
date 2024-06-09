@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { PieChart } from '@mui/x-charts/PieChart';
 
 
 const Dashboard = () => {
   const [scheduledExams, setScheduledExams] = useState([]);
-  // const [conductedExams, setConductedExams] = useState([]);
-  const formateDate =(examdate)=>{
+  const [conductedExams, setConductedExams] = useState([]);
+  const formateDate = (examdate) => {
     const isoString = examdate;
     const date = new Date(isoString);
 
     const year = date.getUTCFullYear();
     const month = String(date.getUTCMonth() + 1).padStart(2, '0');
     const day = String(date.getUTCDate()).padStart(2, '0');
-      
-    const formattedDate = `${day}-${month}-${year}`; 
+
+    const formattedDate = `${day}-${month}-${year}`;
     return formattedDate
   }
   useEffect(() => {
@@ -26,15 +27,34 @@ const Dashboard = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        
+
         setScheduledExams(response.data);
 
       } catch (error) {
-        console.error('Error fetching exams:', error);
+        // console.error('Error fetching exams:', error);
       }
     };
 
     fetchExams();
+  }, []);
+
+  useEffect(() => {
+    const qHistory = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:3000/api/faculty/recentExam/details', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setConductedExams(response.data);
+        // console.log(response.data);
+      } catch (error) {
+        // console.error('Error fetching exams:', error);
+      }
+    };
+
+    qHistory();
   }, []);
 
   return (
@@ -46,11 +66,31 @@ const Dashboard = () => {
             <h3 className='mt-3 text-6xl text-primary group-hover:text-light font-bold'>10</h3>
           </button>
           <button className='sm:col-span-1 col-span-4 group hover:shadow-2xl bg-light hover:bg-primary transition-all rounded-xl p-6'>
-            <p className='text-xl group-hover:text-light'>Total Exam Feedbacks</p>
+            <p className='text-xl group-hover:text-light'>Total Exam Scheduled</p>
             <h3 className='mt-3 text-6xl text-primary group-hover:text-light font-bold'>10</h3>
           </button>
-          <div className='sm:col-span-2 col-span-4 items-center justify-center flex'>
-            <img src="../images/chartFaculty.png" alt="Chart" />
+          <div className='sm:col-span-2 col-span-4 items-center w-full h-fill flex justify-center'>
+            {/* <img src="../images/chartFaculty.png" alt="Chart" /> */}
+            <PieChart
+              colors={['#3F5BCC', '#FF8989', '#E347CF']}
+              series={[
+                {
+                  data: [
+                    { id: 0, value: 10, label: 'series A' },
+                    { id: 1, value: 15, label: 'series B' },
+                    { id: 2, value: 20, label: 'series C' },
+                  ],
+                  innerRadius: 20,
+                  outerRadius: 100,
+                  paddingAngle: 5,
+                  cornerRadius: 5,
+                  startAngle: -90,
+                  endAngle: 180,
+                },
+              ]}
+              width={400}
+              height={250}
+            />
           </div>
         </div>
         <br /><br />
@@ -93,6 +133,7 @@ const Dashboard = () => {
             </tbody>
           </table>
         </div>
+        {scheduledExams.length == 0 ? (<p className='py-4 text-center w-full'>No any Quiz Scheduled !</p>) : ("")}
         <br /><br />
         <h2 className="text-2xl font-semibold mb-4">Recently Conducted Exams</h2>
         <div className='overflow-x-auto '>
@@ -112,35 +153,32 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody >
-
-              <tr className='divide-x divide-light'>
-                <td className="py-3 px-4">1</td>
-                <td className="py-3 px-4">DBMS Practical</td>
-                <td className="py-3 px-4">30</td>
-                <td className="py-3 px-4">30</td>
-                <td className="py-3 px-4">30</td>
-                <td className="py-3 px-4">15</td>
-                <td className="py-3 px-4">22</td>
-                <td className="py-3 px-4">40</td>
-                <td className="py-3 px-4"> <button className="text-light bg-primary text-lg  font-bold py-1 px-3 rounded-lg mr-2">View</button></td>
-              </tr>
-
-              <tr className='divide-x divide-light'>
-                <td className="py-3 px-4">2</td>
-                <td className="py-3 px-4">DAA Practical</td>
-                <td className="py-3 px-4">30</td>
-                <td className="py-3 px-4">30</td>
-                <td className="py-3 px-4">30</td>
-                <td className="py-3 px-4">15</td>
-                <td className="py-3 px-4">22</td>
-                <td className="py-3 px-4">40</td>
-                <td className="py-3 px-4"> <button className="text-light bg-primary text-lg  font-bold py-1 px-3 rounded-lg mr-2">View</button></td>
-              </tr>
-
-
+              {conductedExams.map((item, index) => (
+                <tr key={item.SubmissionID} className="divide-x hover:bg-gray-100 divide-gray-200">
+                  <td className="py-3 px-4">{index + 1}</td>
+                  <td className="py-3 px-4 text-blue-600">  
+                    <Link to={`./view-quiz/${window.btoa(item.ExamID)}`} >
+                    {item.Title}
+                  </Link></td>
+                  <td className="py-3 px-4">{item.total_questions}</td>
+                  <td className="py-3 px-4">{item.total_marks}</td>
+                  <td className="py-3 px-4">{item.max_marks}</td>
+                  <td className="py-3 px-4">{item.min_marks}</td>
+                  <td className="py-3 px-4">{item.avg_marks}</td>
+                  <td className="py-3 px-4">{item.feedback_count}</td>
+                  <td className="py-3 px-4">
+                    {/* ./view-quiz/${window.btoa(item.SubmissionID)} */}
+                    <Link to={`./view-quiz/${window.btoa(item.ExamID)}`} className="text-white bg-blue-600 text-lg font-bold py-1 px-3 rounded-lg mr-2">
+                      View
+                    </Link>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
+        {conductedExams.length == 5 ? (<div className='w-full bg-red- text-center py-4'><Link to={"./manage-quiz"} className='px-4 py-2 bg-blue-50 text-primary rounded-full'>View More</Link></div>) : ("")}
+        {conductedExams.length == 0 ? (<p className='py-4 text-center w-full'>No any Quiz Conducted !</p>) : ("")}
 
       </div>
     </>

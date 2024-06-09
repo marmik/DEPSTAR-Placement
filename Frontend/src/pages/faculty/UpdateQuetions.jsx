@@ -30,7 +30,7 @@ const UpdateQuetions = ({ updateQuestion, i, initialQuestion }) => {
 
 
   return (
-    <div className='pt-10 flex flex-col'>
+    <div className='flex flex-col'>
 
       <div className="w-full">
         <label className="flex flex-col">

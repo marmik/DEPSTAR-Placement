@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import UpdateQuetions from './UpdateQuetions';
 import { toast } from 'react-toastify';
 
 const UpdateQuiz = () => {
+  const navigate = useNavigate();
   const [QuestionList, setQuestionList] = useState([]);
   const { id } = useParams();
   const QuizID = window.atob(id);
@@ -140,6 +141,14 @@ const UpdateQuiz = () => {
       toast.error('Please fill all the fields to create Quiz.');
         return; }
 
+        if(Number(exam_total_marks)<=0 ){
+          toast.error('Marks Must be Greater than 0');
+          return;
+        }
+        if(Number(number_of_questions)<=0 ){
+          toast.error('Question Must be Greater than 0');
+          return;
+        }
     const UpdateData = {
       ...lowerCaseFormData,
       QuestionList
@@ -154,6 +163,7 @@ const UpdateQuiz = () => {
       });
 
       toast.success(response.data.message);
+      navigate("/faculty")
     } catch (error) {
 
       toast.error("Error to Update Quiz !");
@@ -181,7 +191,7 @@ const UpdateQuiz = () => {
   // }, [questionsNo]); 
   return (
     <>
-      <div className="flex flex-col">
+      <div className=" p-4 text-secondary flex flex-col">
         <div className="flex sm:flex-row flex-col gap-2">
           <div className="sm:w-1/5 flex-row">
             <label className="flex flex-col">Select Subject
@@ -208,7 +218,7 @@ const UpdateQuiz = () => {
 
           <div className="sm:w-1/5">
             <label className="flex flex-col">Total Marks
-              <input type="number" name="Exam_Total_Marks" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" value={FormData.Exam_Total_Marks} onChange={handleInputChange} required />
+              <input type="number" min={1} name="Exam_Total_Marks" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" value={FormData.Exam_Total_Marks} onChange={handleInputChange} required />
             </label>
           </div>
         </div>
@@ -216,7 +226,7 @@ const UpdateQuiz = () => {
         <div className="flex w-full sm:flex-row gap-2 my-3 flex-col">
           <div className="sm:w-1/5">
             <label className="flex flex-col">Total Questions
-              <input type="number" name="Number_of_Questions" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" value={FormData.Number_of_Questions} onChange={handleInputChange} required />
+              <input type="number" min={1} name="Number_of_Questions" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" value={FormData.Number_of_Questions} onChange={handleInputChange} required />
             </label>
           </div>
 

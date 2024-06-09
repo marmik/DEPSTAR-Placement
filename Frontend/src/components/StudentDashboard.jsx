@@ -57,14 +57,14 @@ function StudentDashboard() {
 
                 <div className={`${sidebarOpen ? 'sm:col-span-4 col-span-2 ' : ' sm:col-span-5 col-span-5'}  h-screen overflow-y-auto overflow-x-hidden`}>
 
-                    <div className='bg-slate-200  flex justify-between items-center sticky top-0 w-full p-7'>
+                    <div className='z-10 bg-slate-200  flex justify-between items-center sticky top-0 w-full p-7'>
                         <div className='flex justify-center items-center gap-10'>
                             <GiHamburgerMenu className='text-2xl cursor-pointer ' onClick={toggleSidebar} />
                             <h2 className='font-bold text-2xl'>
                                 <Routes>
                                     <Route path='/' element={'Dashboard'}></Route>
                                     <Route path='/view-quiz' element={'View Quiz'}></Route>
-                                    <Route path='/view-given-quiz' element={'View Quiz'}></Route>
+                                    <Route exact path='/view-given-quiz/:id' element={'View Quiz'}></Route>
                                     <Route path='/given-feedback' element={'Given Feedback'}></Route>
                                     <Route path='/system-feedback' element={'System Feedback'}></Route>
                                     <Route path='/start-quiz/:id' element={'Start Quiz'}></Route>
@@ -84,7 +84,7 @@ function StudentDashboard() {
                         <Routes>
                             <Route path='/' element={<Dashboard />}></Route>
                             <Route path='/view-quiz' element={<ViewQuiz />}></Route>
-                            <Route path='/view-given-quiz' element={<ViewGivenQuiz />}></Route>
+                            <Route exact path='/view-given-quiz/:id' element={<ViewGivenQuiz />}></Route>
                             <Route path='/given-feedback' element={<GivenFeedback />}></Route>
                             <Route path='/system-feedback' element={<SystemFeedback />}></Route>
                             <Route path='/start-quiz/:id' element={<StartQuiz />}></Route>

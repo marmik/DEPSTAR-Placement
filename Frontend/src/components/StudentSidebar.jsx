@@ -18,8 +18,8 @@ const StudentSidebar = () => {
 
     return (
         <div className=" flex flex-col bg-primary text-white h-screen overflow-hidden">
-            <div className="flex items-center justify-center h-20">
-                <span className="text-xl font-bold">Logo</span>
+                <div className="flex items-center justify-center p-4">
+                <img src="../images/PlaceStarWhite.png" width={200} alt="" />
             </div>
             <nav className="flex-grow  py-4 px-6">
                 <ul className='flex flex-col gap-4'>
@@ -45,7 +45,7 @@ const StudentSidebar = () => {
                             </div>
                         </Link>
                     </li>
-                    <li className={`p-4 rounded-lg ${path == "/student/given-feedback" ? "bg-white shadow-2xl text-secondary":"" }  `}>
+                    {/* <li className={`p-4 rounded-lg ${path == "/student/given-feedback" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
                             to="./given-feedback"
                             
@@ -55,7 +55,7 @@ const StudentSidebar = () => {
                                 <span>Given Feedback</span>
                             </div>
                         </Link>
-                    </li>
+                    </li> */}
                     <li className={`p-4 rounded-lg ${path == "/student/system-feedback" ? "bg-white shadow-2xl text-secondary":"" }  `}>
                         <Link
                             to="./system-feedback"
@@ -68,18 +68,7 @@ const StudentSidebar = () => {
                         </Link>
                    
                     </li>
-                    {/* <li className={`p-4 rounded-lg ${path == "/student/start-quiz" ? "bg-white shadow-2xl text-secondary":"" }  `}>
-                        <Link
-                            to="./start-quiz"
-                            
-                        >
-                            <div className="flex items-center space-x-2">
-                                <HiChatAlt className="w-5 h-5" />
-                                <span>Start Quiz</span>
-                            </div>
-                        </Link>
-                   
-                    </li> */}
+                  
                   
                 </ul>
             </nav>
