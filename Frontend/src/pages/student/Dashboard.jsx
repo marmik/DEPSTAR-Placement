@@ -4,14 +4,14 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { LineChart } from '@mui/x-charts/LineChart';
-import { PiWindowsLogo } from 'react-icons/pi';
-
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [upcomingExams, setUpcomingExams] = useState([]);
   const [AttemptedExams, setAttemptedExams] = useState([]);
   const [selectedExam, setSelectedExam] = useState(null);
+  const [headerdetails, Setheaderdetails] = useState({});
+  const [keywisedata, setkeywisedata] = useState([]);//this is for graph
   // const [conductedExams, setConductedExams] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   
@@ -108,6 +108,43 @@ const Dashboard = () => {
     };
     fetchAttemptedExams();
 
+    
+
+  }, []);
+
+  useEffect(() => {
+    const fetchheaderdetails = async () => {
+      try {
+        const token = localStorage.getItem('token');
+
+        const response = await axios.get('http://localhost:3000/api/student/dashboard/upcomingExamsCount/examClearedCount', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        // console.log(response.data);
+        Setheaderdetails(response.data);
+        
+        const studentQuizDetails =response.data.studentQuizDetails;
+        const keyWiseArrays = {};
+        studentQuizDetails.forEach(item => {
+            Object.keys(item).forEach(key => {
+                if (!keyWiseArrays[key]) {
+                    keyWiseArrays[key] = [];
+                }
+                keyWiseArrays[key].push(item[key]);
+            });
+        });
+        setkeywisedata(keyWiseArrays);
+        // console.log(keyWiseArrays);
+      } catch (error) {
+        // console.error('Error fetching exams:', error);
+        toast.error("Something Went Wrong ! Please try again Later ");
+      }
+    };
+    fetchheaderdetails();
+    
+
   }, []);
 
   return (
@@ -176,23 +213,21 @@ const Dashboard = () => {
         <div className='grid justify-between gap-10  grid-cols-4 '>
           <button className='sm:col-span-1 col-span-4 group hover:shadow-2xl bg-light hover:bg-primary transition-all rounded-xl p-6'>
             <p className=' text-xl group-hover:text-light'>Total Quiz Cleared</p>
-            <h3 className=' mt-3 text-6xl text-primary group-hover:text-light font-bold'>10</h3>
+            <h3 className=' mt-3 text-6xl text-primary group-hover:text-light font-bold'>{headerdetails.attemptedQuizzesCount || "0"}</h3>
           </button>
           <button className='sm:col-span-1 col-span-4 group hover:shadow-2xl bg-light hover:bg-primary transition-all rounded-xl p-6'>
             <p className=' text-xl group-hover:text-light'>Total Upcoming Quiz</p>
-            <h3 className=' mt-3 text-6xl text-primary group-hover:text-light font-bold'>10</h3>
+            <h3 className=' mt-3 text-6xl text-primary group-hover:text-light font-bold'>{headerdetails.upcomingExamsCount || "0"}</h3>
           </button>
           <div className='sm:col-span-2 col-span-4 items-center w-full h-fill flex justify-center'>
             {/* <img src="../images/graph.png" alt="" /> */}
             <LineChart
-              xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
-              series={[
-                {
-                  data: [2, 5.5, 2, 8.5, 1.5, 5],
-                },
-              ]}
               width={500}
               height={300}
+              series={[
+                { data: (keywisedata.total_marks?keywisedata.total_marks:[0]), label: 'Obtaind Marks' },
+              ]}
+              xAxis={[{ scaleType: 'point', data: (keywisedata.exam_id?keywisedata.exam_id:[0]) }]}
             />
           </div>
         </div>

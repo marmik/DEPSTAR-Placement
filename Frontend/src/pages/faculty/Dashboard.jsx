@@ -1,12 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { PieChart } from '@mui/x-charts/PieChart';
+import { BarChart } from '@mui/x-charts/BarChart';
 
+const xLabels = [
+  'Test 1',
+  'Test 2',
+  'Test 3',
+  'Test 4',
+  'Test 5',
+  'Test 6',
+  'Test 7',
+];
 
 const Dashboard = () => {
   const [scheduledExams, setScheduledExams] = useState([]);
   const [conductedExams, setConductedExams] = useState([]);
+  const [headerdetails, setheaderdetails] = useState([]);
+  const [keywisedata, setkeywisedata] = useState([]);//this is for graph
+
   const formateDate = (examdate) => {
     const isoString = examdate;
     const date = new Date(isoString);
@@ -47,7 +59,22 @@ const Dashboard = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.log(response.data);
         setConductedExams(response.data);
+        
+        const studentQuizDetails =response.data;
+        const keyWiseArrays = {};
+        studentQuizDetails.forEach(item => {
+            Object.keys(item).forEach(key => {
+                if (!keyWiseArrays[key]) {
+                    keyWiseArrays[key] = [];
+                }
+                keyWiseArrays[key].push(item[key]);
+            });
+        });
+        setkeywisedata(keyWiseArrays);
+        console.log(keyWiseArrays);
+
         // console.log(response.data);
       } catch (error) {
         // console.error('Error fetching exams:', error);
@@ -57,40 +84,53 @@ const Dashboard = () => {
     qHistory();
   }, []);
 
+  useEffect(() => {
+    const fetchheaderdetails = async () => {
+      try {
+        const token = localStorage.getItem('token');
+
+        const response = await axios.get('http://localhost:3000/api/faculty/dashboard/examsConductedCount/examScdeduled', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        // console.log(response.data);
+        setheaderdetails(response.data);
+
+      } catch (error) {
+        // console.error('Error fetching exams:', error);
+        toast.error("Something Went Wrong ! Please try again Later ");
+      }
+    };
+    fetchheaderdetails();
+  }, []);
+
   return (
     <>
       <div className='p-4 text-secondary'>
         <div className='grid justify-between gap-10 grid-cols-4'>
           <button className='sm:col-span-1 col-span-4 group hover:shadow-2xl bg-light hover:bg-primary transition-all rounded-xl p-6'>
             <p className='text-xl group-hover:text-light'>Total Exam Conducted</p>
-            <h3 className='mt-3 text-6xl text-primary group-hover:text-light font-bold'>10</h3>
+            <h3 className='mt-3 text-6xl text-primary group-hover:text-light font-bold'>{headerdetails.totalExamConducted || "0"}</h3>
           </button>
           <button className='sm:col-span-1 col-span-4 group hover:shadow-2xl bg-light hover:bg-primary transition-all rounded-xl p-6'>
             <p className='text-xl group-hover:text-light'>Total Exam Scheduled</p>
-            <h3 className='mt-3 text-6xl text-primary group-hover:text-light font-bold'>10</h3>
+            <h3 className='mt-3 text-6xl text-primary group-hover:text-light font-bold'>{headerdetails.totalExamScheduled || "0"}</h3>
           </button>
           <div className='sm:col-span-2 col-span-4 items-center w-full h-fill flex justify-center'>
             {/* <img src="../images/chartFaculty.png" alt="Chart" /> */}
-            <PieChart
-              colors={['#3F5BCC', '#FF8989', '#E347CF']}
+            <BarChart
               series={[
-                {
-                  data: [
-                    { id: 0, value: 10, label: 'series A' },
-                    { id: 1, value: 15, label: 'series B' },
-                    { id: 2, value: 20, label: 'series C' },
-                  ],
-                  innerRadius: 20,
-                  outerRadius: 100,
-                  paddingAngle: 5,
-                  cornerRadius: 5,
-                  startAngle: -90,
-                  endAngle: 180,
-                },
+                { data: (keywisedata.total_marks?keywisedata.total_marks:[1]), stack: 'A', label: 'Total Marks' },
+                { data: (keywisedata.max_marks?keywisedata.max_marks:[1]), stack: 'A', label: 'Maximum Marks'},
+                { data: (keywisedata.min_marks?keywisedata.min_marks:[1]), stack: 'A', label: 'Minimum Marks'},
+                { data: (keywisedata.avg_marks?keywisedata.avg_marks:[1]), stack: 'A', label: 'Average Marks'},
               ]}
-              width={400}
-              height={250}
-            />
+              xAxis={[{ data: (keywisedata.ExamID?keywisedata.ExamID:[1]), scaleType: 'band' }]}
+              width={600}
+              height={350}
+/>
           </div>
         </div>
         <br /><br />
