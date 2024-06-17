@@ -118,7 +118,8 @@ const Questions = ({i,updateQuestion}) => {
       <div className="flex sm:flex-row flex-col">
         <div className="flex w-full sm:flex-row flex-col">
           <div className="w-full">
-            <article className="pt-2 w-2/3 text-wrap">
+            <article className="pt-2 w-2/3 flex flex-col sm:flex-row sm:items-center justify-left gap-2 sm:mt-0 mt-4">
+            Correct options:
               <select
                 name="correctOption"
                 value={Questionobj.correctOption}
