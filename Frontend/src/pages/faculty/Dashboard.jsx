@@ -122,12 +122,12 @@ const Dashboard = () => {
             {/* <img src="../images/chartFaculty.png" alt="Chart" /> */}
             <BarChart
               series={[
-                { data: (keywisedata.total_marks?keywisedata.total_marks:[1]), stack: 'A', label: 'Total Marks' },
-                { data: (keywisedata.max_marks?keywisedata.max_marks:[1]), stack: 'B', label: 'Maximum Marks'},
-                { data: (keywisedata.min_marks?keywisedata.min_marks:[1]), stack: 'C', label: 'Minimum Marks'},
-                { data: (keywisedata.avg_marks?keywisedata.avg_marks:[1]), stack: 'D', label: 'Average Marks'},
+                { data: (keywisedata.total_marks?keywisedata.total_marks:[0]), stack: 'A', label: 'Total Marks' },
+                { data: (keywisedata.max_marks?keywisedata.max_marks:[0]), stack: 'B', label: 'Maximum Marks'},
+                { data: (keywisedata.min_marks?keywisedata.min_marks:[0]), stack: 'C', label: 'Minimum Marks'},
+                { data: (keywisedata.avg_marks?keywisedata.avg_marks:[0]), stack: 'D', label: 'Average Marks'},
               ]}
-              xAxis={[{ data: (conductedExams?(Array.from({ length: conductedExams.length }, (_, i) => keywisedata.Title[i]+""+(i+1))):[1]), scaleType: 'band' }]}
+              xAxis={[{ data: (conductedExams?(Array.from({ length: conductedExams.length }, (_, i) => keywisedata.Title[i]+""+(i+1))):[0]), scaleType: 'band' }]}
               width={600}
               height={350}
 />

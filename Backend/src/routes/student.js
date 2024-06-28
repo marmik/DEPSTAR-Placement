@@ -20,12 +20,12 @@ router.use(cookieParser());
 
 const connection = mysql.createConnection({
   host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
+  // port: process.env.DB_PORT,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   timezone: "Z",
-  socketPath: process.env.DB_SOCKET_PATH
+  // socketPath: process.env.DB_SOCKET_PATH,
 });
 
 connection.connect((err) => {
@@ -36,41 +36,80 @@ connection.connect((err) => {
   console.log("Connected to MySQL as id", connection.threadId);
 });
 
-
-// API for Student to View total and Scheduled Exams
-router.get('/student/dashboard', verifyToken, checkRole('Student'), (req, res) => {
-  const studentID = req.user.userID;
-
-  const scheduledQuery = `
-    SELECT COUNT(*) AS total_scheduled 
-    FROM Exams 
-    WHERE ExamDate >= CURDATE() 
-      AND EndTime >= CURRENT_TIME()
-      AND studentID = ?`; // Use studentID for student
-
-  const totalExamsQuery = `
-    SELECT COUNT(*) AS total_attempted 
-    FROM ExamAttempts 
-    WHERE studentID = ?`; // Use studentID for student
-
-  connection.query([scheduledQuery, totalExamsQuery], [studentID, studentID], (err, results) => {
-    if (err) {
-      console.error('Error fetching dashboard data:', err);
-      return res.status(500).json({ error: 'Could not fetch dashboard data' }); // Use res.status for error handling (or middleware if applicable)
-    }
-
-    // Extract counts directly from results
-    const totalScheduled = results[0][0].total_scheduled;
-    const totalAttempted = results[1][0].total_attempted;
-
-    // Prepare and return response data
-    const response = {
-      totalScheduledExams: totalScheduled,
-      totalAttemptedExams,
-    };
-    res.json(response);
+router.get("/dashboard", verifyToken, checkRole("Student"), (req, res) => {
+  const username = req.user.username;
+  res.status(200).json({
+    message: `Welcome, ${username}! You have access to this protected endpoint`,
   });
 }); // not tested
+
+
+// student dashboard
+router.get("/dashboard/upcomingExamsCount/examClearedCount", verifyToken, checkRole("Student"), async (req, res) => {
+  const studentId = req.user.userID;
+
+  // Query to count upcoming exams
+  const upcomingExamsQuery = `
+    SELECT COUNT(*) AS upcomingExamsCount
+    FROM Exams e
+    LEFT JOIN quizsubmissions qs ON e.ExamID = qs.ExamID AND qs.UserID = ?
+    WHERE (e.ExamDate > CURDATE() OR (e.ExamDate = CURDATE() AND e.EndTime >= CURTIME()))
+      AND (qs.Status IS NULL OR qs.Status != 'Attempted')
+      AND e.className = (SELECT class FROM Users WHERE UserID = ?)
+      AND e.sem = (SELECT sem FROM Users WHERE UserID = ?)
+  `;
+
+  // Query to count attempted quizzes
+  const attemptedQuizzesQuery = `
+    SELECT COUNT(*) AS attemptedQuizzesCount
+    FROM quizsubmissions
+    WHERE UserID = ?
+      AND Status = 'Attempted'
+  `;
+
+  // Query to fetch quiz details with subject from Exams table
+  const studentQuizDetailsQuery = `
+    SELECT 
+      sqd.exam_id,
+      sqd.total_marks,
+      e.subject
+    FROM student_quiz_details sqd
+    INNER JOIN Exams e ON sqd.exam_id = e.ExamID
+    WHERE sqd.student_id = ? order by sqd.created_at LIMIT 10
+  `;
+
+  try {
+    const [upcomingExamsResult, attemptedQuizzesResult, studentQuizDetailsResult] = await Promise.all([
+      new Promise((resolve, reject) => {
+        connection.query(upcomingExamsQuery, [studentId, studentId, studentId], (err, results) => {
+          if (err) return reject(err);
+          resolve(results[0].upcomingExamsCount);
+        });
+      }),
+      new Promise((resolve, reject) => {
+        connection.query(attemptedQuizzesQuery, [studentId], (err, results) => {
+          if (err) return reject(err);
+          resolve(results[0].attemptedQuizzesCount);
+        });
+      }),
+      new Promise((resolve, reject) => {
+        connection.query(studentQuizDetailsQuery, [studentId], (err, results) => {
+          if (err) return reject(err);
+          resolve(results);
+        });
+      })
+    ]);
+
+    res.json({
+      upcomingExamsCount: upcomingExamsResult,
+      attemptedQuizzesCount: attemptedQuizzesResult,
+      studentQuizDetails: studentQuizDetailsResult
+    });
+  } catch (err) {
+    console.error("Error fetching quiz statistics:", err);
+    res.status(500).json({ error: "Could not fetch quiz statistics" });
+  }
+});
 
 // Example protected route handlers
 router.post(
@@ -1100,7 +1139,7 @@ router.get(
   }
 ); //tested
 
-
+//. GET /api/student/afterAttemptedQuizDetails - View after attempted quiz details
 router.get('/quizDetails/:id', verifyToken, checkRole('Student'), (req, res) => {
   const quizId = req.params.id;
   const examQuery = "SELECT * FROM Exams WHERE ExamID = ?";
@@ -1211,8 +1250,6 @@ router.get('/quizDetails/:id', verifyToken, checkRole('Student'), (req, res) => 
     });
   });
 });
-
-
 //. GET /api/student/quizFeedback - View quiz feedback
 router.post(
   "/systemFeedback",

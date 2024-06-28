@@ -1,0 +1,25 @@
+- [ ] Upcoming exam api
+- [ ] Recent exam api
+-  Create quiz api  
+- [ ] Save quiz question api
+-  Update quiz data api 
+-  Delete quiz api
+-  Display all quiz api
+-  Total number of  quiz api
+-  Display schedule quiz
+-  Get quiz details api
+//  Create new table name (quiz feedback) view quiz feedback api
+- [ ] System feedback api
+- [ ] Student performance graph api (student)
+- [ ] Faculty analytic dashboard (faculty) api
+-  Upcoming exam based on semester  student ,batch api
+- [ ] Recent attempted quiz for student api
+- start_student_quiz api
+- submit quiz answer
+- get quiz result       // error
+-  Student Attempted quiz details api   // studentQuizDetails
+- [ ] After attempted quiz details student api  //GET /api/student/quizzes/history - View past quiz attempts and scores
+// Create new table student_qiuz details (students,studentname,quiztitle,totalquetions,totalmarks,time,)
+// Feedback table(studentid,studentname,feedback)
+- view student profile
+- edit student profile

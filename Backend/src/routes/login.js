@@ -8,13 +8,13 @@ require('dotenv').config();
 // Create connection pool for MySQL
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     timezone: "Z",
-    socketPath: process.env.DB_SOCKET_PATH
-  });
+    // port: process.env.DB_PORT,
+    // socketPath: process.env.DB_SOCKET_PATH // Ensure the correct path variable
+});
 
 // Create express app
 const app = express();
@@ -27,14 +27,14 @@ router.use(express.json());
 
 router.post('/login', (req, res) => {
     const { username, password } = req.body;
-    console.log(req.body)
+
     // Check if username and password are provided
     if (!username || !password) {
         return res.status(400).json({ message: 'Username and password are required' });
     }
+
     // Query database to find user
     pool.query('SELECT * FROM users WHERE Username = ?', [username], (error, results) => {
-        console.log(results)
         if (error) {
             console.error(error);
             return res.status(500).json({ message: 'Internal server error' });
@@ -52,9 +52,11 @@ router.post('/login', (req, res) => {
         }
 
         const userId = user.UserID;
+        // const username = user.username;/
         const role = user.Role;
-
-        console.log("hello",user);
+        const sem  = user.sem;
+        const classs  = user.class;
+        const batch  = user.batch;
 
         let dashboard;
         if (role === "Admin") {
@@ -66,22 +68,22 @@ router.post('/login', (req, res) => {
         }
 
         // Generate JWT token
-        const accessToken = jwt.sign({ username: username, role: role, userID: userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const accessToken = jwt.sign({ username: username, role: role, userID: userId , sem :sem ,classs :classs ,batch :batch }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         // Cookie options
-        const cookieOptions = {
-            httpOnly: true, // Accessible only by web server
-            secure: process.env.NODE_ENV === 'production', // Send only over HTTPS when in production
-            sameSite: 'strict', // Helps prevent CSRF attacks
-            maxAge: 60 * 60 * 1000 // 1 hour
-        };
+        // const cookieOptions = {
+        //     httpOnly: true, // Accessible only by web server
+        //     secure: process.env.NODE_ENV === 'production', // Send only over HTTPS when in production
+        //     sameSite: 'strict', // Helps prevent CSRF attacks
+        //     maxAge: 60 * 60 * 1000 // 1 hour
+        // };
 
         // Set the cookie
-        res.cookie('accessToken', accessToken, cookieOptions);
+        // res.cookie('accessToken', accessToken, cookieOptions);
 
         // Send response
         res.json({
-            dashboard: dashboard,
+            role: dashboard,
             token: accessToken,
             status: "User logged in successfully"
         });

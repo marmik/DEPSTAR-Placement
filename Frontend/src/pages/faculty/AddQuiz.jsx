@@ -259,7 +259,7 @@ const AddQuiz = () => {
         <div className="flex gap-2 sm:flex-row my-3 flex-col ">
           <div className="sm:w-1/4">
             <label className="flex flex-col">Date
-              <input type="date" required name="date" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" onChange={handleInputChange} />
+              <input type="date" required name="date" min={new Date().toISOString().split('T')[0]} placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" onChange={handleInputChange} />
             </label>
           </div>
 
@@ -271,7 +271,7 @@ const AddQuiz = () => {
 
           <div className="sm:w-1/4">
             <label className="flex flex-col">End Time
-              <input type="time" required name="endTime" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" onChange={handleInputChange} />
+              <input type="time" required  name="endTime" placeholder="" className="p-4 mt-2 border-2 border-slate-300 rounded-md focus:border-primary focus:outline-none" onChange={handleInputChange} />
             </label>
           </div>
 

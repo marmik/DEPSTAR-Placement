@@ -18,13 +18,11 @@ const { verifyToken, checkRole } = vverifyToken;
 
 // Database connection
 const connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  timezone: "Z",
-  socketPath: process.env.DB_SOCKET_PATH
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    timezone: "Z"
 });
 
 connection.connect((err) => {
@@ -34,39 +32,41 @@ connection.connect((err) => {
     }
     console.log('Connected to MySQL as id', connection.threadId);
 });
-// API for faculty dashboard
-router.get('/faculty/dashboard', verifyToken, checkRole('Faculty'), (req, res) => {
-    const userid = req.user.userID;
+
+router.get("/dashboard/examsConductedCount/examScdeduled", verifyToken, checkRole("Faculty"), async (req, res) => {
+    const userId = req.user.userID;
   
-    const scheduledQuery = `
-      SELECT COUNT(*) AS total_scheduled 
-      FROM Exams 
-      WHERE ExamDate >= CURDATE() 
-        AND EndTime >= CURRENT_TIME()
-        AND creatorID = ?`; // Use creatorID for faculty
+    // Updated query to count both completed and not started exams created by the user
+    const examsCountQuery = `
+      SELECT 
+        SUM(CASE WHEN Status = 'completed' THEN 1 ELSE 0 END) AS completedExamsCount,
+        SUM(CASE WHEN Status = 'Not Started' THEN 1 ELSE 0 END) AS notStartedExamsCount
+      FROM exams
+      WHERE CreatorID = ?
+    `;
   
-    const totalExamsQuery = `
-      SELECT COUNT(*) AS total_exams 
-      FROM Exams 
-      WHERE creatorID = ?`; // Use creatorID for faculty
+    try {
+      // Execute the query
+      const examsCountResult = await new Promise((resolve, reject) => {
+        connection.query(examsCountQuery, [userId], (err, results) => {
+          if (err) return reject(err);
+          resolve(results[0]); // results[0] will be the row with both counts
+        });
+      });
   
-    connection.query([scheduledQuery, totalExamsQuery], [userid, userid], (err, results) => {
-      if (err) {
-        console.error('Error fetching dashboard data:', err);
-        return res.status(500).json({ error: 'Could not fetch dashboard data' });
-      }
+      // Extract counts from the result
+      const completedExamsCount = examsCountResult.completedExamsCount;
+      const notStartedExamsCount = examsCountResult.notStartedExamsCount;
   
-      // Extract counts directly from results
-      const totalScheduled = results[0][0].total_scheduled;
-      const totalExams = results[1][0].total_exams;
-  
-      // Prepare and return response data
-      const response = {
-        totalScheduledExams: totalScheduled,
-        totalExams,
-      };
-      res.json(response);
-    });
+      // Send the response with both counts
+      res.json({
+        totalExamConducted: completedExamsCount,
+        totalExamScheduled: notStartedExamsCount
+      });
+    } catch (err) {
+      console.error("Error fetching exams count:", err);
+      res.status(500).json({ error: "Could not fetch exams count" });
+    }
   });
 
 router.post('/createNewQuiz', verifyToken, checkRole('Faculty'), (req, res) => {
@@ -663,11 +663,11 @@ router.get(
       const facultyId = req.user.userID;
   
       const feedbackQuery = `
-        SELECT e.title, e.subject, e.ExamDate, COUNT(qf.feedback) AS total_feedback
+        SELECT e.title,e.ExamID, e.subject, e.ExamDate, COUNT(qf.feedback) AS total_feedback
         FROM exams e
         LEFT JOIN quiz_feedback qf ON e.ExamID = qf.quiz_id
         WHERE e.CreatorID = ?
-        GROUP BY e.ExamID, e.Title, e.Subject, e.ExamDate
+        GROUP BY e.ExamID, e.Title, e.Subject, e.ExamDate ORDER BY e.created_at DESC
       `;
   
       connection.query(feedbackQuery, [facultyId], (err, results) => {

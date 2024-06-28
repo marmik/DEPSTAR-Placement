@@ -9,9 +9,9 @@ const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT,
-    socketPath: process.env.DB_SOCKET_PATH
+    database: process.env.DB_NAME
+    // port: process.env.DB_PORT,
+    // socketPath: process.env.DB_SOCKET_PATH
 });
 
 // Middleware function to verify JWT token
