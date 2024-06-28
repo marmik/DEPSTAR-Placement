@@ -227,7 +227,8 @@ const Dashboard = () => {
               series={[
                 { data: (keywisedata.total_marks?keywisedata.total_marks:[0]), label: 'Obtaind Marks' },
               ]}
-              xAxis={[{ scaleType: 'point', data: (keywisedata.exam_id?keywisedata.exam_id:[0]) }]}
+              
+              xAxis={[{ scaleType: 'point', data: (keywisedata.exam_id?Array.from({ length: keywisedata.exam_id.length }, (_, i) => `Exam ${i + 1}`):[0]) }]}
             />
           </div>
         </div>
